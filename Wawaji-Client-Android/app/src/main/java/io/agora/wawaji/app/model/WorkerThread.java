@@ -375,7 +375,7 @@ public class WorkerThread extends Thread {
 
     private RtcEngine ensureRtcEngineReadyLock() {
         if (mRtcEngine == null) {
-            String appId = mContext.getString(R.string.private_app_id);
+            String appId = mContext.getString(R.string.agora_app_id);
             if (TextUtils.isEmpty(appId)) {
                 throw new RuntimeException("NEED TO use your App ID, get your own ID at https://dashboard.agora.io/");
             }
@@ -397,7 +397,7 @@ public class WorkerThread extends Thread {
     private AgoraAPIOnlySignal mSignalSDK;
 
     private AgoraAPIOnlySignal ensureSignalingSDKReadyLock(boolean logout) {
-        String appId = mContext.getString(R.string.agora_app_id);
+        String appId = mContext.getString(R.string.agora_signalling_app_id);
         if (mSignalSDK == null) {
             mSignalSDK = AgoraAPIOnlySignal.getInstance(mContext, appId);
         }
@@ -410,7 +410,7 @@ public class WorkerThread extends Thread {
         String identification = "p1_" + getDeviceID(mContext) + "_a" + BuildConfig.APPLICATION_ID + "_v" + BuildConfig.VERSION_NAME;
 
         long expiredTime = System.currentTimeMillis() / 1000 + 3600;
-        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);
+        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_signalling_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);
 
         mSignalSDK.login2(appId, String.valueOf(mEngineConfig.mUid), token, 0, "", 5, 1);
         log.debug("login " + (mEngineConfig.mUid & 0XFFFFFFFFL) + " " + identification);

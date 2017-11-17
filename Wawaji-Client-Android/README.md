@@ -3,9 +3,9 @@
 *Read this in other languages: [English](README.en.md)*
 
 - **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
-- **为了安全，建议大家在正式环境中启用 [动态密钥鉴](https://document.agora.io/cn/1.14/instruction/key.html) 权机制**
+- **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
-这个开源示例项目演示了如何利用 Agora 视频 SDK，实现抓娃娃游戏。
+这个示例项目演示了如何快速集成 Agora 视频和信令 SDK，实现在线抓娃娃。
 
 在这个示例项目中包含了以下功能：
 
@@ -17,12 +17,22 @@
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "app/src/main/res/values/strings_config.xml"
 
 ```
-<string name="private_app_id"><#YOUR APP ID#></string>
+<string name="agora_app_id"><#YOUR APP ID#></string>
+```
+```
+<string name="agora_signalling_app_id"><#YOUR SIGNALLING APP ID#></string>
+<string name="agora_signalling_app_certificate"><#YOUR SIGNALLING APP CERTIFICATE#></string>
 ```
 
-然后在 [Agora.io SDK](https://www.agora.io/cn/download/) 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs** 文件夹下的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下。
+[Agora.io SDK](https://www.agora.io/cn/download/) 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs** 文件夹下的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下。
 
-对于 **信令(信令是用来控制娃娃机或者摄像头等等设备的)**，同样的 **libs/signaling** 当中的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs/signaling** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下
+**Agora.io Signaling SDK** 在本项目中用来控制娃娃机端的摄像头多视角切换，开发者可以根据自己的情况选择性使用。对于 **信令 SDK**，同样的 **libs/signal** 当中的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs/signal** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下
+
+在本示例当中娃娃机的控制是使用第三方的基于 [WebSocket](https://en.wikipedia.org/wiki/WebSocket)，开发者需要根据自己的情况调整这部分代码，具体的控制协议格式也可能需要修改
+
+```
+public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
+```
 
 最后用 Android Studio 打开该项目，连上设备，编译并运行。
 
