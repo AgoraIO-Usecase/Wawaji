@@ -53,6 +53,7 @@
         PlayViewController *vc = (PlayViewController *)segue.destinationViewController;
         UIAlertAction *action = (UIAlertAction *)sender;
         vc.player = [action.title isEqualToString:@"Play"];
+        vc.channel = self.channelTextField.text;
     }
 }
 
