@@ -11,5 +11,6 @@
 @interface PlayViewController : UIViewController
 
 @property (assign, nonatomic) BOOL player;
+@property (copy, nonatomic) NSString *channel;
 
 @end

@@ -14,7 +14,7 @@
 #import <AgoraSignalKit/AgoraSignalKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static NSString * const kServerUrlString = @"YOUR Wawaji Controlling Protocol Server";
+static NSString * const kServerUrlString = <#Your Wawaji Controlling Protocol Server#>;
 
 @interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
 {
@@ -34,6 +34,8 @@ static NSString * const kServerUrlString = @"YOUR Wawaji Controlling Protocol Se
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.navigationItem.title = self.channel;
     
     [self loadMediaEngine];
     [self loadSignalEngine];
@@ -113,7 +115,7 @@ static NSString * const kServerUrlString = @"YOUR Wawaji Controlling Protocol Se
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Audience withKey:nil];
     [mediaEngine enableVideo];
-    int result = [mediaEngine joinChannelByKey:nil channelName:@"wawaji_demo" info:nil uid:0 joinSuccess:nil];
+    int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {
         [UIApplication sharedApplication].idleTimerDisabled = YES;
     }
