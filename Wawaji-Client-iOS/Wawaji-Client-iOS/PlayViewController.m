@@ -15,6 +15,7 @@
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
 static NSString * const kServerUrlString = <#Your Wawaji Controlling Protocol Server#>;
+static NSString * const kRemoteSignalAccount = @"meixi";
 
 @interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
 {
@@ -75,7 +76,7 @@ static NSString * const kServerUrlString = <#Your Wawaji Controlling Protocol Se
 - (IBAction)switchCamera:(id)sender {
     NSDictionary *msgDic = @{@"uid" : [NSString stringWithFormat:@"%d", self.signalUid], @"opeType" : @(1), @"opeAttr" : @"iOS"};
     NSString *msg = [msgDic JSONString];
-    [signalEngine messageInstantSend:@"meixi" uid:0 msg:msg msgID:nil];
+    [signalEngine messageInstantSend:kRemoteSignalAccount uid:0 msg:msg msgID:nil];
 }
 
 - (IBAction)cion:(id)sender {
@@ -113,8 +114,11 @@ static NSString * const kServerUrlString = <#Your Wawaji Controlling Protocol Se
 - (void)loadMediaEngine {
     mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:[KeyCenter mediaAppId] delegate:self];
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
-    [mediaEngine setClientRole:AgoraRtc_ClientRole_Audience withKey:nil];
+    [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
+    [mediaEngine enableLocalVideo:NO];
+    [mediaEngine muteLocalAudioStream:YES];
+    [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
     int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {
         [UIApplication sharedApplication].idleTimerDisabled = YES;
