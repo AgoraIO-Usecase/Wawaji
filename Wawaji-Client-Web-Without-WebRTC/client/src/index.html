@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Image Streaming</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="assets/css/bundle.css?v=1.14.0" />
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+</head>
+
+<body>
+    <div class="container">
+        <img id="image" />
+        <form>
+            <ul class="list-group" id="js_join_box">
+                <li class="list-group-item">
+                    <h3>Image Streaming</h3>
+                </li>
+                <li class="list-group-item form-group">
+                    <div class="form-group">
+                        <label>App Id</label>
+                        <input type="text" class="form-control idField" placeholder="Enter app id">
+                        <div class="invalid-feedback">
+                            Please provide a valid appid.
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item form-group">
+                    <div class="form-group">
+                        <label>Channel Name</label>
+                        <input type="text" class="form-control channelField" placeholder="Enter channel name" value="xcapture">
+                        <div class="invalid-feedback">
+                            Please provide a valid channel name.
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item form-group">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input forceCheck">Force start
+                    </label>
+                </li>
+                <!--<li class="list-group-item form-group">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Encryption key">
+                    </div>
+                    <div class="form-group">
+                        <select name="encryption" class="form-control" id="">
+                            <option value="AES 128">AES 128</option>
+                            <option value="AES 256">AES 256</option>
+                        </select>
+                    </div>
+                </li>-->
+                <li class="list-group-item">
+                    <button type="button" class="btn btn-success record_btn">Record</button>
+                    <button type="button" class="btn btn-info connect_btn" disabled>Connect</button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <!-- Scripts -->
+    <!--[if lte IE 8]><script src="assets/js/respond.min.js"></script><![endif]-->
+    <script src="assets/js/vendor-bundle.js?v=1.14.0"></script>
+    <script src="assets/js/index.js?v=1.14.0"></script>
+
+</body>
+
+</html>

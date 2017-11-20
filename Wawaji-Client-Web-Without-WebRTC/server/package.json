@@ -1,0 +1,22 @@
+{
+  "name": "sis",
+  "version": "1.0.0",
+  "description": "Socket Image Stream",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "delivery": "0.0.6",
+    "express": "^4.16.2",
+    "fs": "0.0.1-security",
+    "node-base64-image": "^1.0.4",
+    "path": "^0.12.7",
+    "ps-node": "^0.1.6",
+    "shelljs": "^0.7.8",
+    "socket.io": "^2.0.4"
+  }
+}
