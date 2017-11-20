@@ -2,7 +2,7 @@
 
 对于支持 [WebRTC](https://webrtc.org/) 的浏览器环境，我们建议您使用 [Wawaji-Client-Web](https://github.com/AgoraIO/Wawaji/tree/master/Wawaji-Client-Web)
 
-对于不支持 [WebRTC](https://webrtc.org/) 的浏览器环境，如果您的产品需要支持，就需要按照如下的办法来实现，该方案需要一个特殊的 **录制 SDK**，可以找 sales@agora.io 或者拨打 400 632 6626，或加入官方Q群 12742516 提问索取
+对于不支持 [WebRTC](https://webrtc.org/) 的浏览器环境(典型的微信浏览器)，如果您的产品需要支持，就需要按照如下的办法来实现，该方案需要一个特殊的 **录制 SDK**，可以找 sales@agora.io 或者拨打 400 632 6626，或加入官方Q群 12742516 提问索取
 # 部署指南
 
 # 系统需求
