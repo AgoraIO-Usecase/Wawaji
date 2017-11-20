@@ -22,7 +22,7 @@ nohup {你的 录制 SDK 目录 绝对路径}/samples/release/bin/recorder --app
 
 若你有使用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html)，则需要增加一个参数 --channelKey {你的 Dynamic Key}
 
-4. 修改完毕后进入 demo 目录，运行 `npm install` 安装依赖
+4. 修改完毕后进入 `server` 目录，运行 `npm install` 安装依赖
 5. 完成后运行 `npm start` 即可开始使用
 
 ## 使用方法
