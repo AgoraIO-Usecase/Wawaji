@@ -42,11 +42,13 @@
                     // socket = io();
                     var channel = $('.channelField').val();
                     var appid = $('.idField').val();
+                    var uid = $('.uidField').val();
                     // let socket = io(`http://localhost:3000/?channel=${channel}&appid=${appid}`)
                     socket = io({
                         query: {
                             channel: channel,
-                            appid: appid
+                            appid: appid,
+                            uid: uid
                         }
                     });
                     subscribeSocketEvents(socket);

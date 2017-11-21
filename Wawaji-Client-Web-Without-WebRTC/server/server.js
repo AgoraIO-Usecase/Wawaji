@@ -62,7 +62,7 @@ io.sockets.on('connection', function (socket) {
     connect_ts = connect_ts.getTime();
 
     var query = socket.request._query;
-    var conn = new Connection(socket, query.channel, query.appid);
+    var conn = new Connection(socket, query.channel, query.appid, query.uid);
     var channelId = conn.getChannelId();
     var conns = channels[channelId] || [];
     conns.push(conn);
@@ -83,9 +83,15 @@ io.sockets.on('connection', function (socket) {
         // console.log(`${existing_connection.socketid} disconnected, channel has ${JSON.stringify(socketIds)}`);
     });
 
-    function parseTs(filename) {
+    function parseTs(channelId, filename) {
+        var connections = channels[channelId];
         var suffix = filename.split(".")[1];
         if (suffix !== "jpg" && suffix !== "webp") {
+            return null;
+        }
+        var uid = filename.split("_")[0];
+        if(connections[0] && connections[0].uid && connections[0].uid !== uid){
+            console.log(`${uid} not matching given uid ${connections[0].uid}`)
             return null;
         }
         var ts = filename.split("_")[1].split(".")[0];
@@ -103,11 +109,11 @@ io.sockets.on('connection', function (socket) {
 
     function sendSingleImage(channelId, filename) {
         var connections = channels[channelId];
-        if (!filename || !parseTs(filename) || connections.length === 0) {
+        if (!filename || !parseTs(channelId, filename) || connections.length === 0) {
             // console.log(`imageFolderPath ${ifolder}`);
             return;
         }
-        // console.log(`sending image ${filename}`)
+        console.log(`sending image ${filename}`)
         fs.readFile(path.join(connections[0].imageFolderPath, `./${filename}`), (err, data) => {
             if (err || data.length === 0) {
                 // console.log("error converting image");

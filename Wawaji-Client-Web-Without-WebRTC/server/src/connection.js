@@ -1,10 +1,11 @@
 
-function Connection(socket, channel, appid){
+function Connection(socket, channel, appid, uid){
     this.socketid = socket.id;
     this.socket = socket;
     this.channel = channel || "";
     this.appid = appid || "";
     this.imageFolderPath = "";
+    this.uid = uid || "";
 }
 
 
