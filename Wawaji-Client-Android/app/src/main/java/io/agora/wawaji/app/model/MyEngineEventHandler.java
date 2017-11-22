@@ -1,12 +1,10 @@
 package io.agora.wawaji.app.model;
 
 import android.content.Context;
-import io.agora.AgoraAPIOnlySignal;
 import io.agora.rtc.IRtcEngineEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -116,61 +114,5 @@ public class MyEngineEventHandler {
         }
 
     };
-
-    final AgoraAPIOnlySignal.ICallBack mSignalingEventHandler = new AgoraAPIOnlySignal.CallBack() {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-        @Override
-        public void onLoginSuccess(int uid, int fd) {
-            log.debug("onLoginSuccess " + uid + " " + (uid & 0xFFFFFFFFL) + " " + fd);
-
-        }
-
-        @Override
-        public void onLoginFailed(int error) {
-            log.debug("onLoginFailed " + error);
-        }
-
-        private void doXXWhenDisconnected(int action) {
-
-        }
-
-        @Override
-        public void onLogout(int error) {
-
-        }
-
-        @Override
-        public void onLog(String txt) {
-            log.debug("onLog " + txt);
-        }
-
-        @Override
-        public void onChannelUserJoined(String account, int uid) {
-
-        }
-
-        @Override
-        public void onChannelUserLeaved(String account, int uid) {
-
-        }
-
-        @Override
-        public void onChannelUserList(java.lang.String[] accounts, int[] uids) {
-            log.debug("onChannelUserList " + Arrays.toString(accounts) + " " + Arrays.toString(uids));
-
-        }
-
-        @Override
-        public void onMessageInstantReceive(String account, int uid, String msg) {
-            log.debug("onMessageInstantReceive " + account + " " + uid + " " + msg);
-        }
-
-        @Override
-        public void onMessageChannelReceive(String channel, String account, int uid, String msg) {
-            log.debug("onMessageChannelReceive " + channel + " " + account + " " + uid + " " + msg + " " + mConfig.mUid + " " + mConfig.mChannel);
-        }
-    };
-
 
 }

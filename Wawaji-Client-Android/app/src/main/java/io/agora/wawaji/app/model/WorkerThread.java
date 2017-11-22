@@ -11,13 +11,10 @@ import android.view.SurfaceView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.agora.AgoraAPIOnlySignal;
 import io.agora.common.Constant;
-import io.agora.common.TokenUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
-import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.R;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -27,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 import static io.agora.common.Constant.*;
@@ -146,10 +142,7 @@ public class WorkerThread extends Thread {
         }
 
         ensureRtcEngineReadyLock();
-        mRtcEngine.joinChannel(null, channel, "OpenLive", uid);
-
-        ensureSignalingSDKReadyLock(false);
-        mSignalSDK.channelLeave(channel);
+        mRtcEngine.joinChannel(null, channel, "Wawa", uid);
 
         mEngineConfig.mChannel = channel;
 
@@ -168,10 +161,6 @@ public class WorkerThread extends Thread {
 
         if (mRtcEngine != null) {
             mRtcEngine.leaveChannel();
-        }
-
-        if (mSignalSDK != null) {
-            mSignalSDK.channelLeave(mEngineConfig.mChannel);
         }
 
         if (mWawajiCtrl != null) {
@@ -335,11 +324,6 @@ public class WorkerThread extends Thread {
             case Wawaji_Ctrl_CATCH:
                 mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"b\"}");
                 break;
-            case Wawaji_Ctrl_SWITCH_CAM:
-                String switchCam = "{\"uid\":\"%s\",\"opeType\":1,\"opeAttr\":\"\"}";
-                switchCam = String.format(Locale.US, switchCam, String.valueOf(mEngineConfig.mUid));
-                mSignalSDK.messageInstantSend("meixi", mEngineConfig.mWawajiUid, switchCam, String.valueOf(System.currentTimeMillis()));
-                break;
             default:
                 log.warn("Unknown ctrl " + ctrl);
                 break;
@@ -392,29 +376,6 @@ public class WorkerThread extends Thread {
             mRtcEngine.enableDualStreamMode(true);
         }
         return mRtcEngine;
-    }
-
-    private AgoraAPIOnlySignal mSignalSDK;
-
-    private AgoraAPIOnlySignal ensureSignalingSDKReadyLock(boolean logout) {
-        String appId = mContext.getString(R.string.agora_signalling_app_id);
-        if (mSignalSDK == null) {
-            mSignalSDK = AgoraAPIOnlySignal.getInstance(mContext, appId);
-        }
-
-        if (logout) {
-            mSignalSDK.logout();
-        }
-
-        mSignalSDK.callbackSet(mEngineEventHandler.mSignalingEventHandler);
-        String identification = "p1_" + getDeviceID(mContext) + "_a" + BuildConfig.APPLICATION_ID + "_v" + BuildConfig.VERSION_NAME;
-
-        long expiredTime = System.currentTimeMillis() / 1000 + 3600;
-        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_signalling_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);
-
-        mSignalSDK.login2(appId, String.valueOf(mEngineConfig.mUid), token, 0, "", 5, 1);
-        log.debug("login " + (mEngineConfig.mUid & 0XFFFFFFFFL) + " " + identification);
-        return mSignalSDK;
     }
 
     public MyEngineEventHandler eventHandler() {
