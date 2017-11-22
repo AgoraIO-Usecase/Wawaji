@@ -19,14 +19,6 @@
 ```
 <string name="agora_app_id"><#YOUR APP ID#></string>
 ```
-```
-<string name="agora_signalling_app_id"><#YOUR SIGNALLING APP ID#></string>
-<string name="agora_signalling_app_certificate"><#YOUR SIGNALLING APP CERTIFICATE#></string>
-```
-
-[Agora.io SDK](https://www.agora.io/cn/download/) 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs** 文件夹下的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下。
-
-**Agora.io Signaling SDK** 在本项目中用来控制娃娃机端的摄像头多视角切换，开发者可以根据自己的情况选择性使用。对于 **信令 SDK**，同样的 **libs/signal** 当中的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs/signal** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下
 
 在本示例当中娃娃机的控制是使用第三方的基于 [WebSocket](https://en.wikipedia.org/wiki/WebSocket)，开发者需要根据自己的情况调整这部分代码，具体的控制协议格式也可能需要修改
 
