@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources>
+    <string name="app_name">Agora 声网 娃娃机 服务端</string>
+
+    <string name="label_leave">离开</string>
+
+    <string name="main_title">欢迎使用 Agora 声网娃娃机服务端!</string>
+    <string name="main_input">输入直播间名称?</string>
+    <string name="main_button">进入直播间</string>
+
+</resources>
