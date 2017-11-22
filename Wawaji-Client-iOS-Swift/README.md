@@ -28,10 +28,10 @@ static let WebSocketUrlString: String = "Your Wawaji Controlling WebSocket Url";
 然后在 [Agora.io SDK](https://www.agora.io/cn/download/)
 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs/AgoraRtcEngineKit.framework** 复制到本目录。
 
-本项目使用 Cocoapods 添加 websocket 开源库 SocketRocket(https://github.com/square/SocketRocket)。
-如果你尚未安装 Cocoapods，首先在终端中执行 "gem install cocoapods" 和 "pod setup" ，然后在终端中进入本目录执行 "pod install"。
+本项目使用 Cocoapods 添加 [WebSocket](https://en.wikipedia.org/wiki/WebSocket) 开源库 [SocketRocket](https://github.com/square/SocketRocket)。
+如果你尚未安装 Cocoapods，首先在终端中执行 `gem install cocoapods` 和 `pod setup`，然后在终端中进入本目录执行 `pod install`。
 
-最后使用 XCode 打开 Wawaji-Client-iOS.xcworkspace，连接 iPhone／iPad 测试设备，设置有效的开发者签名后即可运行。
+最后使用 XCode 打开 Wawaji-Client-iOS.xcworkspace，连接 iPhone／iPad 测试设备或模拟器，设置有效的开发者签名后即可运行。
 
 ## 运行环境
 * XCode 9.0 +
