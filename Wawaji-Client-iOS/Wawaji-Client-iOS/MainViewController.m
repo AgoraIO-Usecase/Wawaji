@@ -29,20 +29,20 @@
 
 - (IBAction)start:(id)sender {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:@"Would you like to play or just watch?"
+                                                                             message:NSLocalizedString(@"PlayOrWatchMessage", nil)
                                                                       preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *playAction = [UIAlertAction actionWithTitle:@"Play" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIAlertAction *playAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Play", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self performSegueWithIdentifier:@"playSegue" sender:action];
     }];
     [alertController addAction:playAction];
     
-    UIAlertAction *watchAction = [UIAlertAction actionWithTitle:@"Watch" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIAlertAction *watchAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Watch", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self performSegueWithIdentifier:@"playSegue" sender:action];
     }];
     [alertController addAction:watchAction];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleDefault handler:nil];
     [alertController addAction:cancelAction];
     
     [self presentViewController:alertController animated:YES completion:nil];
@@ -52,7 +52,7 @@
     if ([segue.identifier isEqualToString:@"playSegue"]) {
         PlayViewController *vc = (PlayViewController *)segue.destinationViewController;
         UIAlertAction *action = (UIAlertAction *)sender;
-        vc.player = [action.title isEqualToString:@"Play"];
+        vc.player = [action.title isEqualToString:NSLocalizedString(@"Play", nil)];
         vc.channel = self.channelTextField.text;
     }
 }

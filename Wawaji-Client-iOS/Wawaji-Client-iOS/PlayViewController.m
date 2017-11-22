@@ -9,19 +9,17 @@
 #import "PlayViewController.h"
 #import "KeyCenter.h"
 #import "SocketRocket.h"
-#import "NSObject+JSONString.h"
 #import "AlertUtil.h"
-#import <AgoraSignalKit/AgoraSignalKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static NSString * const kServerUrlString = <#Your Wawaji Controlling Protocol Server#>;
-static NSString * const kRemoteSignalAccount = @"meixi";
+static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocket Url#>;
 
 @interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
 {
     AgoraRtcEngineKit *mediaEngine;
-    AgoraAPI *signalEngine;
     SRWebSocket *webSocket;
+    NSMutableArray *allStreamUids;
+    NSUInteger currentStreamUid;
 }
 
 @property (assign, nonatomic) uint32_t signalUid;
@@ -38,8 +36,10 @@ static NSString * const kRemoteSignalAccount = @"meixi";
     
     self.navigationItem.title = self.channel;
     
+    allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
+    currentStreamUid = 0;
+    
     [self loadMediaEngine];
-    [self loadSignalEngine];
     
     if (self.player) {
         [self connectWebSocket];
@@ -56,9 +56,6 @@ static NSString * const kRemoteSignalAccount = @"meixi";
     [mediaEngine leaveChannel:nil];
     mediaEngine = nil;
     
-    [signalEngine logout];
-    signalEngine = nil;
-    
     [webSocket close];
     webSocket.delegate = nil;
     webSocket = nil;
@@ -74,54 +71,83 @@ static NSString * const kRemoteSignalAccount = @"meixi";
 }
 
 - (IBAction)switchCamera:(id)sender {
-    NSDictionary *msgDic = @{@"uid" : [NSString stringWithFormat:@"%d", self.signalUid], @"opeType" : @(1), @"opeAttr" : @"iOS"};
-    NSString *msg = [msgDic JSONString];
-    [signalEngine messageInstantSend:kRemoteSignalAccount uid:0 msg:msg msgID:nil];
+    if (allStreamUids.count <= 1) {
+        [AlertUtil showAlert:NSLocalizedString(@"NoMoreCamera", nil)];
+        return;
+    }
+    
+    AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+    videoCanvas.uid = currentStreamUid;
+    videoCanvas.view = nil;
+    [mediaEngine setupRemoteVideo:videoCanvas];
+    
+    NSUInteger index = [allStreamUids indexOfObject:@(currentStreamUid)];
+    if (index == allStreamUids.count - 1) {
+        index = 0;
+    }
+    else {
+        index++;
+    }
+    currentStreamUid = [allStreamUids[index] unsignedIntegerValue];
+    
+    AgoraRtcVideoCanvas *newVideoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+    newVideoCanvas.uid = currentStreamUid;
+    newVideoCanvas.view = self.videoView;
+    newVideoCanvas.renderMode = AgoraRtc_Render_Hidden;
+    [mediaEngine setupRemoteVideo:newVideoCanvas];
 }
 
 - (IBAction)cion:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Insert", @"data" : @"", @"extra" : @(123456)};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 - (IBAction)up:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"u"};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 - (IBAction)down:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"d"};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 - (IBAction)left:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"l"};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 - (IBAction)right:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"r"};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 - (IBAction)grab:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"b"};
-    [webSocket send:[msgDic JSONString]];
+    [self sendWebSocketMessage:msgDic];
 }
 
 // MARK: - Media Engine
 
 - (void)loadMediaEngine {
-    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:[KeyCenter mediaAppId] delegate:self];
+    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppID delegate:self];
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
     [mediaEngine enableLocalVideo:NO];
+    [mediaEngine enableAudio];
     [mediaEngine muteLocalAudioStream:YES];
     [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
+    
     int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {
         [UIApplication sharedApplication].idleTimerDisabled = YES;
+    }
+    else {
+        NSLog(@"joinChannel failed: %d", result);
+        [AlertUtil showAlert:NSLocalizedString(@"JoinChannelFailed", nil) completion:^{
+            [self dismissViewControllerAnimated:NO completion:nil];
+        }];
     }
 }
 
@@ -147,58 +173,26 @@ static NSString * const kRemoteSignalAccount = @"meixi";
     [mediaEngine setupRemoteVideo:videoCanvas];
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraRtcUserOfflineReason)reason {
-    NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
-    [AlertUtil showAlert:@"Remote device offline" completion:^{
-        [self dismissViewControllerAnimated:NO completion:nil];
-    }];
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoDecodedOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
+    NSLog(@"rtcEngine:firstRemoteVideoDecodedOfUid: %ld", (long)uid);
+    if ([allStreamUids containsObject:@(uid)]) {
+        return;
+    }
+    
+    [allStreamUids addObject:@(uid)];
+    if (currentStreamUid == 0) {
+        currentStreamUid = uid;
+        
+        AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+        videoCanvas.uid = currentStreamUid;
+        videoCanvas.view = self.videoView;
+        videoCanvas.renderMode = AgoraRtc_Render_Hidden;
+        [mediaEngine setupRemoteVideo:videoCanvas];
+    }
 }
 
-// MARK: - Signal Engine
-
-- (void)loadSignalEngine {
-    __weak typeof(self) weakSelf = self;
-    
-    signalEngine = [AgoraAPI getInstanceWithoutMedia:[KeyCenter signalAppId]];
-    signalEngine.onLog = ^(NSString *txt){
-        NSLog(@"%@", txt);
-    };
-    
-    signalEngine.onLoginSuccess = ^(uint32_t uid, int fd) {
-        NSLog(@"Login successfully, uid: %u", uid);
-        weakSelf.signalUid = uid;
-    };
-    
-    signalEngine.onLoginFailed = ^(AgoraEcode ecode) {
-        NSLog(@"Login failed, error: %lu", (unsigned long)ecode);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [AlertUtil showAlert:@"Login failed" completion:^{
-                [weakSelf.navigationController popViewControllerAnimated:NO];
-            }];
-        });
-    };
-    
-    signalEngine.onLogout = ^(AgoraEcode ecode) {
-        NSLog(@"onLogout, ecode: %lu", (unsigned long)ecode);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf.navigationController popViewControllerAnimated:NO];
-        });
-    };
-    
-    signalEngine.onMessageSendError = ^(NSString* messageID, AgoraEcode ecode) {
-        NSLog(@"onMessageSendError, messageID: %@, error: %lu", messageID, (unsigned long)ecode);
-    };
-    
-    signalEngine.onMessageSendSuccess = ^(NSString *messageID) {
-        NSLog(@"onMessageSendSuccess, messageID: %@", messageID);
-    };
-    
-    NSString *account = [NSString stringWithFormat:@"signal-demo-iOS-%f", [NSDate date].timeIntervalSinceReferenceDate];
-    [signalEngine login:[KeyCenter signalAppId]
-                account:account
-                  token:[KeyCenter generateSignalToken:account expiredTime:3600]
-                    uid:0
-               deviceID:nil];
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraRtcUserOfflineReason)reason {
+    NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
 }
 
 // MARK: - WebSocket
@@ -207,9 +201,14 @@ static NSString * const kRemoteSignalAccount = @"meixi";
     webSocket.delegate = nil;
     webSocket = nil;
     
-    SRWebSocket *newWebSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:kServerUrlString]];
+    SRWebSocket *newWebSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:kWebSocketUrlString]];
     newWebSocket.delegate = self;
     [newWebSocket open];
+}
+
+- (void)sendWebSocketMessage:(NSDictionary *)message {
+    NSData *data = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
+    [webSocket send:data];
 }
 
 - (void)webSocketDidOpen:(SRWebSocket *)newWebSocket {
