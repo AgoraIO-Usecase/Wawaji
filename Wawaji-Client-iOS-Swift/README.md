@@ -25,7 +25,7 @@ static let WebSocketUrlString: String = "Your Wawaji Controlling WebSocket Url";
 
 ```
 
-然后在 [Agora.io SDK](https://www.agora.io/cn/blog/download/)
+然后在 [Agora.io SDK](https://www.agora.io/cn/download/)
 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs/AgoraRtcEngineKit.framework** 复制到本目录。
 
 本项目使用 Cocoapods 添加 websocket 开源库 SocketRocket(https://github.com/square/SocketRocket)。
