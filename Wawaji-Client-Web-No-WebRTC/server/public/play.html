@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Catch Sample</title><script src="assets/js/vendor-bundle.js"></script><script src="assets/js/play.js"></script><link rel="stylesheet" href="assets/css/bundle.css"></head><style>#bar_222224 {
+        display: none !important;
+        opacity: 0 !important;
+    }</style><body><div id="can_use_error" style="display: none;color:red;text-align: center"><span>抱歉，您的浏览器不支持 AgoraSDK<br>推荐使用主版本号 ≥ 52 的 Chrome 浏览器</span></div><div class="wrapper" style="margin: 0 auto"><div id="video" style="height:360px;overflow: hidden;display:block;background-color: #000; position: relative"><div id="agora_local" style="display:none;float:right;width: 480px;height:360px"></div><button type="button" class="btn btn-info camera_btn">等待信令...</button></div><div id="game"><div class="d-flex justify-content-center" style="position: relative"><!-- <div v-show="ready_to_controll"> --><!-- <div>
+                        <div>机器状态：{{step_now}}</div>
+                        <div>单局价格：{{price}}币/局</div>
+                        <div>机内币数：{{coins_left}}</div>
+                        <div>剩余局数：{{games_left}}</div>
+                        <div>剩余时间：{{count_time_left}}</div>
+                    </div>
+
+                    <div>
+                        <br>
+                        <b>操作说明：</b>
+                        <br>投币：+键
+                        <br>移动：方向键 / WASD键
+                        <br>抓取：ENTER键
+                    </div> --><!-- </div> --><!-- <div v-show="!ready_to_controll">WS url：
+                            <input v-model="socket_host" style="width: 300px" />
+                        </div> --><!-- </div> --> <button v-show="!ready_to_controll" class="btn btn-info mt-3" onclick="allStart()">开始连接</button> <button type="button" v-show="ready_to_controll" class="btn btn-info control-coin mt-3">投币</button> <button type="button" class="no-border control-btn control-left"></button> <button type="button" class="no-border control-btn control-right"></button> <button type="button" class="no-border control-btn control-up"></button> <button type="button" class="no-border control-btn control-down"></button> <button type="button" class="no-border control-btn control-catch"></button></div></div></div></body></html>

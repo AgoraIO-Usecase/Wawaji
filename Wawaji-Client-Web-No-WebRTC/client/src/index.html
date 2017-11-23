@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Catch Sample</title>
+    <script src="assets/js/vendor-bundle.js"></script>
+    <script src="assets/js/index.js"></script>
+    <link rel="stylesheet" href="assets/css/bundle.css" />
+</head>
+
+<style>
+    #bar_222224 {
+        display: none !important;
+        opacity: 0 !important;
+    }
+</style>
+
+<body>
+    <div class="wrapper" style="margin: 0 auto">
+        <div class="lobby row">
+            <div class="col-lg-8 col-md-8 col-sm-10" style="margin: 20px auto">
+                <ul class="list-group machine-list">
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="game" style="display: none; position: relative">
+            <div id="video" style="height:360px;overflow: hidden;background-color: #000; position: relative">
+                <img id="player"></img>
+            </div>
+            <button type="button" style="position: absolute; top: 10px; right: 20px;" class="no-border control-btn control-camera"></button>
+
+            <div id="control">
+                <div class="d-flex justify-content-center" style="position: relative;">
+                    <button type="button" class="btn btn-info control-coin mt-3">投币</button>
+                    <button type="button" class="no-border control-btn control-left"></button>
+                    <button type="button" class="no-border control-btn control-right"></button>
+                    <button type="button" class="no-border control-btn control-up"></button>
+                    <button type="button" class="no-border control-btn control-down"></button>
+                    <button type="button" class="no-border control-btn control-catch"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
