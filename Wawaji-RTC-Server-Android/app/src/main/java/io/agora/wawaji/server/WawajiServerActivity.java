@@ -22,6 +22,7 @@ import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.wawaji.utils.AppUtil;
 
 public class WawajiServerActivity extends Activity {
 
@@ -53,7 +54,8 @@ public class WawajiServerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wawaji_server);
 
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO)
+                && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
             initAgoraEngineAndJoinChannel();
         }
     }
@@ -158,7 +160,14 @@ public class WawajiServerActivity extends Activity {
 
     // Step 4
     private void joinChannel() {
-        mRtcEngine.joinChannel(null, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                String dynamicKey = AppUtil.getDynamicKeyForChannel(mChannelName ,0,getString(R.string.agora_app_id),getString(R.string.agora_appCertificate));
+                mRtcEngine.joinChannel(dynamicKey, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+            }
+        }.start();
     }
     // Step 5
     private void setupLocalVideo() {
