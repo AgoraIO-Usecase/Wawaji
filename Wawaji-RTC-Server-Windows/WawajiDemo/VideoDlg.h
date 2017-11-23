@@ -83,49 +83,6 @@ protected:
 	afx_msg LRESULT OnStopRecordingService(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnApiCallExecuted(WPARAM wParam, LPARAM lParam);
 
-
-	//SINGLE
-	HRESULT onSingleReconnecting(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleReconnected(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleLoginSuccess(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleLogout(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleLoginFailed(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelJoined(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelJoinFailed(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelLeaved(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelUserJoined(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelUserLeaved(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelUserList(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelQueryUserNumResult(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelQueryUserIsIn(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleChannelAttrUpdated(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteReceived(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteReceivedByPeer(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteAcceptedByPeer(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteRefusedByPeer(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteFailed(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteEndByPeer(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteEndByMyself(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInviteMsg(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageSendError(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageSendProgress(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageSendSuccess(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageAppReceived(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageInstantReceive(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMessageChannelReceive(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleLog(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleInvokeRet(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleMsg(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleUserAttrResult(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleUserAttrAllResult(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleError(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleQueryUserStatusResult(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleDbg(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleBCCall_result(WPARAM wParam, LPARAM lParam);
-
-	HRESULT onSingleSendInstanceMsg(WPARAM wParam, LPARAM lParam);
-	HRESULT onSingleSwitchCamera(WPARAM wParam, LPARAM lParam);
-
 	DECLARE_MESSAGE_MAP()
 
 protected:
@@ -149,13 +106,6 @@ protected:
 	void AdjustSizeVideo1(int cx, int cy);
 	void AdjustSizeVideo4(int cx, int cy);
 	void AdjustSizeVideoMulti(int cx, int cy);
-
-	//SINGLE
-public:
-	void startSingle(const std::string &appID, const std::string &channelName, const std::string &account);	
-	IAgoraAPI* getAgoraInstance();
-	static DWORD WINAPI ThreadStartRunning(LPVOID lpParam);
-	void switchCamera(const std::string &msg);
 
 private:
 	CBrush			m_brHead;
@@ -218,22 +168,4 @@ private:	// data
 	BOOL			m_bRecording;
 	BOOL			m_bFullScreen;
 	int				m_nTimeCounter;
-
-	//SINGLE
-
-	std::string appId_;
-	std::string channelName_;
-	std::string appCertificateId_;
-	std::string tokenId_;
-	std::string userName_;
-
-	std::string callRemoteAccount_;
-
-	IAgoraAPI* pSingleInstance_;
-	HANDLE threadStartHandle_;
-
-	bool isLogin_;
-	bool isInChannel_;
-	bool isAppExit_;
-	bool isNeedExitPM_;
 };

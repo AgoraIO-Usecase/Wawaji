@@ -108,6 +108,7 @@
     <ClInclude Include="AGButton.h" />
     <ClInclude Include="AGComboBox.h" />
     <ClInclude Include="AGConfig.h" />
+    <ClInclude Include="AGDynamicKeyRequestor.h" />
     <ClInclude Include="AGEdit.h" />
     <ClInclude Include="AGEngineEventHandler.h" />
     <ClInclude Include="AGEventDef.h" />
@@ -126,26 +127,23 @@
     <ClInclude Include="AGVideoTestWnd.h" />
     <ClInclude Include="AGVideoWnd.h" />
     <ClInclude Include="ChatDlg.h" />
-    <ClInclude Include="commonFun.h" />
     <ClInclude Include="DeviceDlg.h" />
     <ClInclude Include="EnterChannelDlg.h" />
-    <ClInclude Include="FileIO.h" />
-    <ClInclude Include="generatorSignalToken.h" />
+    <ClInclude Include="HttpOperator.h" />
     <ClInclude Include="LanguageSet.h" />
     <ClInclude Include="LogoDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SEIDlg.h" />
     <ClInclude Include="SetupDlg.h" />
-    <ClInclude Include="SingleWrap.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="utils.h" />
     <ClInclude Include="VideoDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AGButton.cpp" />
     <ClCompile Include="AGComboBox.cpp" />
     <ClCompile Include="AGConfig.cpp" />
+    <ClCompile Include="AGDynamicKeyRequestor.cpp" />
     <ClCompile Include="AGEdit.cpp" />
     <ClCompile Include="AGEngineEventHandler.cpp" />
     <ClCompile Include="AGHyperLink.cpp" />
@@ -162,15 +160,13 @@
     <ClCompile Include="AGVideoTestWnd.cpp" />
     <ClCompile Include="AGVideoWnd.cpp" />
     <ClCompile Include="ChatDlg.cpp" />
-    <ClCompile Include="commonFun.cpp" />
     <ClCompile Include="DeviceDlg.cpp" />
     <ClCompile Include="EnterChannelDlg.cpp" />
-    <ClCompile Include="FileIO.cpp" />
+    <ClCompile Include="HttpOperator.cpp" />
     <ClCompile Include="LanguageSet.cpp" />
     <ClCompile Include="LogoDlg.cpp" />
     <ClCompile Include="SEIDlg.cpp" />
     <ClCompile Include="SetupDlg.cpp" />
-    <ClCompile Include="SingleWrap.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

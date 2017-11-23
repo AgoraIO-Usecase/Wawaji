@@ -159,6 +159,9 @@ public:
 	static BOOL EnableWhiteboardVer(BOOL bEnable);
 	static BOOL EnableWhiteboardFeq(BOOL bEnable);
 
+	BOOL GetDynamicKey(LPCTSTR lpURL, CHAR *lpszKey, SIZE_T *lpKeySize);
+	CStringA GetDynChannelKey(LPCTSTR lpChannelName = NULL, LPCTSTR lpAppID = NULL, LPCTSTR lpCert = NULL);
+
 protected:
 	CAgoraObject(void);
 

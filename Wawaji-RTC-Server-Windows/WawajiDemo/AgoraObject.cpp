@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AgoraObject.h"
 #include "AGResourceVisitor.h"
+#include "AGDynamicKeyRequestor.h"
 
 #include <stdio.h>
 
@@ -976,4 +977,45 @@ BOOL CAgoraObject::EnableWhiteboardFeq(BOOL bEnable)
 	::RegCloseKey(hKey);
 
 	return lStatus == ERROR_SUCCESS ? TRUE : FALSE;
+}
+
+BOOL CAgoraObject::GetDynamicKey(LPCTSTR lpURL, CHAR *lpszKey, SIZE_T *lpKeySize)
+{
+	CAGDynamicKeyRequestor requestor;
+
+	requestor.Create();
+	BOOL bRet = requestor.GetKey(lpURL, lpszKey, lpKeySize);
+	requestor.Close();
+
+	return bRet;
+}
+
+CStringA CAgoraObject::GetDynChannelKey(LPCTSTR lpChannelName, LPCTSTR lpAppID, LPCTSTR lpCert)
+{
+	CString strURL;
+	CString	strUIDSection;
+	CStringA strDynKey;
+	SIZE_T	nKeySize = 256;
+
+	if (lpChannelName != NULL)
+		m_strChannelName = lpChannelName;
+
+	//	ASSERT(m_nSelfUID == 0);
+
+	if (lpAppID != NULL && lpCert != NULL) {
+
+		if (m_nSelfUID != 0)
+			strURL.Format(_T("http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?channelname=%s&key=%s&sign=%s&uid=%u"), m_strChannelName, lpAppID, lpCert, m_nSelfUID);
+		else
+			strURL.Format(_T("http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?channelname=%s&key=%s&sign=%s"), m_strChannelName, lpAppID, lpCert);
+	}
+	else if (lpAppID == NULL && lpCert == NULL)
+		strURL.Format(_T("http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?channelname=%s"), m_strChannelName);
+	else
+		ASSERT(FALSE);
+
+	GetDynamicKey(strURL, strDynKey.GetBuffer(256), &nKeySize);
+	strDynKey.ReleaseBuffer();
+
+	return strDynKey;
 }

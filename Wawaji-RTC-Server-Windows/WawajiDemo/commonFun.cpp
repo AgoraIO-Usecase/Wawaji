@@ -1,51 +1,6 @@
 #include "stdafx.h"
 #include "commonFun.h"
 
-void add_json_member_string(Value& root, const char* member_name, const std::string& value, Document::AllocatorType& allocator)
-{
-	Value json_member(kStringType);
-	json_member.SetString(value.c_str(), value.size(), allocator);
-
-	root.AddMember(member_name, json_member, allocator);
-}
-
-void add_json_member_int(Value& root, const char* member_name, const int& value, Document::AllocatorType& allocator)
-{
-	Value json_member(kNumberType);
-	json_member.SetInt(value);
-
-	root.AddMember(member_name, json_member, allocator);
-}
-
-std::string get_json_content_string(Value& root)
-{
-	StringBuffer buffer;
-	Writer<StringBuffer> writer(buffer);
-	root.Accept(writer);
-
-	return buffer.GetString();
-}
-
-std::string get_json_content_stylestring(Value& root)
-{
-	return get_json_content_string(root);
-
-	StringBuffer buffer;
-	PrettyWriter<StringBuffer> writer(buffer);
-	root.Accept(writer);
-
-	return buffer.GetString();
-}
-
-std::string get_document_content_stylestring(Document &document)
-{
-	StringBuffer buffer;
-	PrettyWriter<StringBuffer> writer(buffer);
-	document.Accept(writer);
-
-	return buffer.GetString();
-}
-
 std::string getAbsoluteDir()
 {
 	TCHAR path[MAXPATHLEN] = { 0 };

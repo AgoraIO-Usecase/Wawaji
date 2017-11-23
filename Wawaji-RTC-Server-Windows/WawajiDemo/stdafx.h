@@ -47,65 +47,9 @@
 
 #include <IAgoraRtcEngine.h>
 #include <IAgoraMediaEngine.h>
-#include "agora_api_win.h"
 #pragma comment(lib, "agorartc.lib")
-#pragma comment(lib,"agorasdk.lib")
 using namespace agora::util;
 using namespace agora::media;
-using namespace agora_sdk_win;
-namespace SingleDesc
-{
-	enum SingleMsg
-	{
-		WM_Default = WM_USER,
-		WM_Reconnecting,
-		WM_Reconnected,
-		WM_LoginSuccess,
-		WM_LogOut,
-		WM_LoginFailed,
-		WM_ChannelJoined,
-		WM_ChannelJoinedFailed,
-		WM_ChannelLeaved,
-		WM_ChannelUserJoined,
-		WM_ChannelUserLeaved,
-		WM_ChannelUserList,
-		WM_ChannelQueryUserNumResult,
-		WM_ChannelQueryUserIsIn,
-		WM_ChannelAttrUpdated,
-		WM_InviteReceived,
-		WM_InviteReceivedByPeer,
-		WM_InviteAcceptedByPeer,
-		WM_InviteRefusedByPeer,
-		WM_InviteFailed,
-		WM_InviteEndByPeer,
-		WM_InviteEndByMyself,
-		WM_InviteMsg,
-		WM_MessageSendError,
-		WM_MessageSendProgress,
-		WM_MessageSendSuccess,
-		WM_MessageAppReceived,
-		WM_MessageInstantReceive,
-		WM_MessageChannelReceive,
-		WM_Log,
-		WM_InvokeRet,
-		WM_Msg,
-		WM_UserAttrResult,
-		WM_UserAttrAllResult,
-		WM_Error,
-		WM_QueryUserStatusResult,
-		WM_Dbg,
-		WM_BCCall_result,
-
-		//operator
-		WM_SingleInstanceSendMsg,
-		WM_SingleSwitchCamera,
-
-		WM_UNKWOWN = WM_USER + 0xff
-	};
-
-}
-
-using namespace SingleDesc;
 
 
 #define MAXPATHLEN 10000
