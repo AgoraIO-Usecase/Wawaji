@@ -10,11 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import io.agora.common.Constant;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
+import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AGEventHandler {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +50,16 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void workerReady() {
+        super.workerReady();
+
+        worker().fetchWawaji();
+    }
+
+    @Override
     protected void deInitUIandEvent() {
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -91,5 +101,28 @@ public class MainActivity extends BaseActivity {
         i.putExtra(ConstantApp.ACTION_KEY_ROOM_NAME, room);
 
         startActivity(i);
+    }
+
+    @Override
+    public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
+
+    }
+
+    @Override
+    public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+
+    }
+
+    @Override
+    public void onUserOffline(int uid, int reason) {
+
+    }
+
+    @Override
+    public void onExtraInfo(int msg, Object... data) {
+        switch (msg) {
+            case Constant.APP_Wawaji_Fetch_LIST_RESULT:
+                break;
+        }
     }
 }

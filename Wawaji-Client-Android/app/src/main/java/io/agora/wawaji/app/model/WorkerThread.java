@@ -11,10 +11,13 @@ import android.view.SurfaceView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.agora.AgoraAPIOnlySignal;
 import io.agora.common.Constant;
+import io.agora.common.TokenUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.R;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -43,9 +46,11 @@ public class WorkerThread extends Thread {
 
     private static final int ACTION_WORKER_PREVIEW = 0X2014;
 
-    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2015;
+    private static final int ACTION_WORKER_WAWAJI_FETCH = 0X2015;
 
-    private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2016;
+    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2016;
+
+    private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2017;
 
     private static final class WorkerThreadHandler extends Handler {
 
@@ -85,6 +90,9 @@ public class WorkerThread extends Thread {
                 case ACTION_WORKER_PREVIEW:
                     Object[] previewData = (Object[]) msg.obj;
                     mWorkerThread.preview((boolean) previewData[0], (SurfaceView) previewData[1], (int) previewData[2]);
+                    break;
+                case ACTION_WORKER_WAWAJI_FETCH:
+                    mWorkerThread.fetchWawaji();
                     break;
                 case ACTION_WORKER_WAWAJI_PREPARE:
                     mWorkerThread.prepareWawaji();
@@ -141,8 +149,13 @@ public class WorkerThread extends Thread {
             return;
         }
 
+        String channelKey = TokenUtils.getDynamicKeyForJoinChannel(channel, uid, mContext.getString(R.string.agora_app_id), mContext.getString(R.string.agora_app_certificate));
+
         ensureRtcEngineReadyLock();
-        mRtcEngine.joinChannel(null, channel, "Wawa", uid);
+        mRtcEngine.joinChannel(channelKey, channel, "Wawa", uid);
+
+        ensureSignalingSDKReadyLock(false);
+        mSignalSDK.channelJoin(channel);
 
         mEngineConfig.mChannel = channel;
 
@@ -161,6 +174,10 @@ public class WorkerThread extends Thread {
 
         if (mRtcEngine != null) {
             mRtcEngine.leaveChannel();
+        }
+
+        if (mSignalSDK != null) {
+            mSignalSDK.channelLeave(mEngineConfig.mChannel);
         }
 
         if (mWawajiCtrl != null) {
@@ -208,6 +225,20 @@ public class WorkerThread extends Thread {
         }
 
         log.debug("configEngine " + cRole + " " + mEngineConfig.mVideoProfile);
+    }
+
+    public final void fetchWawaji() {
+        if (Thread.currentThread() != this) {
+            log.warn("fetchWawaji() - worker thread asynchronously");
+            Message envelop = new Message();
+            envelop.what = ACTION_WORKER_WAWAJI_FETCH;
+            mWorkerHandler.sendMessage(envelop);
+            return;
+        }
+
+        ensureSignalingSDKReadyLock(false);
+
+        mSignalSDK.messageInstantSend(WAWAJI_CONTROL_CENTER, 0, "{ \"type\": \"LIST\" }", String.valueOf(System.currentTimeMillis()));
     }
 
     private CountDownLatch mConnectLatch;
@@ -376,6 +407,29 @@ public class WorkerThread extends Thread {
             mRtcEngine.enableDualStreamMode(true);
         }
         return mRtcEngine;
+    }
+
+    private AgoraAPIOnlySignal mSignalSDK;
+
+    private AgoraAPIOnlySignal ensureSignalingSDKReadyLock(boolean logout) {
+        String appId = mContext.getString(R.string.agora_app_id);
+        if (mSignalSDK == null) {
+            mSignalSDK = AgoraAPIOnlySignal.getInstance(mContext, appId);
+        }
+
+        if (logout) {
+            mSignalSDK.logout();
+        }
+
+        mSignalSDK.callbackSet(mEngineEventHandler.mSignalingEventHandler);
+        String identification = "p1_" + getDeviceID(mContext) + "_a" + BuildConfig.APPLICATION_ID + "_v" + BuildConfig.VERSION_NAME;
+
+        long expiredTime = System.currentTimeMillis() / 1000 + 3600;
+        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);
+
+        mSignalSDK.login2(appId, String.valueOf(mEngineConfig.mUid), token, 0, "", 5, 1);
+        log.debug("login " + (mEngineConfig.mUid & 0XFFFFFFFFL) + " " + identification);
+        return mSignalSDK;
     }
 
     public MyEngineEventHandler eventHandler() {
