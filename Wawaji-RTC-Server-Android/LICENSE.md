@@ -1,10 +1,5 @@
 The MIT License (MIT)
-
-<<<<<<< HEAD
-Copyright (c) 2016 Agora.io
-=======
-Copyright (c) 2017 Agora.io
->>>>>>> 7d1b140816897e90c856fed2c78460a9097cc9fe
+Copyright (c) 2017 Agora Lab, Inc (http://www.agora.io/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
