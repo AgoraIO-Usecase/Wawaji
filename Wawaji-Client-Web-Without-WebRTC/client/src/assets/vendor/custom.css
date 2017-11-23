@@ -1,0 +1,68 @@
+html,
+body{
+    height: 100%;
+}
+
+.wrapper{
+    height: 100%;
+    max-width: 468px;
+    background: #4EA8F1;
+}
+
+.camera_btn{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+
+.control-btn {
+    position: absolute;
+}
+
+.control-left{
+    background-image: url('../images/left.png');
+    width: 44px;
+    height: 44px;
+    background-size: contain;
+    background-color: transparent;
+}
+
+
+.control-right{
+    background-image: url('../images/right.png');
+    width: 44px;
+    height: 44px;
+    background-size: contain;
+    background-color: transparent;
+}
+
+
+.control-up{
+    background-image: url('../images/up.png');
+    width: 44px;
+    height: 44px;
+    background-size: contain;
+    background-color: transparent;
+}
+
+
+.control-down{
+    background-image: url('../images/down.png');
+    width: 44px;
+    height: 44px;
+    background-size: contain;
+    background-color: transparent;
+}
+
+.control-catch{
+    background-image: url('../images/catcher.png');
+    width: 88px;
+    height: 88px;
+    background-size: contain;
+    background-color: transparent;
+}
+
+.no-border{
+    border: 0;
+}

@@ -1,27 +1,15 @@
 {
-  "name": "videocall",
+  "name": "wawaji-web-demo",
+  "descrioption": "Web Demo of Wawaji",
   "version": "1.0.0",
-  "description": "Agora Video Call",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AgoraLab/AgoraDemo.git"
-  },
   "keywords": [
-    "Agora",
-    "Video",
-    "Call",
-    "SDK"
+    "Agora"
   ],
-  "author": "George Sun",
+  "author": "Qianze Zhang",
   "license": "",
-  "bugs": {
-    "url": "https://github.com/AgoraLab/AgoraDemo/issues"
-  },
-  "homepage": "https://github.com/AgoraLab/AgoraDemo#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-syntax-async-functions": "^6.13.0",
@@ -39,6 +27,7 @@
     "gulp-imagemin": "^2.4.0",
     "gulp-order": "^1.1.1",
     "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^1.5.2",
     "imagemin-pngquant": "^4.2.2"
   }
