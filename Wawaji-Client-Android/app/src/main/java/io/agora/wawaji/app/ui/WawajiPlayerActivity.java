@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceView;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler {
 
     private final static Logger log = LoggerFactory.getLogger(WawajiPlayerActivity.class);
+
+    private final SparseBooleanArray mUidList = new SparseBooleanArray();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,22 +118,45 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     return;
                 }
 
-                SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
-                surfaceV.setZOrderOnTop(true);
-                surfaceV.setZOrderMediaOverlay(true);
-                if (config().mUid == uid) {
-                    return;
-                } else {
-                    rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
-                }
-
-                FrameLayout container = (FrameLayout) findViewById(R.id.gaming_video);
-                if (container.getChildCount() >= 2) {
+                if (mUidList.size() >= 1) {
                     return;
                 }
-                container.addView(surfaceV);
 
-                config().mWawajiUid = uid;
+                mUidList.put(uid, true);
+
+                doSetupView(uid);
+            }
+        });
+    }
+
+    private void doSetupView(int uid) {
+        SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
+        surfaceV.setZOrderOnTop(true);
+        surfaceV.setZOrderMediaOverlay(true);
+        if (config().mUid == uid) {
+            return;
+        } else {
+            rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+        }
+
+        FrameLayout container = (FrameLayout) findViewById(R.id.gaming_video);
+        if (container.getChildCount() >= 2) {
+            return;
+        }
+        container.addView(surfaceV);
+
+        config().mWawajiUid = uid;
+    }
+
+    private void doRemoveRemoteUi(final int uid) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isFinishing()) {
+                    return;
+                }
+
+                rtcEngine().setupRemoteVideo(new VideoCanvas(null, VideoCanvas.RENDER_MODE_HIDDEN, uid));
             }
         });
     }
@@ -155,6 +181,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     @Override
     public void onUserOffline(int uid, int reason) {
         log.debug("onUserOffline " + (uid & 0xFFFFFFFFL) + " " + reason);
+        doRemoveRemoteUi(uid);
+        mUidList.delete(uid);
     }
 
     @Override
@@ -247,6 +275,27 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_SWITCH_CAM);
+        // running on UI thread
+        if (mUidList.size() > 1) {
+            int targetUid = 0;
+            for (int i = 0, size = mUidList.size(); i < size; i++) {
+                int uid = mUidList.keyAt(i);
+                boolean current = mUidList.get(uid);
+
+                if (current) {
+                    mUidList.put(uid, false);
+                    if (i < size - 1) {
+                        targetUid = mUidList.keyAt(i + 1);
+                    } else {
+                        targetUid = mUidList.keyAt(0);
+                    }
+                    break;
+                }
+            }
+            // targetUid should not be 0
+            doSetupView(targetUid);
+        } else {
+            showShortToast(getString(R.string.label_can_not_switch_cam));
+        }
     }
 }

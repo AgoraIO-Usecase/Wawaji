@@ -23,7 +23,6 @@ public class Constant {
     public static final int Wawaji_Ctrl_LEFT = 4;
     public static final int Wawaji_Ctrl_RIGHT = 5;
     public static final int Wawaji_Ctrl_CATCH = 6;
-    public static final int Wawaji_Ctrl_SWITCH_CAM = 7;
 
     public static final int Wawaji_Msg_TIMEOUT = 1;
     public static final int Wawaji_Msg_RESULT = 2;
