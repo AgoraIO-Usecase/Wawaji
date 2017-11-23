@@ -8,23 +8,28 @@
 
 #import "PlayViewController.h"
 #import "KeyCenter.h"
-#import "SocketRocket.h"
 #import "AlertUtil.h"
+#import "Constants.h"
+#import "NSObject+JSONString.h"
+#import <AgoraSignalKit/AgoraSignalKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocket Url#>;
-
-@interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
+@interface PlayViewController () <AgoraRtcEngineDelegate>
 {
+    AgoraAPI *signalEngine;
+    NSString *signalChannel;
+    
     AgoraRtcEngineKit *mediaEngine;
-    SRWebSocket *webSocket;
     NSMutableArray *allStreamUids;
     NSUInteger currentStreamUid;
+    
+    NSString *playing;
+    NSArray *queue;
 }
 
-@property (assign, nonatomic) uint32_t signalUid;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIView *controlView;
+@property (weak, nonatomic) IBOutlet UIButton *cionButton;
 
 @end
 
@@ -34,19 +39,17 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.navigationItem.title = self.channel;
+    self.navigationItem.title = self.machine;
     
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
     
-    [self loadMediaEngine];
+    playing = nil;
+    queue = nil;
     
-    if (self.player) {
-        [self connectWebSocket];
-    }
-    else {
-        [self.controlView removeFromSuperview];
-    }
+    [self loadMediaEngine];
+    [self loadSignalEngine];
+    [self joinSignalChannel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -56,9 +59,10 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     [mediaEngine leaveChannel:nil];
     mediaEngine = nil;
     
-    [webSocket close];
-    webSocket.delegate = nil;
-    webSocket = nil;
+    if (signalChannel) {
+        [signalEngine channelLeave:signalChannel];
+    }
+    signalEngine = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -98,39 +102,61 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 }
 
 - (IBAction)cion:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Insert", @"data" : @"", @"extra" : @(123456)};
-    [self sendWebSocketMessage:msgDic];
+    NSDictionary *msgDic = @{@"type" : @"PLAY", @"machine" : self.machine};
+    NSString *msgString = [msgDic JSONString];
+    NSLog(@"messageInstantSend: %@", msgString);
+    [signalEngine messageInstantSend:kControlServer uid:0 msg:msgString msgID:nil];
 }
 
-- (IBAction)up:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"u"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startUp:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"up", @"pressed" : @(YES)};
+    [self sendControlMessage:msgDic];
 }
 
-- (IBAction)down:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"d"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopUp:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"up", @"pressed" : @(NO)};
+    [self sendControlMessage:msgDic];
 }
 
-- (IBAction)left:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"l"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startDown:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"down", @"pressed" : @(YES)};
+    [self sendControlMessage:msgDic];
 }
 
-- (IBAction)right:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"r"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopDown:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"down", @"pressed" : @(NO)};
+    [self sendControlMessage:msgDic];
 }
 
-- (IBAction)grab:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"b"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startLeft:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"left", @"pressed" : @(YES)};
+    [self sendControlMessage:msgDic];
+}
+
+- (IBAction)stopLeft:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"left", @"pressed" : @(NO)};
+    [self sendControlMessage:msgDic];
+}
+
+- (IBAction)startRight:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"right", @"pressed" : @(YES)};
+    [self sendControlMessage:msgDic];
+}
+
+- (IBAction)stopRight:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"right", @"pressed" : @(NO)};
+    [self sendControlMessage:msgDic];
+}
+
+- (IBAction)fetch:(id)sender {
+    NSDictionary *msgDic = @{@"type" : @"CATCH"};
+    [self sendControlMessage:msgDic];
 }
 
 // MARK: - Media Engine
 
 - (void)loadMediaEngine {
-    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppID delegate:self];
+    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:[KeyCenter appId] delegate:self];
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
@@ -139,7 +165,8 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     [mediaEngine muteLocalAudioStream:YES];
     [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
     
-    int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
+    NSString *key = [KeyCenter generateMediaKey:kMediaChannel uid:0 expiredTime:0];
+    int result = [mediaEngine joinChannelByKey:key channelName:kMediaChannel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {
         [UIApplication sharedApplication].idleTimerDisabled = YES;
     }
@@ -195,35 +222,80 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
 }
 
-// MARK: - WebSocket
+// MARK: - Signal Engine
 
-- (void)connectWebSocket {
-    webSocket.delegate = nil;
-    webSocket = nil;
+- (void)loadSignalEngine {
+    __weak typeof(self) weakSelf = self;
     
-    SRWebSocket *newWebSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:kWebSocketUrlString]];
-    newWebSocket.delegate = self;
-    [newWebSocket open];
+    signalEngine = [AgoraAPI getInstanceWithoutMedia:[KeyCenter appId]];
+    signalEngine.onChannelAttrUpdated = ^(NSString* channelID, NSString* name, NSString* value, NSString* type) {
+        NSLog(@"onChannelAttrUpdated, name : %@, value : %@, type : %@", name, value, type);
+        if (![type isEqualToString:@"set"]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf updateStatus:name value:value];
+            });
+        }
+    };
 }
 
-- (void)sendWebSocketMessage:(NSDictionary *)message {
-    NSData *data = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
-    [webSocket send:data];
+- (void)joinSignalChannel {
+    signalChannel = [NSString stringWithFormat:@"room_%@", self.machine];
+    [signalEngine channelJoin:signalChannel];
 }
 
-- (void)webSocketDidOpen:(SRWebSocket *)newWebSocket {
-    webSocket = newWebSocket;
+- (void)sendControlMessage:(NSDictionary *)msgDic {
+    NSString *msgString = [msgDic JSONString];
+    NSLog(@"messageInstantSend: %@", msgString);
+    [signalEngine messageInstantSend:self.machine uid:0 msg:msgString msgID:nil];
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    [self connectWebSocket];
+- (void)updateStatus:(NSString *)name value:(NSString *)value {
+    if ([name isEqualToString:@"playing"]) {
+        playing = value;
+        [self updateUI];
+    }
+    else if ([name isEqualToString:@"queue"]) {
+        NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
+        queue = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        [self updateUI];
+    }
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    [self connectWebSocket];
-}
+- (void)updateUI {
+    if ([playing isEqualToString:self.account]) {
+        self.controlView.userInteractionEnabled = YES;
+        self.cionButton.enabled = NO;
+        
+        NSString *title = NSLocalizedString(@"Gaming", nil);
+        [self.cionButton setTitle:title forState:UIControlStateNormal];
+    }
+    else {
+        self.controlView.userInteractionEnabled = NO;
+        
+        NSUInteger index = [queue indexOfObject:self.account];
+        if (index != NSNotFound) {
+            self.cionButton.enabled = NO;
 
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
+            NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Waiting", nil), index + 1];
+            [self.cionButton setTitle:title forState:UIControlStateNormal];
+        }
+        else {
+            self.cionButton.enabled = YES;
+            
+            if (queue.count > 0) {
+                NSString *title = [NSString stringWithFormat:NSLocalizedString(@"CionAndWait", nil), queue.count + 1];
+                [self.cionButton setTitle:title forState:UIControlStateNormal];
+            }
+            else if (playing.length > 0) {
+                NSString *title = [NSString stringWithFormat:NSLocalizedString(@"CionAndWait", nil), 1];
+                [self.cionButton setTitle:title forState:UIControlStateNormal];
+            }
+            else {
+                NSString *title = NSLocalizedString(@"Cion", nil);
+                [self.cionButton setTitle:title forState:UIControlStateNormal];
+            }
+        }
+    }
 }
 
 @end
