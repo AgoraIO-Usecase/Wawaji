@@ -17,13 +17,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import io.agora.common.Constant;
+import io.agora.rtc.RtcEngine;
 import io.agora.wawaji.app.AGApplication;
 import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.model.ConstantApp;
 import io.agora.wawaji.app.model.EngineConfig;
 import io.agora.wawaji.app.model.MyEngineEventHandler;
 import io.agora.wawaji.app.model.WorkerThread;
-import io.agora.rtc.RtcEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (Manifest.permission.CAMERA.equals(permission)) {
             ((AGApplication) getApplication()).initWorkerThread();
+            workerReady();
         }
         return true;
     }
@@ -184,6 +185,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, ConstantApp.PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE);
                     ((AGApplication) getApplication()).initWorkerThread();
+                    workerReady();
                 } else {
                     finish();
                 }
@@ -198,6 +200,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    protected void workerReady() {
     }
 
     protected void initVersionInfo() {
