@@ -101,16 +101,18 @@
         
         NSData *data = [msg dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        NSArray *deviceArray = result[@"machines"];
-        NSMutableArray *devices = [[NSMutableArray alloc] initWithCapacity:deviceArray.count];
-        for(NSDictionary *device in deviceArray) {
-            [devices addObject:device[@"name"]];
+        if ([result[@"type"] isEqualToString:@"LIST"]) {
+            NSArray *deviceArray = result[@"machines"];
+            NSMutableArray *devices = [[NSMutableArray alloc] initWithCapacity:deviceArray.count];
+            for(NSDictionary *device in deviceArray) {
+                [devices addObject:device[@"name"]];
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakSelf.machines = devices;
+                [weakSelf.tableView reloadData];
+            });
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakSelf.machines = devices;
-            [weakSelf.tableView reloadData];
-        });
     };
 }
 

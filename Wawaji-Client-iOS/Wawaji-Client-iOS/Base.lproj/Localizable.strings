@@ -16,3 +16,7 @@
 "CionAndWait" = "投币, 当前队列：%d人";
 "Waiting" = "你排在第%d位";
 "Gaming" = "游戏中";
+
+"YourTurn" = "轮到你了";
+"StartPlay" = "开始游戏（%ds）";
+"GiveUp" = "放弃";

@@ -23,8 +23,10 @@
     NSMutableArray *allStreamUids;
     NSUInteger currentStreamUid;
     
-    NSString *playing;
-    NSArray *queue;
+    UIAlertController *startAlertController;
+    UIAlertAction *startAlertAction;
+    NSTimer *timer;
+    NSUInteger countDown;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *videoView;
@@ -43,9 +45,6 @@
     
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
-    
-    playing = nil;
-    queue = nil;
     
     [self loadMediaEngine];
     [self loadSignalEngine];
@@ -102,10 +101,8 @@
 }
 
 - (IBAction)cion:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"PLAY", @"machine" : self.machine};
-    NSString *msgString = [msgDic JSONString];
-    NSLog(@"messageInstantSend: %@", msgString);
-    [signalEngine messageInstantSend:kControlServer uid:0 msg:msgString msgID:nil];
+    NSDictionary *msgDic = @{@"type" : @"PLAY"};
+    [self sendControlMessage:msgDic];
 }
 
 - (IBAction)startUp:(id)sender {
@@ -231,8 +228,24 @@
     signalEngine.onChannelAttrUpdated = ^(NSString* channelID, NSString* name, NSString* value, NSString* type) {
         NSLog(@"onChannelAttrUpdated, name : %@, value : %@, type : %@", name, value, type);
         if (![type isEqualToString:@"set"]) {
+            NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf updateStatus:name value:value];
+                [weakSelf updateUI:dic[@"playing"] queue:dic[@"queue"]];
+            });
+        }
+    };
+    
+    signalEngine.onMessageInstantReceive = ^(NSString *account, uint32_t uid, NSString *msg) {
+        NSLog(@"onMessageInstantReceive, msg: %@", msg);
+        
+        NSData *data = [msg dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSString *type = result[@"type"];
+        if ([type isEqualToString:@"PREPARE"]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf startPlay];
             });
         }
     };
@@ -245,24 +258,12 @@
 
 - (void)sendControlMessage:(NSDictionary *)msgDic {
     NSString *msgString = [msgDic JSONString];
-    NSLog(@"messageInstantSend: %@", msgString);
-    [signalEngine messageInstantSend:self.machine uid:0 msg:msgString msgID:nil];
+    NSLog(@"messageChannelSend: %@", msgString);
+    [signalEngine messageChannelSend:signalChannel msg:msgString msgID:nil];
 }
 
-- (void)updateStatus:(NSString *)name value:(NSString *)value {
-    if ([name isEqualToString:@"playing"]) {
-        playing = value;
-        [self updateUI];
-    }
-    else if ([name isEqualToString:@"queue"]) {
-        NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
-        queue = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        [self updateUI];
-    }
-}
-
-- (void)updateUI {
-    if ([playing isEqualToString:self.account]) {
+- (void)updateUI:(NSString *)playing queue:(NSArray *)queue {
+    if ([self.account isEqualToString:playing]) {
         self.controlView.userInteractionEnabled = YES;
         self.cionButton.enabled = NO;
         
@@ -295,6 +296,56 @@
                 [self.cionButton setTitle:title forState:UIControlStateNormal];
             }
         }
+    }
+}
+
+- (void)startPlay {
+    countDown = 10;
+    timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countDownTimer) userInfo:nil repeats:YES];
+    
+    startAlertController = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:NSLocalizedString(@"YourTurn", nil)
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    
+    NSString *startTitle = [NSString stringWithFormat:NSLocalizedString(@"StartPlay", nil), countDown];
+    startAlertAction = [UIAlertAction actionWithTitle:startTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [timer invalidate];
+        timer = nil;
+        startAlertController = nil;
+        startAlertAction = nil;
+
+        NSDictionary *msgDic = @{@"type" : @"START"};
+        NSString *msgString = [msgDic JSONString];
+        NSLog(@"messageInstantSend: %@", msgString);
+        [signalEngine messageInstantSend:self.machine uid:0 msg:msgString msgID:nil];
+    }];
+    [startAlertController addAction:startAlertAction];
+
+    UIAlertAction *giveUpAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"GiveUp", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [timer invalidate];
+        timer = nil;
+        startAlertController = nil;
+        startAlertAction = nil;
+    }];
+    [startAlertController addAction:giveUpAlertAction];
+
+    [self presentViewController:startAlertController animated:YES completion:nil];
+}
+
+- (void)countDownTimer {
+    countDown--;
+    
+    if (countDown > 0) {
+        NSString *startTitle = [NSString stringWithFormat:NSLocalizedString(@"StartPlay", nil), countDown];
+        [startAlertAction setValue:startTitle forKeyPath:@"title"];
+    }
+    else {
+        [timer invalidate];
+        timer = nil;
+        
+        [startAlertController dismissViewControllerAnimated:YES completion:nil];
+        startAlertController = nil;
+        startAlertAction = nil;
     }
 }
 
