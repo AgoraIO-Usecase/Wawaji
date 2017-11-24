@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import io.agora.AgoraAPIOnlySignal;
 import io.agora.common.Constant;
 import io.agora.common.JsonUtil;
@@ -12,7 +13,6 @@ import io.agora.common.Wawaji;
 import io.agora.rtc.IRtcEngineEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -149,12 +149,37 @@ public class MyEngineEventHandler {
 
         @Override
         public void onLog(String txt) {
-            log.debug("onLog " + txt);
+//            log.debug("onLog " + txt);
         }
 
         @Override
         public void onChannelUserJoined(String account, int uid) {
 
+        }
+
+        @Override
+        public void onChannelJoined(String channelID) {
+            log.debug("onChannelJoined " + channelID + "  ");
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onChannelJoined(channelID);
+            }
+        }
+
+        @Override
+        public void onChannelJoinFailed(String channelID, int ecode) {
+            log.debug("onChannelJoinFailed " + channelID + "  " + channelID);
+        }
+
+        @Override
+        public void onChannelAttrUpdated(String channelID, String name, String value, String type) {
+
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onChannelAttrUpdated(channelID, name, value, type);
+            }
         }
 
         @Override
@@ -182,7 +207,13 @@ public class MyEngineEventHandler {
                 if ("LIST".equals(type)) {
                     JsonArray machines = obj.getAsJsonArray("machines");
                     Wawaji[] wawajis = JsonUtil.getGson().fromJson(machines, Wawaji[].class);
-                    notifyAppLayer(Constant.APP_Wawaji_Fetch_LIST_RESULT, (Object) wawajis);
+                    notifyAppLayer(Constant.APP_Wawaji_Fetch_LIST_RESULT,  wawajis);
+                }
+            }else {
+                Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+                while (it.hasNext()) {
+                    AGEventHandler handler = it.next();
+                    handler.onMessageInstantReceive(account, uid, msg);
                 }
             }
         }

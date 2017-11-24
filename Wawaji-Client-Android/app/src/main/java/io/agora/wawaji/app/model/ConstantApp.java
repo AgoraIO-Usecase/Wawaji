@@ -29,4 +29,5 @@ public class ConstantApp {
 
     public static final String ACTION_KEY_CROLE = "C_Role";
     public static final String ACTION_KEY_ROOM_NAME = "ecHANEL";
+    public static final String ACTION_KEY_ROOM_WAWAJI = "eWawaji";
 }
