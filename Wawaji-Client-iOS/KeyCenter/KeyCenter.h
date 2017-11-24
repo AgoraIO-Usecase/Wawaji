@@ -8,4 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString *const kAgoraAppID;
+@interface KeyCenter : NSObject
+
++ (NSString *)appId;
+
++ (NSString *)generateSignalToken:(NSString*)account expiredTime:(unsigned)expiredTimeIntervalSinceNow;
+
++ (NSString *)generateMediaKey:(NSString*)channel uid:(uint32_t)uid expiredTime:(uint32_t)expiredTime;
+
+@end
