@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Connection = require('./connection')
 
-var debug = false;
+var debug = true;
 var dbg = function () {
     if (debug) {
         var x = [];
@@ -57,22 +57,22 @@ function SocketStream(io, channel, channelKey) {
         var query = socket.request._query;
         var conn = new Connection(socket, query.channel, query.appid, query.uid);
         var channelId = conn.getChannelId();
-        var conns = stream.channels[channelId] || [];
-        conns.push(conn);
-        stream.channels[channelId] = conns;
-        dbg(`channel joined, this channel has ${conns.length} users`);
+        stream.channels[channelId] = stream.channels[channelId] || [];
+        stream.channels[channelId].push(conn);
+        dbg(`channel joined, this channel has ${stream.channels[channelId].length} users`);
         conn.imageFolderPath = stream.folderPath;
         dbg(`image folder ${conn.imageFolderPath}`);
         startMonitoring(conn);
 
         socket.on('disconnect', function (reason) {
-            var existing_connection = conn;
-            var all_connections = conns;
+            var sid = socket.id;
+            dbg(`socket disconneted ${sid}`);
+            var all_connections = stream.channels[channelId];
             var left_connections = all_connections.filter(function (connection) {
-                return connection !== existing_connection;
+                return connection.socketid !== sid;
             });
 
-            stream.channels[existing_connection.getChannelId()] = left_connections;
+            stream.channels[channelId] = left_connections;
         });
 
         socket.on('cameras', function(data, cb){
@@ -136,7 +136,7 @@ function SocketStream(io, channel, channelKey) {
             //record
             stream.uids[channelId] = stream.uids[channelId] || {};
             stream.uids[channelId][uid] = true;
-            dbg(`uid status for channel ${channelId}, ${stream.uids[channelId]}`)
+            // dbg(`uid status for channel ${channelId}, ${stream.uids[channelId]}`)
             return uid;
         }
 
@@ -156,7 +156,7 @@ function SocketStream(io, channel, channelKey) {
                 var uid = parseUid(channelId, filename);
 
                 for (var i = 0; i < connections.length; i++) {
-                    dbg(`parsed uid: ${uid}, connection id: ${connections[i].uid}`);
+                    dbg(`socketid: ${connections[i].socketid}`);
                     if(uid === connections[i].uid){
                         connections[i].socket.send(data);
                     }

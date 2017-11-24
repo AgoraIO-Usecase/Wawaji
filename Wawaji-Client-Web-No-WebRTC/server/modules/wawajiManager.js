@@ -232,6 +232,35 @@ Wawaji.Server = function (serverid) {
                 machine.users = results;
                 dbg(machine.users.length + " players in " + machine.name);
             };
+
+            machine.channel.onMessageChannelReceive = function(account, uid, msg){
+                if(account !== machine.playing){
+                    return;
+                }
+                dbg("msg received from " + account + ": " + msg);
+                var data = JSON.parse(msg);
+    
+                if (data && data.type) {
+                    if(data.type === "CONTROL"){
+                        var control_data = {
+                            type: 'Control',
+                            data: ''
+                        };
+                        switch (data.data) {
+                            case 'left': control_data.data = data.pressed ? 'l' : 'A'; break;
+                            case 'right': control_data.data = data.pressed ? 'r' : 'D'; break;
+                            case 'up': control_data.data = data.pressed ? 'u' : 'W'; break;
+                            case 'down': control_data.data = data.pressed ? 'd' : 'S'; break;
+                            default: break;
+                        }
+                        initWS(function () { machine.socket.send(JSON.stringify(control_data)) });
+                    } else if(data.type === "CATCH"){
+                        initWS(function () { machine.socket.send(JSON.stringify({type: 'Control', data: 'b'})) });
+                    } else if(data.type === "PLAY"){
+                        initWS(function () { machine.play(account)});
+                    }
+                }
+            }
         };
 
         //if fail
@@ -270,7 +299,12 @@ Wawaji.Server = function (serverid) {
             dbg("machine status: " + machine.status);
             if (machine.playing === account) {
                 dbg("you are already playing");
+                session.messageInstantSend(account, JSON.stringify({type: "INFO", data: "PLAYER_ALREADY_PLAYING"}));
                 return false;
+            }
+            if(machine.queue.indexOf(account) !== -1){
+                session.messageInstantSend(account, JSON.stringify({type: "INFO", data: "PLAYER_ALREADY_IN_QUEUE"}));
+                dbg("you are already in queue");
             }
             if (machine.canPlay()) {
                 machine.setPlaying(account);

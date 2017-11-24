@@ -1,10 +1,10 @@
 #!/bin/sh
 #copy client static files
 
-cd ../WawajiClient
+cd ../client
 gulp build
-cd ../WawajiServer
-cp -r ../WawajiClient/dist/* ./public/.
+cd ../server
+cp -r ../client/dist/* ./public/.
 
 deployDir=/home/devops/web_demo/project/Wawaji_Full
 ServerName=${@:$OPTIND:1}

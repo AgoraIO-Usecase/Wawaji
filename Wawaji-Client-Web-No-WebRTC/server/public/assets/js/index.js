@@ -1,4 +1,5 @@
 $(function () {
+    // var appid = "Your app id", appcert = "Your app certificate";
     var appid = "324f0da1e2284832a44fee5fcbec44c1", appcert = "164aa13965394ffbb5ebeb43c4c7ed5c";
     var wawaji_control_center = "wawaji_cc_server";
     var debug = true;
@@ -123,10 +124,10 @@ $(function () {
                 lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": game.machine }));
             }
             this.control = function (data, pressed) {
-                lobby.session.messageInstantSend(game.machine, JSON.stringify({ "type": "CONTROL", "data": data, "pressed": pressed }));
+                game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": data, "pressed": pressed }));
             }
             this.catch = function () {
-                lobby.session.messageInstantSend(game.machine, JSON.stringify({ "type": "CATCH" }));
+                game.channel.messageChannelSend(JSON.stringify({ "type": "CATCH" }));
             }
 
 
@@ -141,7 +142,6 @@ $(function () {
                 });
                 player.images = [];
                 player.domId = eleId;
-                player.currentIdx = 0;
                 player.frame_rate = 50;
                 player.cameras = [];
                 player.camera = null;
@@ -154,6 +154,10 @@ $(function () {
                         let urlCreator = window.URL || window.webkitURL;
                         let imageUrl = urlCreator.createObjectURL(blob);
                         player.images.push(imageUrl);
+                    });
+
+                    player.socket.on('disconnect', function(data){
+                        alert("socket disconnected!");
                     });
 
                     player.play();
@@ -179,20 +183,17 @@ $(function () {
                     if (player.images.length > 0) {
                         var img = document.querySelector("#" + player.domId);
                         var imageUrl = null;
-                        if (player.currentIdx >= player.images.length) {
-                            imageUrl = player.images[player.images.length - 1];
+
+                        if(player.images.length > 100){
+                            imageUrl = player.images.pop();
+                            player.images = [];
                         } else {
-                            imageUrl = player.images[player.currentIdx++];
+                            imageUrl = player.images.shift();
                         }
 
-                        if (player.images.length - player.currentIdx > 100) {
-                            //if falling behind too much, jump frame
-                            player.currentIdx = player.images.length - 1;
-                            dbg("jumping frame");
+                        if(imageUrl){
+                            img.src = imageUrl;
                         }
-
-                        dbg(`playing image ${player.currentIdx}/${player.images.length}`);
-                        img.src = imageUrl;
                     }
                     setTimeout(player.play, 1000 / player.frame_rate);
                 }
@@ -205,6 +206,8 @@ $(function () {
     var lobby = new Lobby(account ? account : randName(10), function () {
         lobby.list();
     });
+    //TODO to remove
+    window.lobby = lobby;
 
 
 
