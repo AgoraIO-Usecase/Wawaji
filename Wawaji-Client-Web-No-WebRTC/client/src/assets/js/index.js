@@ -1,6 +1,5 @@
 $(function () {
-    // var appid = "Your app id", appcert = "Your app certificate";
-    var appid = "324f0da1e2284832a44fee5fcbec44c1", appcert = "164aa13965394ffbb5ebeb43c4c7ed5c";
+    var appid = Vault.appid, appcert = Vault.appcert;
     var wawaji_control_center = "wawaji_cc_server";
     var debug = true;
     var dbg = function () {
