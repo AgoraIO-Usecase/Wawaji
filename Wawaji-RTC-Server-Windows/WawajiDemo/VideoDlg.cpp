@@ -731,7 +731,6 @@ LRESULT CVideoDlg::OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam)
 
 LRESULT CVideoDlg::OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam)
 {
-	return true;
 	LPAGE_FIRST_REMOTE_VIDEO_DECODED lpData = (LPAGE_FIRST_REMOTE_VIDEO_DECODED)wParam;
 	BOOL bFound = FALSE;
 	SEI_INFO seiInfo;
@@ -755,7 +754,7 @@ LRESULT CVideoDlg::OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam)
 		m_listWndInfo.AddTail(agvWndInfo);
 	}
 
-	RebindVideoWnd();
+	//RebindVideoWnd();
 
 	memset(&seiInfo, 0, sizeof(SEI_INFO));
 
@@ -816,7 +815,7 @@ LRESULT CVideoDlg::OnEIDUserOffline(WPARAM wParam, LPARAM lParam)
 	while (pos != NULL){
 		if (m_listWndInfo.GetAt(pos).nUID == lpData->uid) {
 			m_listWndInfo.RemoveAt(pos);
-			RebindVideoWnd();
+			//RebindVideoWnd();
 			break;
 		}
 
@@ -1131,6 +1130,7 @@ HWND CVideoDlg::GetRemoteVideoWnd(int nIndex)
 
 void CVideoDlg::RebindVideoWnd()
 {
+	return;
 	if (m_wndVideo[0].GetSafeHwnd() == NULL || m_wndLocal.GetSafeHwnd() == NULL)
 		return;
 
