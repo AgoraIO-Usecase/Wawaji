@@ -41,7 +41,7 @@ app.use(function (req, res, next) {
 
 var manager = new WawajiManager("server");
 manager.onStarted = function(){
-    manager.machines.add('machine1', 'ws://test.azusasoft.com:4015/play/TestSecret4');
+    manager.machines.add('machine1', vault.machine);
 }
 
 
