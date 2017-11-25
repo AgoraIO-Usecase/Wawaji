@@ -119,7 +119,7 @@ Wawaji.Server = function (serverid) {
     /*------------------------------------------------
     |   Class : Machine
     \*----------------------------------------------*/
-    Wawaji.Machine = function (name, url) {
+    Wawaji.Machine = function (name, profile) {
         var machine = this;
         this.status = WawajiStatus.INITIAL;
         this.name = "wawaji_" + name;
@@ -132,7 +132,7 @@ Wawaji.Server = function (serverid) {
         this.users = [];
         this.queue = [];
         this.socket = null;
-        this.url = url;
+        this.url = profile.url;
         this.playing = null;
         this.result = false;
         this.attributes = {queue:[], playing: null};

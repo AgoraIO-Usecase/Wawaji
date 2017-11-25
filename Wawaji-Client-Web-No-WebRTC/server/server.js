@@ -9,8 +9,8 @@ const ps = require('ps-node');
 const request = require('request');
 var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
-var SocketStream = require('./modules/socketStream.js')
 var vault = require('./modules/vault')
+var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua');
 
 app.use(express.static('public'));
 
@@ -38,15 +38,11 @@ app.use(function (req, res, next) {
     next();
 });
 
+var profile = new ZhuaZhuaProfile();
 
 var manager = new WawajiManager("server");
 manager.onStarted = function(){
-    manager.machines.add('machine1', vault.machine);
+    manager.machines.add('machine', profile);
 }
 
-
-request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${vault.appid}&sign=${vault.appcert}&channelname=${"xcapture"}`, function(err, response, body){
-    var stream = new SocketStream(io, "xcapture", body, "1", "2");
-});
-
-http.listen("4000");
+http.listen("5000");
