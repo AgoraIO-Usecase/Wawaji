@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Connection = require('./connection')
 
-var debug = true;
+var debug = false;
 var dbg = function () {
     if (debug) {
         var x = [];

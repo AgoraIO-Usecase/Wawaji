@@ -48,11 +48,18 @@ $(function () {
         };
 
         this.session.onMessageInstantReceive = function (account, uid, msg) {
+            console.log("message received: " + msg);
             var data = JSON.parse(msg);
             if (data.type !== undefined) {
                 switch (data.type) {
                     case "LIST":
                         lobby.setMachines(data.machines || [])
+                        break;
+                    case "INFO":
+                        console.log(msg);
+                        break;
+                    case "PREPARE":
+                        lobby.session.messageInstantSend(lobby.game.machine, JSON.stringify({ type: "START" }));
                         break;
                 }
             }
@@ -70,16 +77,19 @@ $(function () {
                     .appendTo($(".machine-list"));
             }
 
-            $(".roomBtn").off("click").on("click", function () {
+            $(".game-room").off("click").on("click", function () {
                 var machine = $(this).attr("name");
-                lobby.game = new Game(machine, lobby.account);
+                if (!machine) {
+                    alert("设备维护中！")
+                } else {
+                    lobby.game = new Game(machine, lobby.account);
+                    updateViews();
+                }
             });
         };
 
         var Game = function (machine, account) {
             var game = this;
-            $(".lobby").hide();
-            $(".game").show();
 
             this.machine = machine;
             this.account = account;
@@ -95,32 +105,44 @@ $(function () {
                 dbg("machine connect failed");
             };
 
-            this.channel.onChannelAttrUpdated = function (k, v, type) {
-                if (k === "queue") {
-                    game.queue = JSON.parse(v) || [];
+            this.channel.onChannelAttrUpdated = function (type, k, v) {
+                if (k === "attrs" && type === "update") {
+                    var attrs = JSON.parse(v) || {};
+                    game.queue = attrs.queue;
+                    game.playing = attrs.playing;
                 }
-                if (k === "playing") {
-                    game.playing = v;
+                if (v === "update" && type === "attrs") {
+                    var attrs = JSON.parse(k) || {};
+                    game.queue = attrs.queue;
+                    game.playing = attrs.playing;
                 }
 
-                var idx = game.queue.indexOf(game.account);
-                if (game.playing === game.account) {
-                    $(".control-coin").text("游戏中");
-                    $(".control-coin").prop("disabled", true);
-                } else if (idx !== -1) {
-                    var text = idx === 0 ? "已预约，你是下一位玩家" : "已预约，你前面有" + (idx + 1) + "人";
-                    $(".control-coin").text(text);
-                    $(".control-coin").prop("disabled", true);
-                } else {
-                    var waiting = game.playing ? game.queue.length + 1 : game.queue.length;
-                    $(".control-coin").text(waiting > 0 ? waiting + "人排队，预约" : "投币");
-                    $(".control-coin").prop("disabled", false);
-                }
+                updateViews();
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
             };
 
+            this.channel.onMessageChannelReceive = function (account, uid, msg) {
+                var result;
+                console.log("channel message received: " + msg);
+                var data = JSON.parse(msg);
+                if (data.type !== undefined) {
+                    switch (data.type) {
+                        case "RESULT":
+                            result = data.data;
+                            if(data.player === lobby.account){
+                                if(result){
+                                    showMessage("抓到啦！", "再来一次")
+                                } else {
+                                    showMessage("好遗憾..！", "我不服")
+                                }
+                            }
+                            break;
+                    }
+                }
+            };
+
             this.play = function () {
-                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": game.machine }));
+                game.channel.messageChannelSend(JSON.stringify({ "type": "PLAY" }));
             }
             this.control = function (data, pressed) {
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": data, "pressed": pressed }));
@@ -155,25 +177,25 @@ $(function () {
                         player.images.push(imageUrl);
                     });
 
-                    player.socket.on('disconnect', function(data){
+                    player.socket.on('disconnect', function (data) {
                         alert("socket disconnected!");
                     });
 
                     player.play();
                 });
 
-                player.switchCamera = function(){
-                    player.socket.emit("cameras", {channel: appid+"xcapture", socketid: player.socket.id}, function(result){
+                player.switchCamera = function () {
+                    player.socket.emit("cameras", { channel: appid + "xcapture", socketid: player.socket.id }, function (result) {
                         var cameras = [];
                         var channel = result.channel;
                         var socketid = result.socketid;
-                        $.each(result.cameras, function(idx){
+                        $.each(result.cameras, function (idx) {
                             cameras.push(idx);
                         });
-                        if(cameras.length === 0){
+                        if (cameras.length === 0) {
                             alert("no camera!")
                         } else {
-                            player.socket.emit("switch", {socketid: socketid, camera: player.cameras[0], channel: appid+"xcapture"});
+                            player.socket.emit("switch", { socketid: socketid, camera: player.cameras[0], channel: appid + "xcapture" });
                         }
                     })
                 }
@@ -183,14 +205,14 @@ $(function () {
                         var img = document.querySelector("#" + player.domId);
                         var imageUrl = null;
 
-                        if(player.images.length > 100){
+                        if (player.images.length > 100) {
                             imageUrl = player.images.pop();
                             player.images = [];
                         } else {
                             imageUrl = player.images.shift();
                         }
 
-                        if(imageUrl){
+                        if (imageUrl) {
                             img.src = imageUrl;
                         }
                     }
@@ -201,36 +223,34 @@ $(function () {
         }
     };
 
-    var account = getParameterByName("account");
-    var lobby = new Lobby(account ? account : randName(10), function () {
+    var account = getParameterByName("account") || randName(10);
+    var lobby = new Lobby(account, function () {
         lobby.list();
     });
-    //TODO to remove
-    window.lobby = lobby;
 
 
 
     (function layoutItems() {
         var width = $(document).innerWidth(), height = $(document).innerHeight();
         // $('#video').width(width > 468 ? 468 : width);
-        $('#video').height(height * 3 / 5);
-        // $('#game').width(width > 468 ? 468 : width);
-        $('#game').height(height * 2 / 5);
+        $('#video').height(height - 200);
+        // // $('#game').width(width > 468 ? 468 : width);
+        // $('#game').height(height * 2 / 5);
 
-        var baseH = 30;
-        var baseV = height * 2 / 5 / 2 - 40;
-        $('.control-left').css("left", baseH + "px");
+        var baseH = 55;
+        var baseV = height - 200 + 40;
+        $('.control-left').css("left", baseH - 40 + "px");
         $('.control-left').css("top", (baseV + 30) + "px");
-        $('.control-up').css("left", baseH + 40 + "px");
-        $('.control-up').css("top", baseV + "px");
-        $('.control-down').css("left", baseH + 40 + "px");
-        $('.control-down').css("top", baseV + 60 + "px");
+        $('.control-up').css("left", baseH + 20 + "px");
+        $('.control-up').css("top", baseV - 20 + "px");
+        $('.control-down').css("left", baseH + 20 + "px");
+        $('.control-down').css("top", baseV + 75 + "px");
         $('.control-right').css("left", baseH + 80 + "px");
         $('.control-right').css("top", baseV + 30 + "px");
 
 
         $('.control-catch').css("top", baseV + 10 + "px");
-        $('.control-catch').css("right", baseH + 30 + "px");
+        $('.control-catch').css("right", baseH - 30 + "px");
     })();
 
 
@@ -243,11 +263,17 @@ $(function () {
     var start_event = isMobile() ? "touchstart" : "mousedown";
     var end_event = isMobile() ? "touchend" : "mouseup";
 
-    $(".control-coin").off("click").on("click", function () {
-        lobby.game.play();
+    $(".controls .main").off("click").on("click", function () {
+        var text = $(this).text();
+        if(text === "开始游戏"){
+            lobby.game.play();
+        } else if (text === "预约排队"){
+            lobby.game.play();
+        }
+        //todo disable btn
     });
 
-    $(".control-camera").off("click").on("click", function(){
+    $(".control-camera").off("click").on("click", function () {
         lobby.game.player.switchCamera();
     });
 
@@ -279,4 +305,70 @@ $(function () {
     $("body").on(end_event, ".control-catch", function () {
         lobby.game.catch()
     });
+
+    function showMessage(mainText, subText, cb) {
+        $(".top-layer").show();
+        $(".top-layer .message-box").html(mainText);
+        $(".top-layer .confirm").html(subText);
+
+        $(".top-layer .confirm").off("click").on("click", function () {
+            cb && cb();
+            $(".top-layer").hide();
+        })
+    }
+
+    function updateViews() {
+        if (lobby.game) {
+            $(".lobby").hide();
+            $(".game").show();
+
+
+            //control logic
+            var idx = lobby.game.queue.indexOf(lobby.game.account);
+            if (lobby.game.playing !== account) {
+                //not yet in play
+                $(".controls-game").hide();
+                $(".controls").show();
+
+                if (lobby.game.queue.length === 0 && !lobby.game.playing) {
+                    //no people in queue, starts directly
+                    $(".controls .main .content").text("开始游戏");
+                    $(".controls .info").text("");
+                } else {
+                    //people in queue
+                    var queuelength = lobby.game.playing ? 1 : 0;
+                    if (idx !== -1) {
+                        queuelength += idx;
+                        //i am already in queue
+                        $(".controls .main .content").text("已预约");
+                        //todo disable button
+                    } else {
+                        queuelength += lobby.game.queue.length;
+                        $(".controls .main .content").text("预约排队");
+                    }
+                    $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
+                }
+
+            } else {
+                //playing
+                $(".controls-game").show();
+                $(".controls").hide();
+            }
+
+            $(".banner-container .users").remove();
+
+            if(lobby.game.playing){
+                $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+            }
+            if(lobby.game.queue.length > 0){
+                for( var i = 0; i < lobby.game.queue.length; i++){
+                    $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+                }
+            }
+
+        } else {
+            $(".lobby").show();
+            $(".game").hide();
+        }
+    }
 });
