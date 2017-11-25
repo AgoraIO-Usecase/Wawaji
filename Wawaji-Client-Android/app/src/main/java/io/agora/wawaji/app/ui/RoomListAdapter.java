@@ -1,4 +1,4 @@
-package io.agora.wawaji.app.model;
+package io.agora.wawaji.app.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,20 +15,18 @@ import io.agora.wawaji.app.R;
  * Created by beryl on 2017/10/20.
  */
 
-public class RomListAdapter extends RecyclerView.Adapter<RomListAdapter.MyViewHolder> {
+public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyViewHolder> {
 
     protected final LayoutInflater mInflater;
     private Wawaji[] wawajiArr;
     private onClickButtonInterface onClickButtonInterface;
 
-    public RomListAdapter(Context context , Wawaji[] wawajiArr ,onClickButtonInterface clickButtonInterface){
+    public RoomListAdapter(Context context, Wawaji[] wawajiArr, onClickButtonInterface clickButtonInterface) {
         mInflater = ((Activity) context).getLayoutInflater();
         this.wawajiArr = wawajiArr;
         this.onClickButtonInterface = clickButtonInterface;
 
     }
-
-
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
@@ -39,7 +37,7 @@ public class RomListAdapter extends RecyclerView.Adapter<RomListAdapter.MyViewHo
             @Override
             public void onClick(View v) {
                 if (onClickButtonInterface != null)
-                    onClickButtonInterface.onItemClickListerner(position);
+                    onClickButtonInterface.onItemClickListener(position);
             }
         });
 
@@ -52,15 +50,14 @@ public class RomListAdapter extends RecyclerView.Adapter<RomListAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return wawajiArr.length ;
+        return wawajiArr.length;
     }
 
-    //Override onCreateViewHolder function，return ViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = mInflater.inflate(R.layout.room_item_layout,parent, false);
-        MyViewHolder holder= new MyViewHolder(view);
+        View view = mInflater.inflate(R.layout.room_item_layout, parent, false);
+        MyViewHolder holder = new MyViewHolder(view);
 
         return holder;
     }
@@ -78,9 +75,8 @@ public class RomListAdapter extends RecyclerView.Adapter<RomListAdapter.MyViewHo
 
     }
 
-    public interface onClickButtonInterface{
-        void onItemClickListerner(int position);
-
+    public interface onClickButtonInterface {
+        void onItemClickListener(int position);
     }
 
 }

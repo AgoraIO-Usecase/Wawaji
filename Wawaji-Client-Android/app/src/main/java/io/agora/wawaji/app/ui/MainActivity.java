@@ -7,23 +7,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-
 import io.agora.common.Constant;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
-import io.agora.wawaji.app.model.RomListAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MainActivity extends BaseActivity implements AGEventHandler ,RomListAdapter.onClickButtonInterface {
+import java.io.Serializable;
+
+public class MainActivity extends BaseActivity implements AGEventHandler ,RoomListAdapter.onClickButtonInterface {
     private final static Logger log = LoggerFactory.getLogger(MainActivity.class);
     private RecyclerView recyclerView;
-    private RomListAdapter romListAdapter;
+    private RoomListAdapter roomListAdapter;
     private Wawaji[] wawajiArr;
 
     @Override
@@ -46,15 +44,14 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RomLis
 
 
     }
-    private void refreshRoomView(){
-        if (romListAdapter == null){
-            romListAdapter = new RomListAdapter(this , wawajiArr ,this);
-            //notifyDataSetChanged Prevent picture flicker
-            romListAdapter.setHasStableIds(true);
-            recyclerView.setAdapter(romListAdapter);
-
-        }else {
-            romListAdapter.notifyDataSetChanged();
+    private void refreshRoomView() {
+        if (roomListAdapter == null) {
+            roomListAdapter = new RoomListAdapter(this, wawajiArr, this);
+            // notifyDataSetChanged Prevent picture flicker
+            roomListAdapter.setHasStableIds(true);
+            recyclerView.setAdapter(roomListAdapter);
+        } else {
+            roomListAdapter.notifyDataSetChanged();
         }
     }
 
@@ -83,30 +80,10 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RomLis
     }
 
     public void onRoomBtnClicked(final int position) {
-        // show dialog to choose role
-     /*   AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.msg_choose_role);
-        builder.setNegativeButton(R.string.label_audience, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(position ,Constants.CLIENT_ROLE_AUDIENCE);
-            }
-        });
-        builder.setPositiveButton(R.string.label_broadcaster, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(position ,Constants.CLIENT_ROLE_BROADCASTER);
-            }
-        });
-        AlertDialog dialog = builder.create();
-
-        dialog.show();*/
         forwardToLiveRoom(position ,Constants.CLIENT_ROLE_AUDIENCE);
     }
 
-
     public void forwardToLiveRoom(int position ,int cRole) {
-
         Intent i = new Intent(MainActivity.this, WawajiPlayerActivity.class);
         i.putExtra(ConstantApp.ACTION_KEY_CROLE, cRole);
         i.putExtra(ConstantApp.ACTION_KEY_ROOM_WAWAJI, (Serializable) wawajiArr[position]);
@@ -115,7 +92,7 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RomLis
     }
 
     @Override
-    public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
+    public void onUserJoined(int uid, int elapsed) {
 
     }
 
@@ -137,10 +114,9 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RomLis
             public void run() {
                 switch (msg) {
                     case Constant.APP_Wawaji_Fetch_LIST_RESULT:
-                        if (data instanceof Wawaji[]){
+                        if (data instanceof Wawaji[]) {
                             wawajiArr = (Wawaji[]) data;
                             refreshRoomView();
-
                         }
 
                         break;
@@ -165,9 +141,8 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RomLis
 
     }
 
-
     @Override
-    public void onItemClickListerner(int position) {
+    public void onItemClickListener(int position) {
         onRoomBtnClicked(position);
     }
 }

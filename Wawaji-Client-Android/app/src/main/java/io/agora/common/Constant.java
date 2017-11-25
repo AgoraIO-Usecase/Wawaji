@@ -15,9 +15,10 @@ public class Constant {
         MEDIA_SDK_VERSION = sdk;
     }
 
-    public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
-
     public static final String WAWAJI_CONTROL_CENTER = "wawaji_cc_server";
+
+    public static final int Wawaji_CAM_MAIN = 1;
+    public static final int Wawaji_CAM_SECONDARY = 2;
 
     public static final int Wawaji_Fetch_LIST      = 1;
 

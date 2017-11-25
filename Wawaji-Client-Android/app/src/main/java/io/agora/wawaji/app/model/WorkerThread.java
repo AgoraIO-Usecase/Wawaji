@@ -2,7 +2,10 @@ package io.agora.wawaji.app.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.*;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -17,6 +20,7 @@ import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
 
 import static io.agora.common.Constant.*;
@@ -139,8 +143,6 @@ public class WorkerThread extends Thread {
 
     private RtcEngine mRtcEngine;
 
-//    private WebSocketClient mWawajiCtrl;
-
     public final void joinChannel(final String channel, int uid) {
         if (Thread.currentThread() != this) {
             log.warn("joinChannel() - worker thread asynchronously " + channel + " " + (uid & 0xFFFFFFFFL));
@@ -248,13 +250,11 @@ public class WorkerThread extends Thread {
             return;
         }
 
-        mSignalSDK.messageInstantSend(machineName, 0,  "{\"type\":\"START\"}", String.valueOf(System.currentTimeMillis()));
-
+        mSignalSDK.messageInstantSend(machineName, 0, "{\"type\":\"START\"}", String.valueOf(System.currentTimeMillis()));
     }
 
-
     public final void joinSiginalChannel(String channelName) {
-        log.debug("joinSiginalChannel channelName :" + channelName );
+        log.debug("joinSiginalChannel channelName :" + channelName);
         if (Thread.currentThread() != this) {
             log.warn("joinSiginalChannel() - worker thread asynchronously");
             Message envelop = new Message();
@@ -263,14 +263,13 @@ public class WorkerThread extends Thread {
             mWorkerHandler.sendMessage(envelop);
             return;
         }
-        log.debug("joinSiginalChannel mSignalSDK :" + mSignalSDK );
+        log.debug("joinSiginalChannel mSignalSDK :" + mSignalSDK);
         mSignalSDK.channelJoin(channelName);
-
     }
 
 
     public final void leaveSiginalChannel(String channelName) {
-        log.debug("leaveSiginalChannel channelName :" + channelName );
+        log.debug("leaveSiginalChannel channelName :" + channelName);
         if (Thread.currentThread() != this) {
             log.warn("leaveSiginalChannel() - worker thread asynchronously");
             Message envelop = new Message();
@@ -279,12 +278,11 @@ public class WorkerThread extends Thread {
             mWorkerHandler.sendMessage(envelop);
             return;
         }
-        log.debug("leaveSiginalChannel mSignalSDK :" + mSignalSDK );
+        log.debug("leaveSiginalChannel mSignalSDK :" + mSignalSDK);
         mSignalSDK.channelLeave(channelName);
-
     }
 
-    public final void ctrlWawaji(String signalRoomName ,int ctrl) {
+    public final void ctrlWawaji(String signalRoomName, int ctrl) {
         if (Thread.currentThread() != this) {
             log.warn("ctrlWawaji() - worker thread asynchronously " + ctrl);
             Message envelop = new Message();
@@ -295,43 +293,42 @@ public class WorkerThread extends Thread {
             return;
         }
 
-
         switch (ctrl) {
             case Wawaji_Ctrl_PLAY:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"PLAY\"}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"PLAY\"}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_DOWN:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_DOWN_STOP:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_UP:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_UP_STOP:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_LEFT:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_LEFT_STOP:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_RIGHT:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_RIGHT_STOP:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_CATCH:
-                mSignalSDK.messageChannelSend(signalRoomName,  "{ \"type\":\"CATCH\"}", String.valueOf(System.currentTimeMillis()));
+                mSignalSDK.messageChannelSend(signalRoomName, "{ \"type\":\"CATCH\"}", String.valueOf(System.currentTimeMillis()));
                 break;
             default:
                 log.warn("Unknown ctrl " + ctrl);
                 break;
         }
-        log.warn("ctrlWawaji done " + ctrl + " "  + signalRoomName);
+        log.warn("ctrlWawaji done " + ctrl + " " + signalRoomName);
     }
 
     public final void preview(boolean start, SurfaceView view, int uid) {

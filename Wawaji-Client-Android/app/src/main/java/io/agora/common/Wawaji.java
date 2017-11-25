@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Wawaji implements Serializable{
+public class Wawaji implements Serializable {
     @SerializedName("name")
     private String name;
 
