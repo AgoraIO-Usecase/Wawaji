@@ -93,6 +93,7 @@ $(function () {
 
             this.machine = machine;
             this.account = account;
+            this.users = 0;
             game.queue = [];
             game.playing = null;
 
@@ -116,10 +117,24 @@ $(function () {
                     game.queue = attrs.queue;
                     game.playing = attrs.playing;
                 }
-
                 updateViews();
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
             };
+
+            this.channel.onChannelUserList = function(users){
+                game.users = users.length;
+                $(".banner-container .user-number").text(game.users + "人在房间");
+            }
+
+            this.channel.onChannelUserJoined = function(users){
+                game.users = game.users + 1;
+                $(".banner-container .user-number").text(game.users + "人在房间");
+            }
+
+            this.channel.onChannelUserLeave = function(users){
+                game.users = game.users - 1;
+                $(".banner-container .user-number").text(game.users + "人在房间");
+            }
 
             this.channel.onMessageChannelReceive = function (account, uid, msg) {
                 var result;
@@ -129,8 +144,8 @@ $(function () {
                     switch (data.type) {
                         case "RESULT":
                             result = data.data;
-                            if(data.player === lobby.account){
-                                if(result){
+                            if (data.player === lobby.account) {
+                                if (result) {
                                     showMessage("抓到啦！", "再来一次")
                                 } else {
                                     showMessage("好遗憾..！", "我不服")
@@ -155,7 +170,7 @@ $(function () {
             var VideoPlayer = function (eleId) {
                 var player = this;
 
-                player.socket = io({
+                player.socket = io("http://123.155.153.87:4000", {
                     query: {
                         channel: "xcapture",
                         appid: appid
@@ -164,40 +179,53 @@ $(function () {
                 player.images = [];
                 player.domId = eleId;
                 player.frame_rate = 50;
-                player.cameras = [];
+                player.cameras = null;
                 player.camera = null;
 
                 player.socket.on('connect', function () {
-                    player.socket.on('message', function (data) {
-                        console.log("message received");
-                        let arrayBufferView = new Uint8Array(data);
-                        let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-                        let urlCreator = window.URL || window.webkitURL;
-                        let imageUrl = urlCreator.createObjectURL(blob);
-                        player.images.push(imageUrl);
-                    });
+                    //getting cameras
+                    player.socket.emit("cameras", { channel: appid + "xcapture", socketid: player.socket.id }, function (result) {
+                        if(!result || !result.cameras || !result.using){
+                            if(!result.using){
+                                alert("failed to get using camera");
+                            } else {
+                                alert("failed to get camera");
+                            }
+                            return;
+                        }
 
-                    player.socket.on('disconnect', function (data) {
-                        alert("socket disconnected!");
-                    });
+                        player.cameras = result.cameras;
+                        player.camera = result.using;
+                        
+                        player.socket.on('message', function (data) {
+                            console.log("message received");
+                            let arrayBufferView = new Uint8Array(data);
+                            let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
+                            let urlCreator = window.URL || window.webkitURL;
+                            let imageUrl = urlCreator.createObjectURL(blob);
+                            player.images.push(imageUrl);
+                        });
 
-                    player.play();
+                        player.socket.on('disconnect', function (data) {
+                            alert("socket disconnected!");
+                        });
+
+                        //when done start play
+                        player.play();
+                    })
+
                 });
 
                 player.switchCamera = function () {
-                    player.socket.emit("cameras", { channel: appid + "xcapture", socketid: player.socket.id }, function (result) {
-                        var cameras = [];
-                        var channel = result.channel;
-                        var socketid = result.socketid;
-                        $.each(result.cameras, function (idx) {
-                            cameras.push(idx);
-                        });
-                        if (cameras.length === 0) {
-                            alert("no camera!")
+                    if(player.cameras && player.camera){
+                        if(player.cameras.front === player.camera){
+                            player.camera = player.cameras.back;
                         } else {
-                            player.socket.emit("switch", { socketid: socketid, camera: player.cameras[0], channel: appid + "xcapture" });
+                            player.camera = player.cameras.front;
                         }
-                    })
+                        console.log("switching to " + player.camera);
+                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: appid + "xcapture" });
+                    }
                 }
 
                 player.play = function () {
@@ -265,9 +293,9 @@ $(function () {
 
     $(".controls .main").off("click").on("click", function () {
         var text = $(this).text();
-        if(text === "开始游戏"){
+        if (text === "开始游戏") {
             lobby.game.play();
-        } else if (text === "预约排队"){
+        } else if (text === "预约排队") {
             lobby.game.play();
         }
         //todo disable btn
@@ -357,11 +385,11 @@ $(function () {
 
             $(".banner-container .users").remove();
 
-            if(lobby.game.playing){
+            if (lobby.game.playing) {
                 $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
             }
-            if(lobby.game.queue.length > 0){
-                for( var i = 0; i < lobby.game.queue.length; i++){
+            if (lobby.game.queue.length > 0) {
+                for (var i = 0; i < lobby.game.queue.length; i++) {
                     $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
                 }
             }
