@@ -126,6 +126,10 @@ h2{
     -webkit-overflow-scrolling: touch;
 }
 
+.rotation-90{
+    transform: translateX(0px) rotate(90deg);
+}
+
 .controls{
     position: absolute;
     bottom: 0;

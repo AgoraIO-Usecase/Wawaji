@@ -1,6 +1,6 @@
 $(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = "wawaji_cc_server";
+    var wawaji_control_center = "wawaji_cc_server2";
     var debug = true;
     var dbg = function () {
         if (debug) {
@@ -78,12 +78,17 @@ $(function () {
             }
 
             $(".game-room").off("click").on("click", function () {
-                var machine = $(this).attr("name");
-                if (!machine) {
+                var name = $(this).attr("name");
+                if (!name) {
                     alert("设备维护中！")
                 } else {
-                    lobby.game = new Game(machine, lobby.account);
-                    updateViews();
+                    for( var i = 0; i < lobby.machines.length; i++){
+                        if(name === lobby.machines[i].name){
+                            lobby.game = new Game(lobby.machines[i], lobby.account);
+                            updateViews();
+                            break;
+                        }
+                    }
                 }
             });
         };
@@ -97,9 +102,9 @@ $(function () {
             game.queue = [];
             game.playing = null;
 
-            this.channel = lobby.session.channelJoin("room_" + this.machine);
+            this.channel = lobby.session.channelJoin("room_" + this.machine.name);
             this.channel.onChannelJoined = function () {
-                dbg("connected to " + game.machine + "  successfully");
+                dbg("connected to " + game.machine.name + "  successfully");
             };
 
             this.channel.onChannelJoinFailed = function (ecode) {
@@ -170,12 +175,18 @@ $(function () {
             var VideoPlayer = function (eleId) {
                 var player = this;
 
-                player.socket = io("http://123.155.153.87:4000", {
+                player.socket = io(game.machine.video_host, {
                     query: {
-                        channel: "xcapture",
-                        appid: appid
+                        channel: game.machine.video_channel,
+                        appid: game.machine.video_appid,
+                        uid: "1"
                     }
                 });
+
+                if(game.machine.video_rotation === 90){
+                    $("#" + eleId).addClass("rotation-90");
+                }
+
                 player.images = [];
                 player.domId = eleId;
                 player.frame_rate = 50;
@@ -184,35 +195,35 @@ $(function () {
 
                 player.socket.on('connect', function () {
                     //getting cameras
-                    player.socket.emit("cameras", { channel: appid + "xcapture", socketid: player.socket.id }, function (result) {
-                        if(!result || !result.cameras || !result.using){
-                            if(!result.using){
-                                alert("failed to get using camera");
-                            } else {
-                                alert("failed to get camera");
-                            }
-                            return;
-                        }
+                    // player.socket.emit("cameras", { channel: appid + game.machine.video_channel, socketid: player.socket.id }, function (result) {
+                    //     if(!result || !result.cameras || !result.using){
+                    //         if(!result.using){
+                    //             alert("failed to get using camera");
+                    //         } else {
+                    //             alert("failed to get camera");
+                    //         }
+                    //         return;
+                    //     }
 
-                        player.cameras = result.cameras;
-                        player.camera = result.using;
+                    //     player.cameras = result.cameras;
+                    //     player.camera = result.using;
                         
-                        player.socket.on('message', function (data) {
-                            console.log("message received");
-                            let arrayBufferView = new Uint8Array(data);
-                            let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-                            let urlCreator = window.URL || window.webkitURL;
-                            let imageUrl = urlCreator.createObjectURL(blob);
-                            player.images.push(imageUrl);
-                        });
+                    // })
+                    player.socket.on('message', function (data) {
+                        console.log("message received");
+                        let arrayBufferView = new Uint8Array(data);
+                        let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
+                        let urlCreator = window.URL || window.webkitURL;
+                        let imageUrl = urlCreator.createObjectURL(blob);
+                        player.images.push(imageUrl);
+                    });
 
-                        player.socket.on('disconnect', function (data) {
-                            alert("socket disconnected!");
-                        });
+                    player.socket.on('disconnect', function (data) {
+                        alert("socket disconnected!");
+                    });
 
-                        //when done start play
-                        player.play();
-                    })
+                    //when done start play
+                    player.play();
 
                 });
 
@@ -224,7 +235,7 @@ $(function () {
                             player.camera = player.cameras.front;
                         }
                         console.log("switching to " + player.camera);
-                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: appid + "xcapture" });
+                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: appid + game.machine.video_channel });
                     }
                 }
 

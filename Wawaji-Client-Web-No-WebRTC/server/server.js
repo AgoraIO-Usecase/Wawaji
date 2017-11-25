@@ -10,7 +10,7 @@ const request = require('request');
 var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
 var vault = require('./modules/vault')
-var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua');
+var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
 
 app.use(express.static('public'));
 
@@ -40,9 +40,9 @@ app.use(function (req, res, next) {
 
 var profile = new ZhuaZhuaProfile();
 
-var manager = new WawajiManager("server");
+var manager = new WawajiManager("server2");
 manager.onStarted = function(){
-    manager.machines.add('machine', profile);
+    manager.machines.add('zhuazhua', profile);
 }
 
 http.listen("5000");
