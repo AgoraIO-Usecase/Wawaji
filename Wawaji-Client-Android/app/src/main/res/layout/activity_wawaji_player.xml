@@ -74,6 +74,15 @@
 
         </io.agora.ui.AGLinearLayout>
 
+        <TextView
+            android:id="@+id/play_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/top_area"
+            android:textSize="14sp"
+            android:ellipsize="middle"
+            android:textColor="@android:color/holo_green_dark" />
+
         <ImageView android:layout_width="36dp"
                    android:layout_height="68dp"
                    android:layout_centerInParent="true"
@@ -97,76 +106,92 @@
             <io.agora.ui.AGRelativeLayout
                     android:id="@+id/bottom_action_container"
                     android:layout_width="wrap_content"
-                    android:layout_height="180dp"
+                    android:layout_height="210dp"
                     android:orientation="horizontal">
 
                 <View android:layout_width="match_parent"
-                      android:layout_height="160dp"
+                      android:layout_height="210dp"
                       android:background="@color/agora_blue"
                       android:layout_alignParentBottom="true"
                       android:clickable="false" />
+                <TextView
+                    android:id="@+id/wawaji_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:background="@color/green"
+                    android:layout_centerHorizontal="true"
+                    android:padding="5dp"
+                    android:textSize="20sp"
+                    android:clickable="true"
+                    android:layout_marginTop="10dp"
+                    android:onClick="onStartBtnClicked"
+                    android:text="@string/label_incert_coins"/>
 
                 <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_left"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_centerVertical="true"
-                        android:onClick="onLeftBtnClicked" />
+                    android:id="@+id/wawaji_left_control"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_left"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="onLeftBtnClicked" />
 
                 <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:scaleType="fitCenter"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="72dp"
-                        android:layout_marginLeft="72dp"
-                        android:src="@drawable/btn_up"
-                        android:onClick="onUpBtnClicked" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginLeft="72dp"
+                    android:src="@drawable/btn_up"
+                    android:onClick="onUpBtnClicked" />
 
                 <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:scaleType="fitCenter"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginStart="72dp"
-                        android:layout_marginLeft="72dp"
-                        android:src="@drawable/btn_down"
-                        android:onClick="onDownBtnClicked" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginLeft="72dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/btn_down"
+                    android:onClick="onDownBtnClicked" />
 
                 <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_right"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="124dp"
-                        android:layout_marginLeft="124dp"
-                        android:layout_centerVertical="true"
-                        android:onClick="onRightBtnClicked" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_right"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="124dp"
+                    android:layout_marginLeft="124dp"
+                    android:layout_marginBottom="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="onRightBtnClicked" />
 
                 <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_catcher"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginEnd="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_centerVertical="true"
-                        android:onClick="onCatcherBtnClicked" />
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_catcher"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="30dp"
+                    android:layout_centerVertical="true"
+                    android:onClick="onCatcherBtnClicked" />
             </io.agora.ui.AGRelativeLayout>
 
         </LinearLayout>

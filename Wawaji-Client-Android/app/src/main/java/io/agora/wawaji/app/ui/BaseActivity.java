@@ -46,6 +46,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 } else {
                     layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
+                //yt add 20171123 temp
+                ((AGApplication) getApplication()).initWorkerThread();
                 initUIandEvent();
             }
         });
@@ -145,6 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected final MyEngineEventHandler event() {
+        log.debug("MyEngineEventHandler event :" + ((AGApplication) getApplication()).getWorkerThread());
         return ((AGApplication) getApplication()).getWorkerThread().eventHandler();
     }
 
