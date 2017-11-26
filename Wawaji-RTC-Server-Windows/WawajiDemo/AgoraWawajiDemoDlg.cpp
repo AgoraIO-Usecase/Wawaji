@@ -343,6 +343,7 @@ LRESULT CAgoraWawajiDemoDlg::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	CStringA channelKey = m_lpAgoraObject->GetDynChannelKey(strChannelName, m_lpAgoraObject->GetAppID(), m_lpAgoraObject->GetAppCert());
 
 	int uid = m_lpAgoraObject->GetSelfUID();
+
 	m_lpAgoraObject->JoinChannel(strChannelName,uid,channelKey);
     
 	return 0;

@@ -691,6 +691,14 @@ LRESULT CVideoDlg::OnEIDJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	lpAgoraObject->RemoveSEIInfo(0);
 	lpAgoraObject->SetSEIInfo(lpAgoraObject->GetSelfUID(), &seiInfo);
 
+	//fix title
+	CString titleVideo;
+	GetWindowText(titleVideo);
+	CString newTitle;
+	newTitle.Format(_T("[uid: %d] %s"), lpData->uid, titleVideo);
+	SetWindowText(newTitle);
+	Invalidate();
+
 	delete lpData;
 
 	return 0;
