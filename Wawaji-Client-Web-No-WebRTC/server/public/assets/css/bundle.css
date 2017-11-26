@@ -20,6 +20,9 @@ body{
     font-size: 14px;
 }
 
+body { -webkit-touch-callout: none !important; }
+a { -webkit-user-select: none !important; }
+
 .lobby{
     background-image: url('../images/bg.png');
     height: 100%;

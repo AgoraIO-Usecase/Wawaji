@@ -2,15 +2,7 @@ var Signal = require('../vendor/signal.js');
 var vault = require('./vault');
 var SignalingToken = require('./token');
 const WebSocket = require('ws');
-
-const WawajiStatus = {
-    INITIAL: 0,
-    INITIALIZING: 1,
-    WAITING: 2,
-    READY: 3,
-    BUSY: 4,
-    RESULT: 6
-}
+const WawajiStatus = require('./constants').WawajiStatus;
 
 var debug = true;
 
@@ -208,24 +200,11 @@ Wawaji.Server = function (serverid) {
 
                 if (data && data.type) {
                     if (data.type === "CONTROL") {
-                        var control_data = {
-                            type: 'Control',
-                            data: ''
-                        };
-                        switch (data.data) {
-                            case 'left': control_data.data = data.pressed ? 'l' : 'A'; break;
-                            case 'right': control_data.data = data.pressed ? 'r' : 'D'; break;
-                            case 'up': control_data.data = data.pressed ? 'u' : 'W'; break;
-                            case 'down': control_data.data = data.pressed ? 'd' : 'S'; break;
-                            default: break;
-                        }
-                        initWS(function () { machine.socket.send(JSON.stringify(control_data)) });
+                        initWS(function () { machine.profile.onControl(data) });
                     } else if (data.type === "CATCH") {
-                        initWS(function () { machine.socket.send(JSON.stringify({ type: 'Control', data: 'b' })) });
+                        initWS(function () { machine.profile.onCatch() });
                     } else if (data.type === "PLAY") {
-                        initWS(function () { 
-                            machine.profile.onPlay(account);
-                        });
+                        machine.play(account);
                     }
                 }
             }
@@ -246,17 +225,16 @@ Wawaji.Server = function (serverid) {
 
             if (data && data.type) {
                 if (data.type === "CONTROL") {
-                    var control_data = machine.profile.controlData(data.data);
-                    initWS(function () { machine.socket.send(JSON.stringify(control_data)) });
+                    initWS(function () { machine.profile.onControl(data) });
                 } else if (data.type === "CATCH") {
-                    initWS(function () { machine.socket.send(JSON.stringify(machine.profile.controlData(data.data))) });
+                    initWS(function () { machine.profile.onCatch() });
                 } else if (data.type === "START") {
                     //clear timer
                     if (account === machine.playing) {
                         clearTimeout(machine.prepare_timer);
                         machine.prepare_timer = null;
                         dbg(`response received from ${account}, start play!`);
-                        initWS(function () { machine.socket.send(JSON.stringify({ type: "Insert", data: "", "extra": null })) });
+                        initWS(function () { machine.profile.onPlay(account)});
                         machine.sendInfo(account, "START");
                     } else {
                         machine.sendInfo(account, "NOT_YOUR_TURN");
@@ -278,7 +256,10 @@ Wawaji.Server = function (serverid) {
             }
             if (machine.canPlay()) {
                 machine.setPlaying(account);
-                initWS(function () { machine.socket.send(JSON.stringify({ type: "Insert", data: "", "extra": null })) });
+                initWS(function () {
+                    machine.profile.onPlay(account);
+                    profile.machine.status = WawajiStatus.BUSY;
+                });
                 return true;
             } else {
                 machine.queuePlayer(account);
