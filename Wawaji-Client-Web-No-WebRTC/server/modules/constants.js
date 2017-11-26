@@ -7,6 +7,12 @@ const WawajiStatus = {
     RESULT: 6
 };
 
+const StreamMethod = {
+    IMAGES: 0,
+    JSMPEG: 1
+}
+
 module.exports =  {
-    WawajiStatus: WawajiStatus
+    WawajiStatus: WawajiStatus,
+    StreamMethod: StreamMethod
 }

@@ -82,8 +82,8 @@ $(function () {
                 if (!name) {
                     alert("设备维护中！")
                 } else {
-                    for( var i = 0; i < lobby.machines.length; i++){
-                        if(name === lobby.machines[i].name){
+                    for (var i = 0; i < lobby.machines.length; i++) {
+                        if (name === lobby.machines[i].name) {
                             lobby.game = new Game(lobby.machines[i], lobby.account);
                             updateViews();
                             break;
@@ -126,17 +126,17 @@ $(function () {
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
             };
 
-            this.channel.onChannelUserList = function(users){
+            this.channel.onChannelUserList = function (users) {
                 game.users = users.length;
                 $(".banner-container .user-number").text(game.users + "人在房间");
             }
 
-            this.channel.onChannelUserJoined = function(users){
+            this.channel.onChannelUserJoined = function (users) {
                 game.users = game.users + 1;
                 $(".banner-container .user-number").text(game.users + "人在房间");
             }
 
-            this.channel.onChannelUserLeave = function(users){
+            this.channel.onChannelUserLeave = function (users) {
                 game.users = game.users - 1;
                 $(".banner-container .user-number").text(game.users + "人在房间");
             }
@@ -172,18 +172,10 @@ $(function () {
             }
 
 
-            var VideoPlayer = function (eleId) {
+            var VideoPlayer = function (eleId, method) {
                 var player = this;
 
-                player.socket = io(game.machine.video_host, {
-                    query: {
-                        channel: game.machine.video_channel,
-                        appid: game.machine.video_appid,
-                        uid: "1"
-                    }
-                });
-
-                if(game.machine.video_rotation === 90){
+                if (game.machine.video_rotation === 90) {
                     $("#" + eleId).addClass("rotation-90");
                 }
 
@@ -192,73 +184,92 @@ $(function () {
                 player.frame_rate = 50;
                 player.cameras = null;
                 player.camera = null;
+                player.method = method;
 
-                player.socket.on('connect', function () {
-                    //getting cameras
-                    // player.socket.emit("cameras", { channel: appid + game.machine.video_channel, socketid: player.socket.id }, function (result) {
-                    //     if(!result || !result.cameras || !result.using){
-                    //         if(!result.using){
-                    //             alert("failed to get using camera");
-                    //         } else {
-                    //             alert("failed to get camera");
-                    //         }
-                    //         return;
-                    //     }
 
-                    //     player.cameras = result.cameras;
-                    //     player.camera = result.using;
-                        
-                    // })
-                    player.socket.on('message', function (data) {
-                        console.log("message received");
-                        let arrayBufferView = new Uint8Array(data);
-                        let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-                        let urlCreator = window.URL || window.webkitURL;
-                        let imageUrl = urlCreator.createObjectURL(blob);
-                        player.images.push(imageUrl);
-                    });
+                if (player.method === "jsmpeg") {
+                    var canvas = document.getElementById('jsmpeg-player');
+                    var url = 'ws://123.155.153.85:8082/';
+                    var player = new JSMpeg.Player(url, {canvas: canvas});
+                } else {
 
-                    player.socket.on('disconnect', function (data) {
-                        alert("socket disconnected!");
-                    });
-
-                    //when done start play
-                    player.play();
-
-                });
-
-                player.switchCamera = function () {
-                    if(player.cameras && player.camera){
-                        if(player.cameras.front === player.camera){
-                            player.camera = player.cameras.back;
-                        } else {
-                            player.camera = player.cameras.front;
+                    player.socket = io(game.machine.video_host, {
+                        query: {
+                            channel: game.machine.video_channel,
+                            appid: game.machine.video_appid,
+                            uid: "1"
                         }
-                        console.log("switching to " + player.camera);
-                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: appid + game.machine.video_channel });
+                    });
+
+                    player.socket.on('connect', function () {
+                        //getting cameras
+                        // player.socket.emit("cameras", { channel: appid + game.machine.video_channel, socketid: player.socket.id }, function (result) {
+                        //     if(!result || !result.cameras || !result.using){
+                        //         if(!result.using){
+                        //             alert("failed to get using camera");
+                        //         } else {
+                        //             alert("failed to get camera");
+                        //         }
+                        //         return;
+                        //     }
+
+                        //     player.cameras = result.cameras;
+                        //     player.camera = result.using;
+
+                        // })
+                        player.socket.on('message', function (data) {
+                            console.log("message received");
+                            let arrayBufferView = new Uint8Array(data);
+                            let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
+                            let urlCreator = window.URL || window.webkitURL;
+                            let imageUrl = urlCreator.createObjectURL(blob);
+                            player.images.push(imageUrl);
+                        });
+
+                        player.socket.on('disconnect', function (data) {
+                            alert("socket disconnected!");
+                        });
+
+                        //when done start play
+                        player.play();
+
+                    });
+
+                    player.switchCamera = function () {
+                        if (player.cameras && player.camera) {
+                            if (player.cameras.front === player.camera) {
+                                player.camera = player.cameras.back;
+                            } else {
+                                player.camera = player.cameras.front;
+                            }
+                            console.log("switching to " + player.camera);
+                            player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: appid + game.machine.video_channel });
+                        }
+                    }
+
+                    player.play = function () {
+                        if (player.images.length > 0) {
+                            var img = document.querySelector("#" + player.domId);
+                            var imageUrl = null;
+
+                            if (player.images.length > 100) {
+                                imageUrl = player.images.pop();
+                                player.images = [];
+                            } else {
+                                imageUrl = player.images.shift();
+                            }
+
+                            if (imageUrl) {
+                                img.src = imageUrl;
+                            }
+                        }
+                        setTimeout(player.play, 1000 / player.frame_rate);
                     }
                 }
 
-                player.play = function () {
-                    if (player.images.length > 0) {
-                        var img = document.querySelector("#" + player.domId);
-                        var imageUrl = null;
 
-                        if (player.images.length > 100) {
-                            imageUrl = player.images.pop();
-                            player.images = [];
-                        } else {
-                            imageUrl = player.images.shift();
-                        }
-
-                        if (imageUrl) {
-                            img.src = imageUrl;
-                        }
-                    }
-                    setTimeout(player.play, 1000 / player.frame_rate);
-                }
             }
-            game.player = new VideoPlayer("player");
+            game.player = new VideoPlayer("player", "jsmpeg");
         }
     };
 

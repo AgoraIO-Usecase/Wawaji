@@ -3,6 +3,8 @@ var vault = require('./vault');
 var SignalingToken = require('./token');
 const WebSocket = require('ws');
 const WawajiStatus = require('./constants').WawajiStatus;
+const StreamMethod = require('./constants').StreamMethod;
+const JsmpegStream = require('./jsmpegStream');
 
 var debug = true;
 
@@ -31,9 +33,12 @@ Wawaji.Server = function (serverid) {
     \*----------------------------------------------*/
     //begin creating singal
     var signal = Signal(vault.appid);
-    var session = signal.login("wawaji_cc_" + serverid, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
+    var cc_name = "wawaji_cc_" + serverid;
+    dbg(`login as ${cc_name}`)
+    var session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
     this.uid = null;
     this.channel = null;
+    this.mode = StreamMethod.IMAGES;
 
     session.onLoginSuccess = function (uid) {
         dbg("login successful " + uid);
@@ -134,6 +139,11 @@ Wawaji.Server = function (serverid) {
         this.result = false;
         this.attributes = {queue:[], playing: null};
         this.prepare_timer = null;
+
+        if(client.mode === StreamMethod.JSMPEG){
+            this.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel);
+        }
+
 
         initWS();
 

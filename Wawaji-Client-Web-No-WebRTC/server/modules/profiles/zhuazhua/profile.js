@@ -18,6 +18,7 @@ ZhuaZhuaProfile = function(){
     this.video_host = vault.video_host;
     this.video_rotation = 90;
     this.game_timeout = null;
+    this.stream_secret = vault.stream_secret;
 
     this.onInit = function(machine){
         profile.machine = machine;
