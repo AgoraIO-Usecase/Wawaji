@@ -18,15 +18,14 @@ ZhuaZhuaProfile = function(mode){
     this.video_channel = vault.video_channel;
     this.video_host = vault.video_host;
     this.video_rotation = 90;
-    this.game_timeout = null;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
 
-    this.onInit = function(machine){
+    this.onInit = function(machine, done){
         profile.machine = machine;
         machine.socket.on('open', function open() {
             dbg("WebSocket opened");
-            profile.machine.status = WawajiStatus.READY;
+            done();
         });
 
         machine.socket.on('message', function incoming(data) {
@@ -40,10 +39,6 @@ ZhuaZhuaProfile = function(mode){
     }
 
     this.onPlay = function(account){
-        profile.game_timeout = setTimeout(function(){
-            dbg("auto catch after waiting for 30 seconds");
-            profile.onCatch();
-        }, 30000);
     }
 
     this.onControl = function(data){
@@ -63,7 +58,6 @@ ZhuaZhuaProfile = function(mode){
     }
 
     this.onCatch = function(){
-        clearTimeout(profile.game_timeout);
         var control_data = {
             type: 'Control',
             data: 'b'
@@ -72,10 +66,8 @@ ZhuaZhuaProfile = function(mode){
         profile.machine.socket.send(JSON.stringify(control_data));
 
         setTimeout(function(){
-            profile.machine.channel.messageChannelSend(JSON.stringify({type: "RESULT", data: false, player: profile.machine.playing}));
-            profile.machine.status = WawajiStatus.READY;
-            profile.machine.processQueue();
-        }, 5000);
+            profile.onResult(false);
+        }, 7000);
     }
 }
 

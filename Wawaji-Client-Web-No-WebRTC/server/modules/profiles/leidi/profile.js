@@ -18,10 +18,12 @@ LeiDiProfile = function(mode){
     this.video_channel = vault.video_channel;
     this.video_host = vault.video_host;
     this.video_rotation = 90;
-    this.game_timeout = null;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
+
+
+    this.onResult = null;
 
     this.sendMessage = function(msgObj, type){
         var id = new Date().getTime();
@@ -31,7 +33,7 @@ LeiDiProfile = function(mode){
         dbg(`sending action ${JSON.stringify(data)} ${type}`);
     }
 
-    this.onInit = function(machine, cb){
+    this.onInit = function(machine, done){
         profile.machine = machine;
         machine.socket.on('open', function open() {
             dbg("WebSocket opened");
@@ -47,10 +49,8 @@ LeiDiProfile = function(mode){
                 if(json.data.ret === 1){
                     dbg(`${action.type} action ${json.id} success`);
                     if(action.type === "ENTER"){
-                        profile.machine.status = WawajiStatus.READY;
-                        cb && cb();
+                        done();
                     } else if(action.type === "PLAY"){
-                        profile.machine.status = WawajiStatus.BUSY;
                     }
                 } else {
                     dbg(`${action.type} action ${json.id} failed`);
@@ -60,9 +60,7 @@ LeiDiProfile = function(mode){
             } else {
                 if(json.type === "message"){
                     if(json.data.result !== undefined){
-                        profile.machine.channel.messageChannelSend(JSON.stringify({type: "RESULT", data: json.data.result, player: profile.machine.playing}));
-                        profile.machine.status = WawajiStatus.READY;
-                        profile.machine.processQueue();
+                        profile.onResult && profile.onResult(json.data.result);
                     }
                 }
             }
@@ -75,11 +73,7 @@ LeiDiProfile = function(mode){
     }
 
     this.onPlay = function(account){
-        dbg("auto catch after waiting for 30 seconds");
         profile.sendMessage({"uri":"/rooms/3/start","type":"post"}, "PLAY");
-        profile.game_timeout = setTimeout(function(){
-            profile.onCatch();
-        }, 30000);
     }
 
     this.onControl = function(data){
@@ -102,8 +96,6 @@ LeiDiProfile = function(mode){
     }
 
     this.onCatch = function(){
-        clearTimeout(profile.game_timeout);
-        profile.game_timeout = null;
         var data = {
             "uri":"/rooms/3/catch","type":"post",
             "type": "post"
