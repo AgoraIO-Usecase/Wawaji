@@ -7,7 +7,6 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 const path = require('path');
 const ps = require('ps-node');
-const request = require('request');
 var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
 var vault = require('./modules/vault')

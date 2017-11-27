@@ -1,6 +1,6 @@
 $(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = "wawaji_cc_server2";
+    var wawaji_control_center = "wawaji_cc_server_agora";
     var debug = true;
     var dbg = function () {
         if (debug) {
@@ -59,7 +59,8 @@ $(function () {
                         console.log(msg);
                         break;
                     case "PREPARE":
-                        lobby.session.messageInstantSend(lobby.game.machine, JSON.stringify({ type: "START" }));
+                        console.log("receive prepare, sending start to " + lobby.game.machine.name);
+                        lobby.session.messageInstantSend(lobby.game.machine.name, JSON.stringify({ type: "START" }));
                         break;
                 }
             }
@@ -187,7 +188,7 @@ $(function () {
                 player.method = method;
 
 
-                if (player.method === "jsmpeg") {
+                if (player.method === 1) {
                     var canvas = document.getElementById('jsmpeg-player');
                     var url = 'ws://123.155.153.85:8082/';
                     var player = new JSMpeg.Player(url, {canvas: canvas});
@@ -269,11 +270,12 @@ $(function () {
 
 
             }
-            game.player = new VideoPlayer("player", "jsmpeg");
+            game.player = new VideoPlayer("player", game.machine.stream_method);
         }
     };
 
-    var account = getParameterByName("account") || randName(10);
+    var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
+    localStorage.setItem("account", account);
     var lobby = new Lobby(account, function () {
         lobby.list();
     });

@@ -5,6 +5,7 @@ const WebSocket = require('ws');
 const WawajiStatus = require('./constants').WawajiStatus;
 const StreamMethod = require('./constants').StreamMethod;
 const JsmpegStream = require('./jsmpegStream');
+const request = require('request');
 
 var debug = true;
 
@@ -38,7 +39,6 @@ Wawaji.Server = function (serverid) {
     var session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
     this.uid = null;
     this.channel = null;
-    this.mode = StreamMethod.IMAGES;
 
     session.onLoginSuccess = function (uid) {
         dbg("login successful " + uid);
@@ -99,7 +99,7 @@ Wawaji.Server = function (serverid) {
             var results = [];
             for (var i = 0; i < collection.__machines.length; i++) {
                 var machine = collection.__machines[i];
-                results.push({ name: machine.name, status: machine.status, players: machine.users, video_channel: machine.video_channel, video_host: machine.video_host, video_appid: machine.video_appid, video_rotation: machine.video_rotation });
+                results.push({ name: machine.name, status: machine.status, players: machine.users, video_channel: machine.video_channel, video_host: machine.video_host, video_appid: machine.video_appid, video_rotation: machine.video_rotation, stream_method: machine.stream_method });
             }
             return results;
         }
@@ -137,11 +137,14 @@ Wawaji.Server = function (serverid) {
         this.video_appid = profile.appid;
         this.video_rotation = profile.video_rotation;
         this.result = false;
-        this.attributes = {queue:[], playing: null};
+        this.attributes = { queue: [], playing: null };
         this.prepare_timer = null;
+        this.stream_method = profile.mode;
 
-        if(client.mode === StreamMethod.JSMPEG){
-            this.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel);
+        if (this.stream_method === StreamMethod.JSMPEG) {
+            request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
+                this.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel, body);
+            });
         }
 
 
@@ -157,7 +160,7 @@ Wawaji.Server = function (serverid) {
                 machine.socket = socket;
                 machine.status = WawajiStatus.INITIALIZING;
 
-                machine.profile.onInit(machine);
+                machine.profile.onInit(machine, cb);
             }
         }
 
@@ -244,7 +247,7 @@ Wawaji.Server = function (serverid) {
                         clearTimeout(machine.prepare_timer);
                         machine.prepare_timer = null;
                         dbg(`response received from ${account}, start play!`);
-                        initWS(function () { machine.profile.onPlay(account)});
+                        initWS(function () { machine.profile.onPlay(account) });
                         machine.sendInfo(account, "START");
                     } else {
                         machine.sendInfo(account, "NOT_YOUR_TURN");
@@ -288,13 +291,13 @@ Wawaji.Server = function (serverid) {
                     machine.sendInfo(player, "KICKED_NO_RESPONSE");
                     dbg("no response, next");
                     machine.processQueue();
-                }, 10* 1000);
+                }, 10 * 1000);
             }
         }
 
-        this.sendInfo = function(account, m){
+        this.sendInfo = function (account, m) {
             dbg("sending info " + m);
-            session.messageInstantSend(account, JSON.stringify({type: "INFO", data: m}))
+            session.messageInstantSend(account, JSON.stringify({ type: "INFO", data: m }))
         }
 
         this.canPlay = function (account) {

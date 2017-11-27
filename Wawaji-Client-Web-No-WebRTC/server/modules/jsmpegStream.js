@@ -11,7 +11,7 @@ const exec = require('child_process').exec;
 
 
 
-var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel) {
+var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel, key) {
     // Websocket Server
     var stream = this;
 
@@ -83,7 +83,7 @@ var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel
     // setTimeout(function () {
         //start record server
         var push_url = `http://123.155.153.85:${stream_port}/${secret}`
-        var script = `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -u ${push_url}`;
+        var script = `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -u ${push_url}`;
         console.log(script);
         exec(script, (error, stdout, stderr) => {
             console.log(`${stdout}`);

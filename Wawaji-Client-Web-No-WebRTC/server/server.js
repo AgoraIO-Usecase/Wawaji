@@ -11,6 +11,8 @@ var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
 var vault = require('./modules/vault')
 var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
+var LeiDiProfile = require('./modules/profiles/leidi/profile');
+var StreamMethod = require('./modules/constants').StreamMethod;
 
 app.use(express.static('public'));
 
@@ -38,11 +40,13 @@ app.use(function (req, res, next) {
     next();
 });
 
-var profile = new ZhuaZhuaProfile();
+var zhuazhua_profile = new ZhuaZhuaProfile(StreamMethod.IMAGES);
+var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
 
-var manager = new WawajiManager("server2");
+var manager = new WawajiManager("server_agora");
 manager.onStarted = function(){
-    manager.machines.add('zhuazhua', profile);
+    manager.machines.add('machine_zhuazhua', zhuazhua_profile);
+    manager.machines.add('machine_leidi', leidi_profile);
 }
 
 http.listen("5000");

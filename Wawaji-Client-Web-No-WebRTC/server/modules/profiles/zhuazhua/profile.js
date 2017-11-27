@@ -9,16 +9,18 @@ var dbg = function () {
     }
 };
 
-ZhuaZhuaProfile = function(){
+ZhuaZhuaProfile = function(mode){
     var profile = this;
     this.machine = null;
     this.appid = vault.appid;
+    this.appcert = vault.appcert;
     this.url = vault.url;
     this.video_channel = vault.video_channel;
     this.video_host = vault.video_host;
     this.video_rotation = 90;
     this.game_timeout = null;
     this.stream_secret = vault.stream_secret;
+    this.mode = mode;
 
     this.onInit = function(machine){
         profile.machine = machine;

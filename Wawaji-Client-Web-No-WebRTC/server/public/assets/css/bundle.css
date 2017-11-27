@@ -130,7 +130,7 @@ h2{
 }
 
 .rotation-90{
-    transform: translateX(0px) rotate(90deg);
+    transform: translateX(32%) rotate(90deg);
 }
 
 .controls{
