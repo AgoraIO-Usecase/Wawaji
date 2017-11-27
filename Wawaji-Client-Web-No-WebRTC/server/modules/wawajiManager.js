@@ -273,10 +273,10 @@ Wawaji.Server = function (serverid) {
                 dbg("you are already in queue");
             }
             if (machine.canPlay()) {
+                profile.machine.status = WawajiStatus.BUSY;
                 machine.setPlaying(account);
                 initWS(function () {
                     machine.profile.onPlay(account);
-                    profile.machine.status = WawajiStatus.BUSY;
                 });
                 return true;
             } else {
