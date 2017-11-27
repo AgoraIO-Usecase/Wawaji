@@ -7,6 +7,8 @@ const StreamMethod = require('./constants').StreamMethod;
 const JsmpegStream = require('./jsmpegStream');
 const request = require('request');
 
+var global_port = 8100;
+
 var debug = true;
 
 var dbg = function () {
@@ -140,10 +142,13 @@ Wawaji.Server = function (serverid) {
         this.attributes = { queue: [], playing: null };
         this.prepare_timer = null;
         this.stream_method = profile.mode;
+        this.stream_port = global_port++;
+        this.websocket_port = global_port++;
 
+        dbg("name: " + name + " stream_port:" + this.stream_port + " websocket_port:" + this.websocket_port);
         if (this.stream_method === StreamMethod.JSMPEG) {
             request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-                this.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel, body);
+                this.stream = new JsmpegStream(this.stream_port, this.websocket_port, profile.stream_secret, profile.appid, profile.video_channel, body);
             });
         }
 
