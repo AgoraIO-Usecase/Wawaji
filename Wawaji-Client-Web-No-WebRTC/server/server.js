@@ -43,10 +43,19 @@ app.use(function (req, res, next) {
 var zhuazhua_profile = new ZhuaZhuaProfile(StreamMethod.IMAGES);
 var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
 
-var manager = new WawajiManager("server_agora");
+var unique = function(s){
+    return s;
+}
+if(process.argv[2] == "dev") {
+    unique = function(s) {
+        return "dev_" + s;
+    }
+}
+
+var manager = new WawajiManager(unique("server_agora"));
 manager.onStarted = function(){
-    manager.machines.add('machine_zhuazhua', zhuazhua_profile);
-    manager.machines.add('machine_leidi', leidi_profile);
+    manager.machines.add(unique('machine_zhuazhua'), zhuazhua_profile);
+    manager.machines.add(unique('machine_leidi'), leidi_profile);
 }
 
 http.listen("5000");
