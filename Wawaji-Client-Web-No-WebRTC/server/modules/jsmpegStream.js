@@ -82,7 +82,7 @@ var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel
     // console.log('Awaiting WebSocket connections on ws://127.0.0.1:' + WEBSOCKET_PORT + '/');
     // setTimeout(function () {
         //start record server
-        var push_url = `http://123.155.153.85:${stream_port}/${secret}`
+        var push_url = `http://localhost:${stream_port}/${secret}`
         var script = `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -u ${push_url}`;
         console.log(script);
         exec(script, (error, stdout, stderr) => {

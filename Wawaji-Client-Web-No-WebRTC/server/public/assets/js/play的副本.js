@@ -186,11 +186,12 @@ $(function () {
                 player.cameras = null;
                 player.camera = null;
                 player.method = method;
+                player.autosize = false;
 
 
                 if (player.method === 1) {
                     var canvas = document.getElementById('jsmpeg-player');
-                    var url = 'ws://123.155.153.87:8082/';
+                    var url = 'ws://123.155.153.85:8082/';
                     var player = new JSMpeg.Player(url, { canvas: canvas });
                 } else {
 
@@ -215,8 +216,6 @@ $(function () {
 
                             player.cameras = result.cameras;
                             player.camera = result.using;
-
-
 
                             player.socket.on('message', function (data) {
                                 console.log("message received");

@@ -148,7 +148,7 @@ Wawaji.Server = function (serverid) {
         dbg("name: " + name + " stream_port:" + this.stream_port + " websocket_port:" + this.websocket_port);
         if (this.stream_method === StreamMethod.JSMPEG) {
             request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-                this.stream = new JsmpegStream(this.stream_port, this.websocket_port, profile.stream_secret, profile.appid, profile.video_channel, body);
+                machine.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel, body);
             });
         }
 

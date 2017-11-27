@@ -109,8 +109,8 @@ h2{
 }
 
 #video img{
-    width: 100%;
-    height: auto;
+    /* width: 100%;
+    height: auto; */
 }
 
 .wrapper{
@@ -130,7 +130,9 @@ h2{
 }
 
 .rotation-90{
-    transform: translateX(32%) rotate(90deg);
+    transform: translateX(-50%) rotate(90deg);
+    left: 50%;
+    position: absolute;
 }
 
 .controls{
