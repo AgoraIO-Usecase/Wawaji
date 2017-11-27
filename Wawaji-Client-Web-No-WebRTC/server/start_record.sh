@@ -29,8 +29,10 @@ else
     echo {\"Recording_Dir\":\"`pwd`/public/${APP_ID}${CHANNEL_NAME}\"} > ./public/${APP_ID}${CHANNEL_NAME}/cfg.json
 
     if [ -z "${CHANNEL_KEY}" ]; then
+        echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ --getVideoFrame 4 --captureInterval 0 --channelProfile 1 > ./recorder.log 2>&1 &"
         nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ --getVideoFrame 4 --captureInterval 0 --channelProfile 1 > ./recorder.log 2>&1 &
     else
+        echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --channelKey ${CHANNEL_KEY} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ --getVideoFrame 4 --captureInterval 0 --channelProfile 1 > ./recorder.log 2>&1 &"
         nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --channelKey ${CHANNEL_KEY} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ --getVideoFrame 4 --captureInterval 0 --channelProfile 1 > ./recorder.log 2>&1 &
     fi
 fi

@@ -11,79 +11,93 @@ const exec = require('child_process').exec;
 
 
 
-var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel, key) {
+var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websocket_port2, secret, appid, channel, key) {
     // Websocket Server
     var stream = this;
 
-    stream.socketServer = new WebSocket.Server({ port: websocket_port, perMessageDeflate: false });
-    stream.socketServer.connectionCount = 0;
-    stream.socketServer.on('connection', function (socket, upgradeReq) {
-        stream.socketServer.connectionCount++;
-        console.log(
-            'New WebSocket Connection: ',
-            (upgradeReq || socket.upgradeReq).socket.remoteAddress,
-            (upgradeReq || socket.upgradeReq).headers['user-agent'],
-            '(' + stream.socketServer.connectionCount + ' total)'
-        );
-        socket.on('close', function (code, message) {
-            stream.socketServer.connectionCount--;
+
+    function createSocketServer(port){
+        var socketServer = new WebSocket.Server({ port: port, perMessageDeflate: false });
+        socketServer.connectionCount = 0;
+        socketServer.on('connection', function (socket, upgradeReq) {
+            socketServer.connectionCount++;
             console.log(
-                'Disconnected WebSocket (' + stream.socketServer.connectionCount + ' total)'
+                'New WebSocket Connection: ',
+                (upgradeReq || socket.upgradeReq).socket.remoteAddress,
+                (upgradeReq || socket.upgradeReq).headers['user-agent'],
+                '(' + socketServer.connectionCount + ' total)'
             );
+            socket.on('close', function (code, message) {
+                socketServer.connectionCount--;
+                console.log(
+                    'Disconnected WebSocket (' + socketServer.connectionCount + ' total)'
+                );
+            });
         });
-    });
-    stream.socketServer.broadcast = function (data) {
-        stream.socketServer.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(data);
-            }
-        });
-    };
+        socketServer.broadcast = function (data) {
+            socketServer.clients.forEach(function each(client) {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(data);
+                }
+            });
+        };
+        return socketServer;
+    }
+    stream.socketServer1 = createSocketServer(websocket_port1);
+    stream.socketServer2 = createSocketServer(websocket_port2);
 
     // HTTP Server to accept incomming MPEG-TS Stream from ffmpeg
-    var streamServer = http.createServer(function (request, response) {
-        var params = request.url.substr(1).split('/');
-
-        if (params[0] !== secret) {
+    function createStreamServer(port, se, ws_server){
+        var streamServer = http.createServer(function (request, response) {
+            console.log("stream server created " + port)
+            var params = request.url.substr(1).split('/');
+    
+            if (params[0] !== se) {
+                console.log(
+                    'Failed Stream Connection: ' + request.socket.remoteAddress + ':' +
+                    request.socket.remotePort + ' - wrong secret.'
+                );
+                response.end();
+            }
+    
+            response.connection.setTimeout(60 * 60 * 1000);
             console.log(
-                'Failed Stream Connection: ' + request.socket.remoteAddress + ':' +
-                request.socket.remotePort + ' - wrong secret.'
+                'Stream Connected: ' +
+                request.socket.remoteAddress + ':' +
+                request.socket.remotePort
             );
-            response.end();
-        }
+            request.on('data', function (data) {
+                ws_server.broadcast(data);
+                // console.log("pushing stream..");
+                if (request.socket.recording) {
+                    request.socket.recording.write(data);
+                }
+            });
+            request.on('end', function () {
+                console.log('close');
+                if (request.socket.recording) {
+                    request.socket.recording.close();
+                }
+            });
+    
+            // Record the stream to a local file?
+            // if (RECORD_STREAM) {
+            //     var path = 'recordings/' + Date.now() + '.ts';
+            //     request.socket.recording = fs.createWriteStream(path);
+            // }
+        }).listen(port);
+    };
 
-        response.connection.setTimeout(60 * 60 * 1000);
-        console.log(
-            'Stream Connected: ' +
-            request.socket.remoteAddress + ':' +
-            request.socket.remotePort
-        );
-        request.on('data', function (data) {
-            stream.socketServer.broadcast(data);
-            if (request.socket.recording) {
-                request.socket.recording.write(data);
-            }
-        });
-        request.on('end', function () {
-            console.log('close');
-            if (request.socket.recording) {
-                request.socket.recording.close();
-            }
-        });
-
-        // Record the stream to a local file?
-        // if (RECORD_STREAM) {
-        //     var path = 'recordings/' + Date.now() + '.ts';
-        //     request.socket.recording = fs.createWriteStream(path);
-        // }
-    }).listen(stream_port);
+    createStreamServer(stream_port1, secret, stream.socketServer1);
+    createStreamServer(stream_port2, secret, stream.socketServer2);
 
     // console.log('Listening for incomming MPEG-TS Stream on http://127.0.0.1:' + STREAM_PORT + '/<secret>');
     // console.log('Awaiting WebSocket connections on ws://127.0.0.1:' + WEBSOCKET_PORT + '/');
     // setTimeout(function () {
         //start record server
-        var push_url = `http://localhost:${stream_port}/${secret}`
-        var script = `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -u ${push_url}`;
+        var push_url1 = `http://localhost:${stream_port1}/${secret}`
+        var push_url2 = `http://localhost:${stream_port2}/${secret}`
+        var script = key ? `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"}` : `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"}`;
         console.log(script);
         exec(script, (error, stdout, stderr) => {
             console.log(`${stdout}`);

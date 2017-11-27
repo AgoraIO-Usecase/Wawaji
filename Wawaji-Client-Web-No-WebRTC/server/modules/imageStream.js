@@ -1,5 +1,4 @@
 const exec = require('child_process').exec;
-const appid = require('./vault').appid;
 const path = require('path');
 const fs = require('fs');
 const Connection = require('./connection')
@@ -13,7 +12,7 @@ var dbg = function () {
     }
 };
 
-function SocketStream(io, channel, channelKey, front_camera, back_camera) {
+function SocketStream(io, appid, channel, channelKey, front_camera, back_camera) {
     var stream = this;
     this.channels = {};
     this.watchers = {};
@@ -37,7 +36,7 @@ function SocketStream(io, channel, channelKey, front_camera, back_camera) {
 
     schedule_cleanup();
 
-    var script = `bash start_record.sh -c ${channel} -i ${appid} -k ${channelKey}`;
+    var script = channelKey ? `bash start_record.sh -c ${channel} -i ${appid} -k ${channelKey}` : `bash start_record.sh -c ${channel} -i ${appid}`;
     this.folderPath = path.join(__dirname, `../public/${appid}${channel}`);
     dbg(`executing script ${script}`);
     exec(script, (error, stdout, stderr) => {

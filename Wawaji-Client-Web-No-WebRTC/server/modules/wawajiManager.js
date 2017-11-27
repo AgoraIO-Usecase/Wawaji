@@ -5,6 +5,7 @@ const WebSocket = require('ws');
 const WawajiStatus = require('./constants').WawajiStatus;
 const StreamMethod = require('./constants').StreamMethod;
 const JsmpegStream = require('./jsmpegStream');
+const ImageStream = require('./imageStream');
 const request = require('request');
 
 var global_port = 8100;
@@ -21,7 +22,7 @@ var dbg = function () {
 
 Wawaji = {};
 
-Wawaji.Server = function (serverid) {
+Wawaji.Server = function (serverid, io) {
     //utils
     var client = this;
 
@@ -64,7 +65,7 @@ Wawaji.Server = function (serverid) {
         if (data.type !== undefined) {
             switch (data.type) {
                 case "LIST":
-                    response = { type: "LIST", machines: client.machines }
+                    response = { type: "LIST", machines: client.machines.toJSON() }
                     session.messageInstantSend(account, JSON.stringify(response));
                     break;
                 case "PLAY":
@@ -99,6 +100,7 @@ Wawaji.Server = function (serverid) {
 
         this.toJSON = function () {
             var results = [];
+            dbg(`toJSON ${collection.__machines.length} machines`);
             for (var i = 0; i < collection.__machines.length; i++) {
                 var machine = collection.__machines[i];
                 results.push({ name: machine.name, status: machine.status, players: machine.users, video_channel: machine.video_channel, video_host: machine.video_host, video_appid: machine.video_appid, video_rotation: machine.video_rotation, stream_method: machine.stream_method });
@@ -139,17 +141,28 @@ Wawaji.Server = function (serverid) {
         this.video_appid = profile.appid;
         this.video_rotation = profile.video_rotation;
         this.result = false;
-        this.attributes = { queue: [], playing: null };
         this.prepare_timer = null;
         this.stream_method = profile.mode;
-        this.stream_port = global_port++;
-        this.websocket_port = global_port++;
+        this.stream_port1 = global_port++;
+        this.stream_port2 = global_port++;
+        this.websocket_port1 = global_port++;
+        this.websocket_port2 = global_port++;
+        this.attributes = { queue: [], playing: null, cameras: {front: this.websocket_port1, back: this.websocket_port2} };
 
-        dbg("name: " + name + " stream_port:" + this.stream_port + " websocket_port:" + this.websocket_port);
+
+        dbg(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
         if (this.stream_method === StreamMethod.JSMPEG) {
-            request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-                machine.stream = new JsmpegStream(8081, 8082, profile.stream_secret, profile.appid, profile.video_channel, body);
-            });
+            if(profile.appcert){
+                request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
+                    machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body);
+                });
+            } else {
+                machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel);
+            }
+        } else {
+            if(!profile.video_host){
+                machine.stream = new ImageStream(io, profile.appid, profile.video_channel, null, "1", "2");
+            }
         }
 
 

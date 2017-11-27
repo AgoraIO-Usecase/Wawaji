@@ -113,15 +113,21 @@ $(function () {
             };
 
             this.channel.onChannelAttrUpdated = function (type, k, v) {
-                if (k === "attrs" && type === "update") {
-                    var attrs = JSON.parse(v) || {};
-                    game.queue = attrs.queue;
-                    game.playing = attrs.playing;
+                var attrs = {}
+                if (k === "attrs" && (type === "update" || type === "set")) {
+                    attrs = JSON.parse(v) || {};
                 }
-                if (v === "update" && type === "attrs") {
-                    var attrs = JSON.parse(k) || {};
-                    game.queue = attrs.queue;
-                    game.playing = attrs.playing;
+                if ((v === "update" || v === "set") && type === "attrs") {
+                    attrs = JSON.parse(k) || {};
+                }
+                game.queue = attrs.queue || [];
+                game.playing = attrs.playing;
+
+                if(game.player.method === 1 && !game.player.cameras){
+                    //camera update for jsmpeg player
+                    game.player.cameras = attrs.cameras || {};
+                    game.player.camera = game.player.camera || game.player.cameras.front;
+                    game.player.renderCanvas();
                 }
                 updateViews();
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
@@ -186,12 +192,62 @@ $(function () {
                 player.cameras = null;
                 player.camera = null;
                 player.method = method;
+                player.player = null;
+                player.player2 = null;
+                player.slow_switch = parseInt(getParameterByName("slow_switch")) === 1;
 
 
                 if (player.method === 1) {
-                    var canvas = document.getElementById('jsmpeg-player');
-                    var url = 'ws://123.155.153.87:8082/';
-                    var player = new JSMpeg.Player(url, { canvas: canvas });
+                    player.renderCanvas = function (force) {
+                        if (player.method !== 1) {
+                            //only allowed for jsmpeg
+                            return;
+                        }
+
+                        if(player.slow_switch){
+                            var canvas = document.getElementById('jsmpeg-player');
+                            var url = 'ws://123.155.153.85:' + player.camera;
+    
+                            if (!player.player) {
+                                player.player = new JSMpeg.Player(url, { canvas: canvas });
+                            } else if (force) {
+                                player.player.destroy();
+                                player.player = null;
+                                player.player = new JSMpeg.Player(url, { canvas: canvas });
+                            }
+                        } else {
+                            var canvas1 = document.getElementById('jsmpeg-player');
+                            var canvas2 = document.getElementById('jsmpeg-player2');
+                            var url1 = 'ws://123.155.153.85:' + player.cameras.front;
+                            var url2 = 'ws://123.155.153.85:' + player.cameras.back;
+    
+                            if (!player.player) {
+                                player.player = new JSMpeg.Player(url1, { canvas: canvas1 });
+                                player.player2 = new JSMpeg.Player(url2, { canvas: canvas2 });
+                            } else if (force) {
+                                if(player.camera === player.cameras.front){
+                                    $("#jsmpeg-player").show();
+                                    $("#jsmpeg-player2").hide();
+                                } else {
+                                    $("#jsmpeg-player2").show();
+                                    $("#jsmpeg-player").hide();
+                                }
+                            }
+                        }
+
+                    }
+                    player.switchCamera = function () {
+                        if (player.cameras && player.camera) {
+                            if (player.cameras.front === player.camera) {
+                                player.camera = player.cameras.back;
+                            } else {
+                                player.camera = player.cameras.front;
+                            }
+                            console.log("switching to " + player.camera);
+
+                        }
+                        player.renderCanvas(true);
+                    }
                 } else {
 
                     player.socket = io(game.machine.video_host, {
@@ -239,6 +295,7 @@ $(function () {
 
                     });
 
+
                     player.switchCamera = function () {
                         if (player.cameras && player.camera) {
                             if (player.cameras.front === player.camera) {
@@ -247,8 +304,9 @@ $(function () {
                                 player.camera = player.cameras.front;
                             }
                             console.log("switching to " + player.camera);
-                            player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: game.machine.video_appid + game.machine.video_channel });
+
                         }
+                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: game.machine.video_appid + game.machine.video_channel });
                     }
 
                     player.play = function () {
