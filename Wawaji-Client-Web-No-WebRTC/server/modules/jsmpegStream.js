@@ -52,7 +52,7 @@ var JsMpegStream = function (stream_port, websocket_port, secret, appid, channel
             response.end();
         }
 
-        response.connection.setTimeout(1000);
+        response.connection.setTimeout(60 * 60 * 1000);
         console.log(
             'Stream Connected: ' +
             request.socket.remoteAddress + ':' +
