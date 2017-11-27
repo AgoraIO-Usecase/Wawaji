@@ -41,12 +41,12 @@ app.use(function (req, res, next) {
 
 var manager = new WawajiManager("server");
 manager.onStarted = function(){
-    manager.machines.add('machine1', 'ws://test.azusasoft.com:4015/play/TestSecret4');
+    manager.machines.add('machine1', vault.machine);
 }
 
 
 request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${vault.appid}&sign=${vault.appcert}&channelname=${"xcapture"}`, function(err, response, body){
-    var stream = new SocketStream(io, "xcapture", body);
+    var stream = new SocketStream(io, "xcapture", body, "1", "2");
 });
 
 http.listen("4000");

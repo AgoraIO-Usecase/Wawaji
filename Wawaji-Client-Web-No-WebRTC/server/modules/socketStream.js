@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Connection = require('./connection')
 
-var debug = false;
+var debug = true;
 var dbg = function () {
     if (debug) {
         var x = [];
@@ -13,11 +13,11 @@ var dbg = function () {
     }
 };
 
-function SocketStream(io, channel, channelKey) {
+function SocketStream(io, channel, channelKey, front_camera, back_camera) {
     var stream = this;
     this.channels = {};
     this.watchers = {};
-    this.uids = {};
+    this.cameras = {front: front_camera, back: back_camera};
 
     dbg(`channel ${channel} connected ${channelKey}`);
     function schedule_cleanup() {
@@ -55,55 +55,57 @@ function SocketStream(io, channel, channelKey) {
         connect_ts = connect_ts.getTime();
 
         var query = socket.request._query;
-        var conn = new Connection(socket, query.channel, query.appid, query.uid);
+        var conn = new Connection(socket, query.channel, query.appid, stream.cameras.front);
         var channelId = conn.getChannelId();
-        var conns = stream.channels[channelId] || [];
-        conns.push(conn);
-        stream.channels[channelId] = conns;
-        dbg(`channel joined, this channel has ${conns.length} users`);
+        stream.channels[channelId] = stream.channels[channelId] || [];
+        stream.channels[channelId].push(conn);
+        dbg(`channel joined, this channel has ${stream.channels[channelId].length} users`);
         conn.imageFolderPath = stream.folderPath;
         dbg(`image folder ${conn.imageFolderPath}`);
         startMonitoring(conn);
 
         socket.on('disconnect', function (reason) {
-            var existing_connection = conn;
-            var all_connections = conns;
+            var sid = socket.id;
+            dbg(`socket disconneted ${sid}`);
+            var all_connections = stream.channels[channelId];
             var left_connections = all_connections.filter(function (connection) {
-                return connection !== existing_connection;
+                return connection.socketid !== sid;
             });
 
-            stream.channels[existing_connection.getChannelId()] = left_connections;
+            stream.channels[channelId] = left_connections;
         });
 
         socket.on('cameras', function(data, cb){
             var channel = data.channel;
             var socketid = data.socketid;
-            var avaialbleCameras = Object.assign({}, stream.uids[channel]);
             var connections = stream.channels[channel];
             var connection = null;
 
-            console.log(JSON.stringify(avaialbleCameras));
             for(var i = 0; i < connections.length; i++){
-                console.log(`${connections[i].socketid} : ${socketid}`);
                 if(connections[i].socketid === socketid){
-                    console.log("match found");
                     connection = connections[i];
                     break;
                 }
             }
-            connection && delete avaialbleCameras[connection.uid];
-            cb({channel: channel, socketid: socketid, cameras: avaialbleCameras});
+
+            if(connection){
+                dbg(`using ${connection.uid}, ${connection}`)
+                cb({cameras: {front: stream.cameras.front, back: stream.cameras.back}, using: connection.uid});
+            } else {
+                cb(null);
+            }
+
         });
 
         socket.on('switch', function(data){
             var channel = data.channel;
-            var uid = data.camera;
+            var camera = data.camera;
             var socketid = data.socketid;
-            dbg(`switch to uid ${uid}`);
+            dbg(`switch to uid ${camera}`);
             var connections = stream.channels[channel];
             for(var i = 0; i < connections.length; i++){
                 if(connections[i].socketid === socketid){
-                    connections[i].uid = uid;
+                    connections[i].uid = camera;
                 }
             }
         });
@@ -133,10 +135,7 @@ function SocketStream(io, channel, channelKey) {
                     connections[i].uid = uid;
                 }
             }
-            //record
-            stream.uids[channelId] = stream.uids[channelId] || {};
-            stream.uids[channelId][uid] = true;
-            dbg(`uid status for channel ${channelId}, ${stream.uids[channelId]}`)
+            // dbg(`uid status for channel ${channelId}, ${stream.uids[channelId]}`)
             return uid;
         }
 
@@ -146,7 +145,7 @@ function SocketStream(io, channel, channelKey) {
                 // dbg(`imageFolderPath ${ifolder}`);
                 return;
             }
-            dbg(`sending image ${filename}`)
+            // dbg(`sending image ${filename}`)
             fs.readFile(path.join(connections[0].imageFolderPath, `./${filename}`), (err, data) => {
                 if (err || data.length === 0) {
                     // dbg("error converting image");
@@ -156,7 +155,7 @@ function SocketStream(io, channel, channelKey) {
                 var uid = parseUid(channelId, filename);
 
                 for (var i = 0; i < connections.length; i++) {
-                    dbg(`parsed uid: ${uid}, connection id: ${connections[i].uid}`);
+                    // dbg(`socketid: ${connections[i].socketid}`);
                     if(uid === connections[i].uid){
                         connections[i].socket.send(data);
                     }

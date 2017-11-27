@@ -10,7 +10,7 @@
 
 @interface PlayViewController : UIViewController
 
-@property (assign, nonatomic) BOOL player;
-@property (copy, nonatomic) NSString *channel;
+@property (copy, nonatomic) NSString *account;
+@property (copy, nonatomic) NSString *machine;
 
 @end

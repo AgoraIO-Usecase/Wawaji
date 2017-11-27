@@ -2,32 +2,26 @@ package io.agora.wawaji.app.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.*;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import io.agora.AgoraAPIOnlySignal;
-import io.agora.common.Constant;
 import io.agora.common.TokenUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.R;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CountDownLatch;
 
 import static io.agora.common.Constant.*;
 
@@ -48,9 +42,15 @@ public class WorkerThread extends Thread {
 
     private static final int ACTION_WORKER_WAWAJI_FETCH = 0X2015;
 
-    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2016;
+//    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2016;
 
     private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2017;
+
+    private static final int ACTION_WORKER_WAWAJI_START = 0X2018;
+
+    private static final int ACTION_WORKER_WAWAJI_JOINCHANNEL = 0X2019;
+
+    private static final int ACTION_WORKER_WAWAJI_LEAVECHANNEL = 0X2020;
 
     private static final class WorkerThreadHandler extends Handler {
 
@@ -94,12 +94,19 @@ public class WorkerThread extends Thread {
                 case ACTION_WORKER_WAWAJI_FETCH:
                     mWorkerThread.fetchWawaji();
                     break;
-                case ACTION_WORKER_WAWAJI_PREPARE:
-                    mWorkerThread.prepareWawaji();
-                    break;
                 case ACTION_WORKER_WAWAJI_CTRL:
-                    mWorkerThread.ctrlWawaji(msg.arg1);
+                    mWorkerThread.ctrlWawaji((String) msg.obj, msg.arg1);
                     break;
+                case ACTION_WORKER_WAWAJI_JOINCHANNEL:
+                    mWorkerThread.joinSiginalChannel((String) msg.obj);
+                    break;
+                case ACTION_WORKER_WAWAJI_LEAVECHANNEL:
+                    mWorkerThread.leaveChannel((String) msg.obj);
+                    break;
+                case ACTION_WORKER_WAWAJI_START:
+                    mWorkerThread.startWawaji((String) msg.obj);
+                    break;
+
             }
         }
     }
@@ -135,8 +142,6 @@ public class WorkerThread extends Thread {
     }
 
     private RtcEngine mRtcEngine;
-
-    private WebSocketClient mWawajiCtrl;
 
     public final void joinChannel(final String channel, int uid) {
         if (Thread.currentThread() != this) {
@@ -180,11 +185,6 @@ public class WorkerThread extends Thread {
             mSignalSDK.channelLeave(mEngineConfig.mChannel);
         }
 
-        if (mWawajiCtrl != null) {
-            mWawajiCtrl.close();
-            mWawajiCtrl = null;
-        }
-
         int clientRole = mEngineConfig.mClientRole;
         mEngineConfig.reset();
         log.debug("leaveChannel " + channel + " " + clientRole);
@@ -218,7 +218,6 @@ public class WorkerThread extends Thread {
 
         if (cRole == Constants.CLIENT_ROLE_BROADCASTER) {
             mRtcEngine.setExternalVideoSource(true, false, true);
-//        mRtcEngine.useExternalAudioDevice();
             mRtcEngine.muteLocalVideoStream(true);
             mRtcEngine.muteLocalAudioStream(true);
 
@@ -241,126 +240,95 @@ public class WorkerThread extends Thread {
         mSignalSDK.messageInstantSend(WAWAJI_CONTROL_CENTER, 0, "{ \"type\": \"LIST\" }", String.valueOf(System.currentTimeMillis()));
     }
 
-    private CountDownLatch mConnectLatch;
-    private CountDownLatch mReadyLatch;
-
-    public final void prepareWawaji() {
+    public final void startWawaji(String machineName) {
         if (Thread.currentThread() != this) {
-            log.warn("prepareWawaji() - worker thread asynchronously");
+            log.warn("startWawaji() - worker thread asynchronously");
             Message envelop = new Message();
-            envelop.what = ACTION_WORKER_WAWAJI_PREPARE;
+            envelop.obj = machineName;
+            envelop.what = ACTION_WORKER_WAWAJI_START;
             mWorkerHandler.sendMessage(envelop);
             return;
         }
 
-        URI uri;
-        try {
-            uri = new URI(Constant.WAWAJI_SERVER_URL);
-        } catch (URISyntaxException e) {
-            log.error(Log.getStackTraceString(e));
-            return;
-        }
-
-        mConnectLatch = new CountDownLatch(1);
-        mReadyLatch = new CountDownLatch(1);
-
-        mWawajiCtrl = new WebSocketClient(uri) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                log.debug("onOpen " + serverHandshake);
-                mWawajiCtrl.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
-                mConnectLatch.countDown();
-            }
-
-            @Override
-            public void onMessage(String message) {
-                log.debug("onMessage " + message);
-
-                JsonParser parser = new JsonParser();
-                JsonElement jElem = parser.parse(message);
-                JsonObject obj = jElem.getAsJsonObject();
-                jElem = obj.get("type");
-
-                String type = jElem.getAsString();
-                if ("Ready".equals(type)) {
-                    mReadyLatch.countDown();
-                } else if ("Time".equals(type)) {
-                    jElem = obj.get("data");
-                    int timeout = jElem.getAsInt();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_TIMEOUT, timeout);
-                } else if ("Result".equals(type)) {
-                    jElem = obj.get("data");
-                    boolean gotone = jElem.getAsBoolean();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, gotone);
-                }
-            }
-
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                log.debug("onClose " + i + " " + s + " " + b);
-                WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_FORCED_LOGOUT, s);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                log.error("onError " + Log.getStackTraceString(e));
-            }
-        };
-
-        mWawajiCtrl.connect();
-
-        try {
-            mConnectLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        log.debug("prepareWawaji " + " " + mEngineConfig.mVideoProfile + " " + mWawajiCtrl + " " + mConnectLatch.getCount());
+        mSignalSDK.messageInstantSend(machineName, 0, "{\"type\":\"START\"}", String.valueOf(System.currentTimeMillis()));
     }
 
-    public final void ctrlWawaji(int ctrl) {
+    public final void joinSiginalChannel(String channelName) {
+        log.debug("joinSiginalChannel channelName :" + channelName);
+        if (Thread.currentThread() != this) {
+            log.warn("joinSiginalChannel() - worker thread asynchronously");
+            Message envelop = new Message();
+            envelop.obj = channelName;
+            envelop.what = ACTION_WORKER_WAWAJI_JOINCHANNEL;
+            mWorkerHandler.sendMessage(envelop);
+            return;
+        }
+        log.debug("joinSiginalChannel mSignalSDK :" + mSignalSDK);
+        mSignalSDK.channelJoin(channelName);
+    }
+
+
+    public final void leaveSiginalChannel(String channelName) {
+        log.debug("leaveSiginalChannel channelName :" + channelName);
+        if (Thread.currentThread() != this) {
+            log.warn("leaveSiginalChannel() - worker thread asynchronously");
+            Message envelop = new Message();
+            envelop.obj = channelName;
+            envelop.what = ACTION_WORKER_WAWAJI_LEAVECHANNEL;
+            mWorkerHandler.sendMessage(envelop);
+            return;
+        }
+        log.debug("leaveSiginalChannel mSignalSDK :" + mSignalSDK);
+        mSignalSDK.channelLeave(channelName);
+    }
+
+    public final void ctrlWawaji(String signalRoomName, int ctrl) {
         if (Thread.currentThread() != this) {
             log.warn("ctrlWawaji() - worker thread asynchronously " + ctrl);
             Message envelop = new Message();
             envelop.what = ACTION_WORKER_WAWAJI_CTRL;
             envelop.arg1 = ctrl;
+            envelop.obj = signalRoomName;
             mWorkerHandler.sendMessage(envelop);
             return;
         }
 
-        if (mReadyLatch.getCount() > 0) {
-            try {
-                mReadyLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         switch (ctrl) {
-            case Wawaji_Ctrl_START:
-                mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":\"\",\"extra\":123456}");
+            case Wawaji_Ctrl_PLAY:
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"PLAY\"}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_DOWN:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"d\"}");
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                break;
+            case Wawaji_Ctrl_DOWN_STOP:
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"down\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_UP:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"u\"}");
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                break;
+            case Wawaji_Ctrl_UP_STOP:
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"up\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_LEFT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"l\"}");
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                break;
+            case Wawaji_Ctrl_LEFT_STOP:
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"left\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_RIGHT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"r\"}");
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":true}", String.valueOf(System.currentTimeMillis()));
+                break;
+            case Wawaji_Ctrl_RIGHT_STOP:
+                mSignalSDK.messageChannelSend(signalRoomName, "{\"type\":\"CONTROL\",\"data\":\"right\",\"pressed\":false}", String.valueOf(System.currentTimeMillis()));
                 break;
             case Wawaji_Ctrl_CATCH:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"b\"}");
+                mSignalSDK.messageChannelSend(signalRoomName, "{ \"type\":\"CATCH\"}", String.valueOf(System.currentTimeMillis()));
                 break;
             default:
                 log.warn("Unknown ctrl " + ctrl);
                 break;
         }
-
-        log.warn("ctrlWawaji done " + ctrl + " " + mReadyLatch.getCount());
+        log.warn("ctrlWawaji done " + ctrl + " " + signalRoomName);
     }
 
     public final void preview(boolean start, SurfaceView view, int uid) {
@@ -423,6 +391,7 @@ public class WorkerThread extends Thread {
 
         mSignalSDK.callbackSet(mEngineEventHandler.mSignalingEventHandler);
         String identification = "p1_" + getDeviceID(mContext) + "_a" + BuildConfig.APPLICATION_ID + "_v" + BuildConfig.VERSION_NAME;
+        log.debug("ensureSignalingSDKReadyLock mEngineConfig.mUid :" + mEngineConfig.mUid);
 
         long expiredTime = System.currentTimeMillis() / 1000 + 3600;
         String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);

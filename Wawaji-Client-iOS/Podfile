@@ -1,3 +1,0 @@
-target 'Wawaji-Client-iOS' do
-    pod "SocketRocket"
-end

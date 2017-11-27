@@ -50,13 +50,7 @@ public class MyEngineEventHandler {
 
         @Override
         public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
-            log.debug("onFirstRemoteVideoDecoded " + (uid & 0xFFFFFFFFL) + width + " " + height + " " + elapsed);
-
-            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
-            while (it.hasNext()) {
-                AGEventHandler handler = it.next();
-                handler.onFirstRemoteVideoDecoded(uid, width, height, elapsed);
-            }
+            log.debug("onFirstRemoteVideoDecoded " + (uid & 0xFFFFFFFFL) + " " + width + " " + height + " " + elapsed);
         }
 
         @Override
@@ -66,6 +60,11 @@ public class MyEngineEventHandler {
 
         @Override
         public void onUserJoined(int uid, int elapsed) {
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onUserJoined(uid, elapsed);
+            }
         }
 
         @Override
@@ -130,7 +129,6 @@ public class MyEngineEventHandler {
         @Override
         public void onLoginSuccess(int uid, int fd) {
             log.debug("onLoginSuccess " + uid + " " + (uid & 0xFFFFFFFFL) + " " + fd);
-
         }
 
         @Override
@@ -149,12 +147,37 @@ public class MyEngineEventHandler {
 
         @Override
         public void onLog(String txt) {
-            log.debug("onLog " + txt);
+//            log.debug("onLog " + txt);
         }
 
         @Override
         public void onChannelUserJoined(String account, int uid) {
 
+        }
+
+        @Override
+        public void onChannelJoined(String channelID) {
+            log.debug("onChannelJoined " + channelID + "  ");
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onChannelJoined(channelID);
+            }
+        }
+
+        @Override
+        public void onChannelJoinFailed(String channelID, int ecode) {
+            log.debug("onChannelJoinFailed " + channelID + "  " + channelID);
+        }
+
+        @Override
+        public void onChannelAttrUpdated(String channelID, String name, String value, String type) {
+
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onChannelAttrUpdated(channelID, name, value, type);
+            }
         }
 
         @Override
@@ -182,7 +205,13 @@ public class MyEngineEventHandler {
                 if ("LIST".equals(type)) {
                     JsonArray machines = obj.getAsJsonArray("machines");
                     Wawaji[] wawajis = JsonUtil.getGson().fromJson(machines, Wawaji[].class);
-                    notifyAppLayer(Constant.APP_Wawaji_Fetch_LIST_RESULT, (Object) wawajis);
+                    notifyAppLayer(Constant.APP_Wawaji_Fetch_LIST_RESULT, wawajis); // list
+                }
+            } else {
+                Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+                while (it.hasNext()) {
+                    AGEventHandler handler = it.next();
+                    handler.onMessageInstantReceive(account, uid, msg);
                 }
             }
         }
