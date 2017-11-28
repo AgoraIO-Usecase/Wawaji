@@ -144,6 +144,7 @@ Wawaji.Server = function (serverid, io) {
         this.result = false;
         this.prepare_timer = null;
         this.game_timer = null;
+        this.result_timer = null;
         this.stream_method = profile.mode;
         this.stream_port1 = global_port++;
         this.stream_port2 = global_port++;
@@ -347,6 +348,10 @@ Wawaji.Server = function (serverid, io) {
             machine.setStatus(WawajiStatus.BUSY);
             clearTimeout(machine.game_timer);
             machine.game_timer = null;
+            machine.result_timer = setTimeout(function(){
+                //machine not returning result, we force return a result then
+                machine.onResult(false);
+            }, 20 * 1000);
             initWS(function () { machine.profile.onCatch() });
         }
 
@@ -388,6 +393,8 @@ Wawaji.Server = function (serverid, io) {
         }
 
         profile.onResult = function (result) {
+            clearTimeout(machine.result_timer);
+            machine.result_timer = null;
             machine.channel.messageChannelSend(JSON.stringify({ type: "RESULT", data: result, player: machine.playing }));
             machine.setStatus(WawajiStatus.WAITING);
             machine.processQueue();

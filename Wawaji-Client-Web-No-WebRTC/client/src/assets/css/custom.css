@@ -144,12 +144,12 @@ h2{
     top: 10px;
 }
 
-.controls .btn{
+.controls .agora-button{
     display: flex;
     flex: 1;
 }
 
-.controls .btn.main{
+.controls .agora-button.main{
     flex: 2;
 }
 

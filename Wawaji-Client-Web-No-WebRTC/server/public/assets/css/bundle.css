@@ -151,12 +151,12 @@ h2{
     top: 10px;
 }
 
-.controls .btn{
+.controls .agora-button{
     display: flex;
     flex: 1;
 }
 
-.controls .btn.main{
+.controls .agora-button.main{
     flex: 2;
 }
 
@@ -184,7 +184,7 @@ h2{
     text-align: center;
 }
 
-.controls .main:active:focus {
+.controls .main:active{
     background-image: url("../images/game_main_down.png");
     background-position: 50% 55%;
 }
