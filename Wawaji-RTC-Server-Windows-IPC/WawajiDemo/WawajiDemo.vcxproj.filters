@@ -94,15 +94,6 @@
     <ClCompile Include="FileIO.cpp">
       <Filter>ExternalCapture\Common</Filter>
     </ClCompile>
-    <ClCompile Include="RTSPSession.cpp">
-      <Filter>ExternalCapture\RTSP</Filter>
-    </ClCompile>
-    <ClCompile Include="RTSPSessionManager.cpp">
-      <Filter>ExternalCapture\RTSP</Filter>
-    </ClCompile>
-    <ClCompile Include="SDKManager.cpp">
-      <Filter>ExternalCapture\RTSP</Filter>
-    </ClCompile>
     <ClCompile Include="BufferQueue.cpp">
       <Filter>ExternalCapture\Buffer</Filter>
     </ClCompile>
@@ -221,15 +212,6 @@
     </ClInclude>
     <ClInclude Include="FileIO.h">
       <Filter>ExternalCapture\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="RTSPSession.h">
-      <Filter>ExternalCapture\RTSP</Filter>
-    </ClInclude>
-    <ClInclude Include="RTSPSessionManager.h">
-      <Filter>ExternalCapture\RTSP</Filter>
-    </ClInclude>
-    <ClInclude Include="SDKManager.h">
-      <Filter>ExternalCapture\RTSP</Filter>
     </ClInclude>
     <ClInclude Include="BufferQueue.h">
       <Filter>ExternalCapture\Buffer</Filter>

@@ -118,13 +118,12 @@ void CDeviceDlg::videoExternCapture(BOOL bEnable /*= ture*/)
 
 	if (bEnable){
 
-		//m_rtspManager.startRTSP(cs2s(rtspURL));
 		m_rtspEx.startRtsp(cs2s(rtspURL));
 		CAgoraObject::GetAgoraObject()->EnableExtendVideoCapture(TRUE, &m_exCapVideoFrameObserver);
 	}
 	else{
 
-		m_rtspManager.stopRTSP();
+		m_rtspEx.stopRtsp();
 		CAgoraObject::GetAgoraObject()->EnableExtendVideoCapture(FALSE, nullptr);
 	}
 }

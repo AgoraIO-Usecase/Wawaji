@@ -140,10 +140,7 @@
     <ClInclude Include="LanguageSet.h" />
     <ClInclude Include="LogoDlg.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="RTSPSession.h" />
     <ClInclude Include="RtspSessionEx.h" />
-    <ClInclude Include="RTSPSessionManager.h" />
-    <ClInclude Include="SDKManager.h" />
     <ClInclude Include="SEIDlg.h" />
     <ClInclude Include="SetupDlg.h" />
     <ClInclude Include="stdafx.h" />
@@ -181,10 +178,7 @@
     <ClCompile Include="HttpOperator.cpp" />
     <ClCompile Include="LanguageSet.cpp" />
     <ClCompile Include="LogoDlg.cpp" />
-    <ClCompile Include="RTSPSession.cpp" />
     <ClCompile Include="RtspSessionEx.cpp" />
-    <ClCompile Include="RTSPSessionManager.cpp" />
-    <ClCompile Include="SDKManager.cpp" />
     <ClCompile Include="SEIDlg.cpp" />
     <ClCompile Include="SetupDlg.cpp" />
     <ClCompile Include="stdafx.cpp">

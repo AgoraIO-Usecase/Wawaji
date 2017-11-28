@@ -12,7 +12,6 @@
 #include "afxwin.h"
 
 #include "ExtendVideoFrameObserver.h"
-#include "RTSPSessionManager.h"
 #include "RtspSessionEx.h"
 // CDeviceDlg ¶Ô»°¿ò
 
@@ -87,6 +86,5 @@ private:
 	CAgoraCameraManager		m_agCamera;
 
 	CExtendVideoFrameObserver	m_exCapVideoFrameObserver;
-	CRTSPSessionManager m_rtspManager;
 	CRtspSessionEx m_rtspEx;
 };
