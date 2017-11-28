@@ -21,12 +21,12 @@ var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websoc
         socketServer.connectionCount = 0;
         socketServer.on('connection', function (socket, upgradeReq) {
             socketServer.connectionCount++;
-            console.log(
-                'New WebSocket Connection: ',
-                (upgradeReq || socket.upgradeReq).socket.remoteAddress,
-                (upgradeReq || socket.upgradeReq).headers['user-agent'],
-                '(' + socketServer.connectionCount + ' total)'
-            );
+            // console.log(
+            //     'New WebSocket Connection: ',
+            //     (upgradeReq || socket.upgradeReq).socket.remoteAddress,
+            //     (upgradeReq || socket.upgradeReq).headers['user-agent'],
+            //     '(' + socketServer.connectionCount + ' total)'
+            // );
             socket.on('close', function (code, message) {
                 socketServer.connectionCount--;
                 console.log(
@@ -61,11 +61,11 @@ var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websoc
             }
     
             response.connection.setTimeout(60 * 60 * 1000);
-            console.log(
-                'Stream Connected: ' +
-                request.socket.remoteAddress + ':' +
-                request.socket.remotePort
-            );
+            // console.log(
+            //     'Stream Connected: ' +
+            //     request.socket.remoteAddress + ':' +
+            //     request.socket.remotePort
+            // );
             request.on('data', function (data) {
                 ws_server.broadcast(data);
                 // console.log("pushing stream..");

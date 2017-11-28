@@ -24,6 +24,7 @@ LeiDiProfile = function(mode){
 
 
     this.onResult = null;
+    this.onError = null;
 
     this.sendMessage = function(msgObj, type){
         var id = new Date().getTime();
@@ -54,6 +55,7 @@ LeiDiProfile = function(mode){
                     }
                 } else {
                     dbg(`${action.type} action ${json.id} failed`);
+                    profile.onError && profile.onError();
                 }
     
                 delete profile[json.id];
@@ -65,11 +67,6 @@ LeiDiProfile = function(mode){
                 }
             }
         });
-
-        machine.socket.onclose = function (e) {
-            dbg("WebSocket closed for " + machine.name);
-            machine.socket = null;
-        }
     }
 
     this.onPlay = function(account){

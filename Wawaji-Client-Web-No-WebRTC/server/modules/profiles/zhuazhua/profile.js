@@ -31,11 +31,6 @@ ZhuaZhuaProfile = function(mode){
         machine.socket.on('message', function incoming(data) {
             dbg(machine.name + " WebSocket receive: " + data);
         });
-
-        machine.socket.onclose = function (e) {
-            dbg("WebSocket closed for " + machine.name);
-            machine.socket = null;
-        }
     }
 
     this.onPlay = function(account){

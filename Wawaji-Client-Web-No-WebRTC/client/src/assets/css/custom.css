@@ -177,7 +177,7 @@ h2{
     text-align: center;
 }
 
-.controls .main:active:focus {
+.controls .main:active{
     background-image: url("../images/game_main_down.png");
     background-position: 50% 55%;
 }

@@ -62,6 +62,9 @@ $(function () {
                     case "INFO":
                         console.log(msg);
                         break;
+                    case "ERROR":
+                        alert("错误");
+                        break;
                     case "PREPARE":
                         console.log("receive prepare, sending start to " + lobby.game.machine.name);
                         lobby.session.messageInstantSend(lobby.game.machine.name, JSON.stringify({ type: "START" }));
@@ -89,6 +92,7 @@ $(function () {
             };
 
             this.channel.onChannelAttrUpdated = function (type, k, v) {
+                dbg(`type: ${type}, k: ${k}, v: ${v}`);
                 var attrs = {}
                 if (k === "attrs" && (type === "update" || type === "set")) {
                     attrs = JSON.parse(v) || {};
@@ -145,7 +149,7 @@ $(function () {
             };
 
             this.play = function () {
-                game.channel.messageChannelSend(JSON.stringify({ "type": "PLAY" }));
+                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name}));
             }
             this.control = function (data, pressed) {
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": data, "pressed": pressed }));

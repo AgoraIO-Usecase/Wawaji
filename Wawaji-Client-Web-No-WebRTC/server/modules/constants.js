@@ -3,7 +3,8 @@ const WawajiStatus = {
     INITIALIZING: 1,
     WAITING: 2,
     READY: 3,
-    BUSY: 4,
+    PLAY: 4,
+    BUSY: 5,
     RESULT: 6
 };
 
