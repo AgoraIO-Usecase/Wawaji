@@ -7,6 +7,7 @@ const StreamMethod = require('./constants').StreamMethod;
 const JsmpegStream = require('./jsmpegStream');
 const ImageStream = require('./imageStream');
 const request = require('request');
+const Utils = require('./utils');
 
 var global_port = 8100;
 
@@ -42,6 +43,8 @@ Wawaji.Server = function (serverid, io) {
     this.session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
     this.uid = null;
     this.channel = null;
+    this.ipaddress = Utils.getIp();
+
 
     this.session.onLoginSuccess = function (uid) {
         dbg("login successful " + uid);
@@ -443,7 +446,7 @@ Wawaji.Server = function (serverid, io) {
         }
 
         this.updateAttrs = function () {
-            var attrs = { queue: machine.queue || [], playing: machine.playing || null, cameras: { front: machine.websocket_port1, back: machine.websocket_port2 } };
+            var attrs = { queue: machine.queue || [], playing: machine.playing || null, cameras: { front: `ws://${client.ipaddress}:${machine.websocket_port1}`, back: `ws://${client.ipaddress}:${machine.websocket_port2}`} };
 
             dbg(`[DEBUG] update attributes ${JSON.stringify(attrs)}`);
             machine.channel && machine.channel.channelSetAttr("attrs", JSON.stringify(attrs));

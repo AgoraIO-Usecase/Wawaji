@@ -48,17 +48,17 @@ var test_profile = new TestProfile(StreamMethod.JSMPEG);
 // var test = new TestProfile(StreamMethod.IMAGES);
 
 var unique = function(s){
-    return s;
+    return s + (process.argv[2] ? "_" + process.argv[2] :  "");
 }
 
 var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
-    manager.machines.add(unique('machine_zhuazhua'), zhuazhua_profile);
+    manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
     manager.machines.add(unique('machine_leidi'), leidi_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }
 
-var port = 4000;
+var port = process.argv[3] || 4000;
 console.log(`listening on port ${port}`)
 http.listen(port);

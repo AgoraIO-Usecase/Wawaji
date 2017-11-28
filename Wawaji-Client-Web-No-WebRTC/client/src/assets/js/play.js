@@ -1,6 +1,6 @@
 $(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = "wawaji_cc_server_agora";
+    var wawaji_control_center = Vault.cc_server;
     var debug = true;
     var dbg = function () {
         if (debug) {
@@ -186,7 +186,7 @@ $(function () {
 
                         if(player.slow_switch){
                             var canvas = document.getElementById('jsmpeg-player');
-                            var url = 'ws://123.155.153.87:' + player.camera;
+                            var url = player.camera;
     
                             if (!player.player) {
                                 player.player = new JSMpeg.Player(url, { canvas: canvas });
@@ -198,8 +198,8 @@ $(function () {
                         } else {
                             var canvas1 = document.getElementById('jsmpeg-player');
                             var canvas2 = document.getElementById('jsmpeg-player2');
-                            var url1 = 'ws://123.155.153.87:' + player.cameras.front;
-                            var url2 = 'ws://123.155.153.87:' + player.cameras.back;
+                            var url1 = player.cameras.front;
+                            var url2 = player.cameras.back;
     
                             if (!player.player) {
                                 player.player = new JSMpeg.Player(url1, { canvas: canvas1 });

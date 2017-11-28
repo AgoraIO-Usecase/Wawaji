@@ -95,9 +95,10 @@ var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websoc
     // console.log('Awaiting WebSocket connections on ws://127.0.0.1:' + WEBSOCKET_PORT + '/');
     // setTimeout(function () {
         //start record server
+        var rand_uid = Math.floor(Math.random() * 100000);
         var push_url1 = `http://localhost:${stream_port1}/${secret}`
         var push_url2 = `http://localhost:${stream_port2}/${secret}`
-        var script = key ? `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"}` : `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"}`;
+        var script = key ? `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}` : `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}`;
         console.log(script);
         exec(script, (error, stdout, stderr) => {
             console.log(`${stdout}`);

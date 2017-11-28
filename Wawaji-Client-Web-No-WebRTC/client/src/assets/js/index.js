@@ -1,6 +1,6 @@
 $(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = "wawaji_cc_server_agora";
+    var wawaji_control_center = Vault.cc_server;
     var debug = true;
     var dbg = function () {
         if (debug) {
