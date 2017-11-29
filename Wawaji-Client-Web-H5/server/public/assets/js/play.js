@@ -1,4 +1,9 @@
 $(function () {
+    window.oncontextmenu = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+   };
     var appid = Vault.appid, appcert = Vault.appcert;
     var wawaji_control_center = Vault.cc_server;
     var debug = true;
@@ -152,7 +157,25 @@ $(function () {
                 lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name}));
             }
             this.control = function (data, pressed) {
-                game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": data, "pressed": pressed }));
+                var action = data;
+                if(!game.player.isUsingFrontCamera()){
+                    //if is using side camera, update control
+                    switch(data){
+                        case 'left':
+                        action = 'down';
+                        break;
+                        case 'right':
+                        action = 'up';
+                        break;
+                        case 'up':
+                        action = 'left';
+                        break;
+                        case 'down':
+                        action = 'right';
+                        break;
+                    }
+                }
+                game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
             }
             this.catch = function () {
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CATCH" }));
