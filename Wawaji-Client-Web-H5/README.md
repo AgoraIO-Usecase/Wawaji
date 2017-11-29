@@ -33,6 +33,12 @@ manager.onStarted = function(){
     manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
 }
 ```
+  
+  
+*注意：项目预置的Profile需要对应的娃娃机才可以正常控制，若没有对应的娃娃机，也可以参考已有的插件撰写自己的插件*
+  
+  
+
 
 将Agora转码SDK解压后重命名为**Agora_Recording_SDK_for_Linux_FULL**与server.js置于同一目录。
 
