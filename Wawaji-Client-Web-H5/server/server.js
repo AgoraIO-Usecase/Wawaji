@@ -14,6 +14,7 @@ var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
 var LeiDiProfile = require('./modules/profiles/leidi/profile');
 var TestProfile = require('./modules/profiles/test/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
+var api  = require('./routes/api');
 
 app.use(express.static('public'));
 
@@ -53,12 +54,16 @@ var unique = function(s){
 
 var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
+    // 85
     manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
     manager.machines.add(unique('machine_zhuazhua2'), zhuazhua_profile);
+    // 87
     // manager.machines.add(unique('machine_leidi'), leidi_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }
+
+api(manager, app);
 
 var port = process.argv[3] || 4000;
 console.log(`listening on port ${port}`)

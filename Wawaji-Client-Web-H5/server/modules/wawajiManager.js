@@ -101,6 +101,11 @@ Wawaji.Server = function (serverid, io) {
             return null;
         }
 
+        this.all = function(){
+            var machines = Object.assign([], collection.__machines);
+            return machines;
+        }
+
         this.toJSON = function () {
             var results = [];
             dbg(`toJSON ${collection.__machines.length} machines`);

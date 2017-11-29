@@ -158,23 +158,23 @@ $(function () {
             }
             this.control = function (data, pressed) {
                 var action = data;
-                if(!game.player.isUsingFrontCamera()){
-                    //if is using side camera, update control
-                    switch(data){
-                        case 'left':
-                        action = 'down';
-                        break;
-                        case 'right':
-                        action = 'up';
-                        break;
-                        case 'up':
-                        action = 'left';
-                        break;
-                        case 'down':
-                        action = 'right';
-                        break;
-                    }
-                }
+                // if(!game.player.isUsingFrontCamera()){
+                //     //if is using side camera, update control
+                //     switch(data){
+                //         case 'left':
+                //         action = 'down';
+                //         break;
+                //         case 'right':
+                //         action = 'up';
+                //         break;
+                //         case 'up':
+                //         action = 'left';
+                //         break;
+                //         case 'down':
+                //         action = 'right';
+                //         break;
+                //     }
+                // }
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
             }
             this.catch = function () {
