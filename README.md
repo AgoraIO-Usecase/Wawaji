@@ -10,3 +10,5 @@
 不同平台参看项目内的 README.md 文档
 
 点击 [官网](https://www.agora.io/cn/zhuawawa/) 查看更多信息
+
+# 如需开通娃娃机测试环境，请联系 400 632 6626，或邮件 sales@agora.io 开通
