@@ -54,7 +54,8 @@ var unique = function(s){
 var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
     manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
-    manager.machines.add(unique('machine_leidi'), leidi_profile);
+    manager.machines.add(unique('machine_zhuazhua2'), zhuazhua_profile);
+    // manager.machines.add(unique('machine_leidi'), leidi_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }

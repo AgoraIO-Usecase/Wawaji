@@ -17,7 +17,7 @@ ZhuaZhuaProfile = function(mode){
     this.url = vault.url;
     this.video_channel = vault.video_channel;
     this.video_host = vault.video_host;
-    this.video_rotation = 90;
+    this.video_rotation = vault.video_rotation;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
 

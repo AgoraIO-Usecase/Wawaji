@@ -178,6 +178,10 @@ $(function () {
 
 
                 if (player.method === 1) {
+                    if (game.machine.video_rotation === 90) {
+                        $("#jsmpeg-player").addClass("rotation-90");
+                        $("#jsmpeg-player2").addClass("rotation-90");
+                    }
                     player.renderCanvas = function (force) {
                         if (player.method !== 1) {
                             //only allowed for jsmpeg
