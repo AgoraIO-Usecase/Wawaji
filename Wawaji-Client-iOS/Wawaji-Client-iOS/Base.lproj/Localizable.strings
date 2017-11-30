@@ -12,11 +12,14 @@
 "JoinChannelFailed" = "Join channel failed";
 "NoMoreCamera" = "No other connected camera";
 
-"Cion" = "投币";
-"CionAndWait" = "投币, 当前队列：%d人";
-"Waiting" = "你排在第%d位";
-"Gaming" = "游戏中";
+"RoomPeopleNumber" = "%d人在房间";
+
+"Start" = "开始抓娃娃";
+"Prebook" = "预约排队";
+"Finish" = "体验结束";
+"TryAgain" = "再来一次";
+
+"QueueInfo" = "前面还有%d个人排队";
 
 "YourTurn" = "轮到你了";
-"StartPlay" = "开始游戏（%ds）";
-"GiveUp" = "放弃";
+"StartPlay" = "开始游戏(%ds)";

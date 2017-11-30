@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WawajiInfo.h"
 
 @interface PlayViewController : UIViewController
 
 @property (copy, nonatomic) NSString *account;
-@property (copy, nonatomic) NSString *machine;
+@property (strong, nonatomic) WawajiInfo *wawaji;
 
 @end
