@@ -42,6 +42,7 @@ private:
 	CAGEdit       m_ctrAppId;
 	CAGEdit			m_ctrChannel;
     CAGEdit         m_ctrPassword;
+	CAGEdit			m_ctrUid;
     CAGButton		m_btnTest;
 	CAGButton		m_btnJoin;
 	CAGButton		m_btnSetup;
@@ -55,4 +56,10 @@ private:
 	CDeviceDlg		m_dlgDevice;
 
 	CAGComboBox		m_ctrRole;
+public:
+	CAGEdit m_edPublishWidth;
+	CAGEdit m_edPublishHeight;
+	CAGEdit m_edPublishFps;
+	CAGEdit m_edPublishBitrate;
+	CAGEdit m_edPublishRtmpUrl;
 };

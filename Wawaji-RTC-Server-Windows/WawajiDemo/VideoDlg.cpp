@@ -1246,6 +1246,14 @@ LRESULT CVideoDlg::OnEIDJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	lpAgoraObject->RemoveSEIInfo(0);
 	lpAgoraObject->SetSEIInfo(lpAgoraObject->GetSelfUID(), &seiInfo);
 
+	//fix title
+	CString titleVideo;
+	GetWindowText(titleVideo);
+	CString newTitle;
+	newTitle.Format(_T("[uid: %ld] %s"), lpData->uid, titleVideo);
+	SetWindowText(newTitle);
+	Invalidate();
+
 	delete lpData;
 
 	//使用UID作为account 登录agoraSDK Single
@@ -1316,7 +1324,7 @@ LRESULT CVideoDlg::OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam)
 		m_listWndInfo.AddTail(agvWndInfo);
 	}
 
-	RebindVideoWnd();
+	//RebindVideoWnd();
 
 	memset(&seiInfo, 0, sizeof(SEI_INFO));
 
@@ -1377,7 +1385,7 @@ LRESULT CVideoDlg::OnEIDUserOffline(WPARAM wParam, LPARAM lParam)
 	while (pos != NULL){
 		if (m_listWndInfo.GetAt(pos).nUID == lpData->uid) {
 			m_listWndInfo.RemoveAt(pos);
-			RebindVideoWnd();
+			//RebindVideoWnd();
 			break;
 		}
 
@@ -1692,6 +1700,7 @@ HWND CVideoDlg::GetRemoteVideoWnd(int nIndex)
 
 void CVideoDlg::RebindVideoWnd()
 {
+	return;
 	if (m_wndVideo[0].GetSafeHwnd() == NULL || m_wndLocal.GetSafeHwnd() == NULL)
 		return;
 

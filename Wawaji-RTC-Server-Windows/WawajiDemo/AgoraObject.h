@@ -6,21 +6,23 @@
 #include <IAgoraMediaEngine.h>
 
 #include "AGEngineEventHandler.h"
+#include "AGEventDef.h"
 
 // #define ENABLE_CODEC	1
 
 using namespace agora::rtc;
 using namespace agora::media;
 
+// 引擎标记位
 #define AG_ENGFLAG_ENNETTEST	0x00000001
 #define AG_ENGFLAG_ECHOTEST		0x00000002
 #define AG_ENGFLAG_SPKPHTEST	0x00000004
 #define AG_ENGFLAG_MICPHTEST	0x00000008
 #define AG_ENGFLAG_VIDEOTEST	0x00000010
 
-#define AG_ENGFLAG_AGCON		0x00000100
-#define AG_ENGFLAG_NSON			0x00000200
-#define AG_ENGFLAG_AECON		0x00000400
+#define AG_ENGFLAG_AGCON		0x00000100	// 自动增益
+#define AG_ENGFLAG_NSON			0x00000200	// 降噪
+#define AG_ENGFLAG_AECON		0x00000400	// 回声消除
 
 #define APP_ID				_T("YOUR APP ID")
 
@@ -97,7 +99,7 @@ public:
 
 	BOOL SetChannelProfile(BOOL bBroadcastMode);
 	BOOL IsBroadcastMode();
-
+	
 	void SetWantedRole(CLIENT_ROLE_TYPE role);
 	int  GetWnatedRole() { return m_nWantRoleType; };
 
@@ -117,7 +119,8 @@ public:
 
     BOOL SetEncryptionSecret(LPCTSTR lpKey, int nEncryptType = 0);
 
-    BOOL EnableLocalRender(BOOL bEnable);
+	BOOL EnableLocalRender(BOOL bEnable);
+	BOOL EnableLocalMirrorImage(BOOL bMirrorLocal);
 
 	BOOL EnableWebSdkInteroperability(BOOL bEnable);
 
@@ -129,7 +132,7 @@ public:
 	BOOL StopAudioMixing();
 	BOOL PauseAudioMixing();
 	BOOL ResumeAudioMixing();
-
+	
 	BOOL EnableAudio(BOOL bEnable);
 	BOOL IsAudioEnabled();
 
@@ -152,11 +155,15 @@ public:
 	void GetSelfResolution(int *nWidth, int *nHeight);
 
 	static IRtcEngine *GetEngine();
-
+	
 	static CString GetSDKVersion();
 	static CString GetSDKVersionEx();
 	static BOOL EnableWhiteboardVer(BOOL bEnable);
 	static BOOL EnableWhiteboardFeq(BOOL bEnable);
+
+	void setPublishParam(const AGE_PUBLISH_PARAM &publishparam);
+	void getPublishParam(AGE_PUBLISH_PARAM &publishParam);
+	bool enablePublish(bool enable = true);
 
 protected:
 	CAgoraObject(void);
@@ -168,7 +175,7 @@ private:
 	static	CString			m_strAppID;
 
 	CString					m_strAppCert;
-
+	
 	UINT		m_nSelfUID;
 	CString		m_strChannelName;
 	BOOL		m_bVideoEnable;
@@ -195,6 +202,8 @@ private:
 
 	int			m_nCanvasWidth;
 	int			m_nCanvasHeight;
+
+	AGE_PUBLISH_PARAM m_publishParam;
 
 	CAtlMap<UINT, SEI_INFO>	m_mapSEIInfo;
 public:

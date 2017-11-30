@@ -240,5 +240,14 @@ typedef struct _AGE_APICALL_EXECUTED
 
 #define EID_APICALL_EXECUTED					0x00000020
 
+typedef struct _AGE_PUBLISH_PARAM
+{
+	int width;
+	int height;
+	int fps;
+	int bitrate;
+	std::string rtmpUrl;
+}AGE_PUBLISH_PARAM,*PAGE_PUBLISH_PARAM,*LPAGE_PUBLISH_PARAM;
+
 
 #endif

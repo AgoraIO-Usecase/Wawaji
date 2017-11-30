@@ -647,6 +647,20 @@ BOOL CAgoraObject::EnableLocalRender(BOOL bEnable)
 	return nRet == 0 ? TRUE : FALSE;
 }
 
+BOOL CAgoraObject::EnableLocalMirrorImage(BOOL bMirrorLocal)
+{
+	int nRet = 0;
+
+	AParameter apm(*m_lpAgoraEngine);
+
+	if (bMirrorLocal)
+		nRet = apm->setParameters("{\"che.video.localViewMirrorSetting\":\"forceMirror\"}");
+	else
+		nRet = apm->setParameters("{\"che.video.localViewMirrorSetting\":\"disableMirror\"}");
+
+	return nRet == 0 ? TRUE : FALSE;
+}
+
 BOOL CAgoraObject::EnableWebSdkInteroperability(BOOL bEnable)
 {
 	RtcEngineParameters rep(*m_lpAgoraEngine);
@@ -976,4 +990,34 @@ BOOL CAgoraObject::EnableWhiteboardFeq(BOOL bEnable)
 	::RegCloseKey(hKey);
 
 	return lStatus == ERROR_SUCCESS ? TRUE : FALSE;
+}
+
+void CAgoraObject::setPublishParam(const AGE_PUBLISH_PARAM &publishparam)
+{
+	m_publishParam = publishparam;
+}
+
+void CAgoraObject::getPublishParam(AGE_PUBLISH_PARAM &publishParam)
+{
+	publishParam = m_publishParam;
+}
+
+bool CAgoraObject::enablePublish(bool enable /*= true*/)
+{
+	if (enable){
+		PublisherConfiguration publishparam;
+		publishparam.width = m_publishParam.width;
+		publishparam.height = m_publishParam.height;
+		publishparam.framerate = m_publishParam.fps;
+		publishparam.bitrate = m_publishParam.bitrate;
+		publishparam.rawStreamUrl = m_publishParam.rtmpUrl.data();
+
+		m_lpAgoraEngine->configPublisher(publishparam);
+	}
+	else
+	{
+
+	}
+
+	return true;
 }

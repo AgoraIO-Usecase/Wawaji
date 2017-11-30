@@ -34,6 +34,7 @@
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 #include <Dbt.h>
 
+#include <string>
 #define HAVE_JPEG
 #include "LanguageSet.h"
 #include "AGMessage.h"

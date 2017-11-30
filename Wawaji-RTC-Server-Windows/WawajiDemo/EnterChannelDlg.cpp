@@ -4,9 +4,8 @@
 #include "stdafx.h"
 #include "AgoraWawajiDemo.h"
 #include "EnterChannelDlg.h"
-
 #include "afxdialogex.h"
-
+#include "commonFun.h"
 
 // CEnterChannelDlg ¶Ô»°¿ò
 
@@ -20,18 +19,23 @@ CEnterChannelDlg::CEnterChannelDlg(CWnd* pParent /*=NULL*/)
 
 CEnterChannelDlg::~CEnterChannelDlg()
 {
-
 }
 
 void CEnterChannelDlg::DoDataExchange(CDataExchange* pDX)
 {
-    CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_ED_APPID, m_ctrAppId);
-    DDX_Control(pDX, IDC_EDCHNAME_CHANNEL, m_ctrChannel);
-    DDX_Control(pDX, IDC_BTNTEST_CHANNEL, m_btnTest);
-    DDX_Control(pDX, IDC_BTNJOIN_CHANNEL, m_btnJoin);
-    DDX_Control(pDX, IDC_BTNSET_CHANNEL, m_btnSetup);
-    DDX_Control(pDX, IDC_EDCHPSWD_CHANNEL, m_ctrPassword);
+	DDX_Control(pDX, IDC_EDCHNAME_CHANNEL, m_ctrChannel);
+	DDX_Control(pDX, IDC_BTNTEST_CHANNEL, m_btnTest);
+	DDX_Control(pDX, IDC_BTNJOIN_CHANNEL, m_btnJoin);
+	DDX_Control(pDX, IDC_BTNSET_CHANNEL, m_btnSetup);
+	DDX_Control(pDX, IDC_EDCHPSWD_CHANNEL, m_ctrPassword);
+	DDX_Control(pDX, IDC_EDIT_UID, m_ctrUid);
+	DDX_Control(pDX, IDC_EDIT_PUBLISH_WIDHT, m_edPublishWidth);
+	DDX_Control(pDX, IDC_EDIT_PUBLISH_HEIGHT, m_edPublishHeight);
+	DDX_Control(pDX, IDC_EDIT_PUBLISH_FPS, m_edPublishFps);
+	DDX_Control(pDX, IDC_EDIT_PUBLISH_BITRATE, m_edPublishBitrate);
+	DDX_Control(pDX, IDC_EDIT_PUBLISH_RTMPURL, m_edPublishRtmpUrl);
 }
 
 
@@ -89,24 +93,49 @@ void CEnterChannelDlg::InitCtrls()
 
 	GetClientRect(&ClientRect);
 
-	m_ctrAppId.MoveWindow(100, 33, 300, 22, TRUE);
+	m_ctrAppId.MoveWindow(160, 33, 240, 22, TRUE);
 	m_ctrAppId.SetFont(&m_ftDesc);
 	m_ctrAppId.SetCaretPos(CPoint(12, 148));
 	m_ctrAppId.ShowCaret();
-	m_ctrAppId.SetTip(_T("324f0da1e2284832a44fee5fcbec44c1"));
+	m_ctrAppId.SetTip(_T("f4637604af81440596a54254d53ade20"));
 	m_ctrAppId.SetFocus();
 	
-	m_ctrChannel.MoveWindow(100, 82, 300, 22, TRUE);
+	m_ctrChannel.MoveWindow(200, 82, 200, 22, TRUE);
     m_ctrChannel.SetFont(&m_ftDesc);
 	m_ctrChannel.SetCaretPos(CPoint(12, 148));
 	m_ctrChannel.ShowCaret();
 	m_ctrChannel.SetTip(_T("wawaji_demo")); 
 	m_ctrChannel.SetFocus();
     
-    m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
-	m_ctrPassword.SetFont(&m_ftDesc);
-	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
-	m_ctrPassword.SetFocus();
+//     m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
+// 	m_ctrPassword.SetFont(&m_ftDesc);
+// 	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
+// 	m_ctrPassword.SetFocus();
+
+	m_ctrUid.MoveWindow(120, 131, 90, 22, TRUE);
+	m_ctrUid.SetFont(&m_ftDesc);
+	m_ctrUid.SetTip(_T("1"));
+	m_ctrUid.SetFocus();
+
+	m_edPublishWidth.SetFont(&m_ftDesc);
+	m_edPublishWidth.SetTip(_T("width"));
+	m_edPublishWidth.SetFocus();
+
+	m_edPublishHeight.SetFont(&m_ftDesc);
+	m_edPublishHeight.SetTip(_T("height"));
+	m_edPublishHeight.SetFocus();
+
+	m_edPublishFps.SetFont(&m_ftDesc);
+	m_edPublishFps.SetTip(_T("fps"));
+	m_edPublishFps.SetFocus();
+
+	m_edPublishBitrate.SetFont(&m_ftDesc);
+	m_edPublishBitrate.SetTip(_T("bitrate"));
+	m_edPublishBitrate.SetFocus();
+
+	m_edPublishRtmpUrl.SetFont(&m_ftDesc);
+	m_edPublishRtmpUrl.SetTip(_T("RtmpUrl"));
+	m_edPublishRtmpUrl.SetFocus();
 
 	m_ctrRole.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE, CRect(ClientRect.Width() / 2 + 1, 168, 180, 32), this, IDC_CMBROLE_CHANNEL);
 	m_ctrRole.MoveWindow(280, 127, 130, 22, TRUE);
@@ -166,12 +195,15 @@ void CEnterChannelDlg::DrawClient(CDC *lpDC)
 	lpDC->SelectObject(&m_penFrame);
 	rcText.SetRect(rcClient.Width() / 2 - 180, 25, rcClient.Width() / 2 + 170, 57);
 	lpDC->RoundRect(&rcText, CPoint(32, 32));
+	lpDC->TextOut(rcClient.Width() / 2 - 175 ,32, _T("APPID"));
 
 	rcText.OffsetRect(0, 49);
 	lpDC->RoundRect(&rcText, CPoint(32, 32));
+	lpDC->TextOut(rcClient.Width() / 2 - 175, 81, _T("ChannelName"));
 
 	rcText.OffsetRect(0, 49);
 	lpDC->RoundRect(&rcText, CPoint(32, 32));
+	lpDC->TextOutW(rcClient.Width() /2 -175,130,_T("UID"));
 
 	lpString = LANG_STR("IDS_CHN_ROLETITLE");
 	lpDC->SetTextColor(RGB(0xD8, 0xD8, 0xD8));
@@ -234,13 +266,30 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	m_lpAgoraObject->EnableVideo(TRUE);
 	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);
 
-	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);
+	CString param;
+	m_ctrUid.GetWindowText(param);
+	m_lpAgoraObject->SetSelfUID(str2int(cs2s(param)));
 
+	AGE_PUBLISH_PARAM publishParam;
+	m_edPublishWidth.GetWindowText(param);
+	publishParam.width = str2int(cs2s(param));
+	m_edPublishHeight.GetWindowText(param);
+	publishParam.height = str2int(cs2s(param));
+	m_edPublishFps.GetWindowText(param);
+	publishParam.fps = str2int(cs2s(param));
+	m_edPublishBitrate.GetWindowText(param);
+	publishParam.bitrate = str2int(cs2s(param));
+	m_edPublishRtmpUrl.GetWindowText(param);
+	publishParam.rtmpUrl = cs2s(param);
+	CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
+	CAgoraObject::GetAgoraObject()->enablePublish(true);
+
+	//m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
+
+	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);
+	
     m_ctrChannel.GetWindowText(strChannelName);
     m_ctrPassword.GetWindowText(strKey);
-
-	//ExtCaptrue Video & Audio
-	//extCapture();
 
 	GetParent()->SendMessage(WM_JOINCHANNEL, 0, 0);
 }
