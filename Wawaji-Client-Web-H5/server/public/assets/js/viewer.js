@@ -50,7 +50,7 @@ $(function () {
             return;
         }
         $.ajax({
-            url: "http://123.155.153.85:4000/v1/machine",
+            url: "/v1/machine",
             type: "GET",
             data: {
                 appid: appid,

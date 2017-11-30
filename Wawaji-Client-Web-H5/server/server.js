@@ -12,9 +12,9 @@ var bodyParser = require('body-parser');
 var vault = require('./modules/vault')
 var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
 var LeiDiProfile = require('./modules/profiles/leidi/profile');
-var TestProfile = require('./modules/profiles/test/profile');
+var VideoProfile = require('./modules/profiles/video/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
-var api  = require('./routes/api');
+var api = require('./routes/api');
 
 app.use(express.static('public'));
 
@@ -45,27 +45,25 @@ app.use(function (req, res, next) {
 var zhuazhua_profile = new ZhuaZhuaProfile(StreamMethod.IMAGES);
 var zhuazhua2_profile = new ZhuaZhuaProfile(StreamMethod.JSMPEG);
 var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
-var test_profile = new TestProfile(StreamMethod.JSMPEG);
-// var test = new TestProfile(StreamMethod.IMAGES);
+var test_profile = new VideoProfile(StreamMethod.JSMPEG);
+// var test = new VideoProfile(StreamMethod.IMAGES);
 
 var test_profiles = [];
-for(var i = 1; i <= 10; i++){
-    test_profiles.push(new TestProfile(StreamMethod.JSMPEG, "wawaji"+i));
+for (var i = 1; i <= 10; i++) {
+    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i));
 }
 
-var unique = function(s){
-    return s + (process.argv[2] ? "_" + process.argv[2] :  "");
+var unique = function (s) {
+    return s + (process.argv[2] ? "_" + process.argv[2] : "");
 }
 
 var manager = new WawajiManager(unique("server_agora"), io);
-manager.onStarted = function(){
-    // 85
-    // manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
-    // manager.machines.add(unique('machine_zhuazhua2'), zhuazhua_profile);
-    // 87
-    for(var i = 0; i < test_profiles.length; i++){
-        manager.machines.add(unique('machine_pressure_test' + i), test_profiles[i]);
-    }
+// 85
+// manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
+// manager.machines.add(unique('machine_zhuazhua2'), zhuazhua_profile);
+// 87
+for (var i = 0; i < test_profiles.length; i++) {
+    manager.machines.add(unique('machine_pressure_test' + i), test_profiles[i]);
 }
 
 api(manager, app);

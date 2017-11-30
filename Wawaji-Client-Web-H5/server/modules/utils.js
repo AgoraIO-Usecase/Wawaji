@@ -1,5 +1,5 @@
 const os = require('os');
-
+const fs = require('fs');
 
 
 var getIp = function () {
@@ -17,6 +17,17 @@ var getIp = function () {
 }
 
 
+var getDomain = function(){
+    var domain = "";
+    try{
+        domain = fs.readFileSync('/etc/wwj_dns', 'utf8');
+    } catch(e){
+        console.log("[ERROR] Fail to read domain");
+    }
+    return domain;
+}
+
 module.exports = {
-    getIp: getIp
+    getIp: getIp,
+    getDomain: getDomain
 }
