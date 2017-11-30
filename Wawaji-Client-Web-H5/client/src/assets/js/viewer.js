@@ -57,7 +57,7 @@ $(function () {
                 channel: channel
             }
         }).done(function (machine) {
-            if (!machine) {
+            if (!machine || machine === {}) {
                 alert("no machine found");
                 return;
             }

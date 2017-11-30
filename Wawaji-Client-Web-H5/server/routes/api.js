@@ -14,7 +14,7 @@ function Api(manager, app){
 
         var machine = machines.length > 0 ? machines[0] : null;
 
-        machine = {
+        machine = machine ? {
             name: machine.name,
             video_channel: machine.video_channel,
             stream_method: machine.profile.mode === 1 ? "jsmpeg" : "image",
@@ -23,7 +23,7 @@ function Api(manager, app){
                 main: `ws://${manager.ipaddress}:${machine.websocket_port1}`, 
                 sub: `ws://${manager.ipaddress}:${machine.websocket_port2}`
             }
-        }
+        } : {};
         res.json(machine);
     });
 }

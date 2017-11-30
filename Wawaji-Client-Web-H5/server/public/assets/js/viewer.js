@@ -10,54 +10,76 @@ $(function () {
     }
 
     var machineName = getParameterByName("name");
-    var cameras = null;
-    var camera = null;
-    var player = null;
 
-    var playJSMpeg = function (url) {
 
-        var canvas = document.getElementById('jsmpeg-player');
-        if (!player) {
-            player = new JSMpeg.Player(url, { canvas: canvas });
-        } else {
-            player.destroy();
-            player = null;
-            player = new JSMpeg.Player(url, { canvas: canvas });
+    function Player() {
+        var player = this;
+        this.cameras = null;
+        this.camera = null;
+        this.player = null;
+
+
+        this.play = function (url) {
+            var canvas = document.getElementById('jsmpeg-player');
+            if (!player.player) {
+                player.player = new JSMpeg.Player(url, { canvas: canvas });
+            } else {
+                player.player.destroy();
+                player.player = null;
+                player.player = new JSMpeg.Player(url, { canvas: canvas });
+            }
+        }
+        this.switchCamera = function () {
+            if (camera === cameras.main) {
+                camera = cameras.sub;
+            } else {
+                camera = cameras.main;
+            }
+            player.play(camera);
         }
     }
 
-    $.get("/v1/machines").done(function (machines) {
-        for (var i = 0; i < machines.length; i++) {
-            var machine = null;
-            if (!machineName) {
-                machine = machines[0];
-                break;
-            } else if (machineName === machine.name) {
-                machine = machines[i];
-                break;
+    var video_player = new Player();
+
+    $(".btn[data-type='connect']").off("click").on("click", function () {
+        var appid = $("input[name='appid']").val();
+        var channel = $("input[name='channelName']").val();
+
+        if (!appid || !channel) {
+            alert("appid or channel empty");
+            return;
+        }
+        $.ajax({
+            url: "http://123.155.153.85:4000/v1/machine",
+            type: "GET",
+            data: {
+                appid: appid,
+                channel: channel
             }
-        }
+        }).done(function (machine) {
+            if (!machine || machine === {}) {
+                alert("no machine found");
+                return;
+            }
 
-        if (machine.video_rotation === 90) {
-            $("#jsmpeg-player").addClass("rotation-90");
-            $("#jsmpeg-player2").addClass("rotation-90");
-        }
+            if (machine.video_rotation === 90) {
+                $("#jsmpeg-player").addClass("rotation-90");
+                $("#jsmpeg-player2").addClass("rotation-90");
+            }
 
-        if (machine.stream_method === 0) {
-            alert("image streaming is not yet supported");
-        } else {
-            cameras = machine.cameras;
-            camera = machine.cameras.main;
-            playJSMpeg(camera);
-        }
+            if (machine.stream_method === 0) {
+                alert("image streaming is not yet supported");
+            } else {
+                cameras = machine.cameras;
+                camera = machine.cameras.main;
+                video_player.play(camera);
+            }
+        }).fail(function (e) {
+            alert("err");
+        });
     });
 
-    $(".control-camera").off("click").on("click", function(){
-        if(camera === cameras.main){
-            camera = cameras.sub;
-        } else {
-            camera = cameras.main;
-        }
-        playJSMpeg(camera);
+    $(".btn[data-type='switch']").off("click").on("click", function () {
+        video_player.switchCamera();
     });
 });
