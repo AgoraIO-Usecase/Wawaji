@@ -9,10 +9,17 @@
 #import "PlayViewController.h"
 #import "KeyCenter.h"
 #import "AlertUtil.h"
-#import "Constants.h"
 #import "NSObject+JSONString.h"
 #import <AgoraSignalKit/AgoraSignalKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
+
+typedef NS_ENUM(NSInteger, PlayStatus) {
+    PlayStatus_Initial,
+    PlayStatus_Waiting,
+    PlayStatus_Ready,
+    PlayStatus_Playing,
+    PlayStatus_Finish,
+};
 
 @interface PlayViewController () <AgoraRtcEngineDelegate>
 {
@@ -26,12 +33,24 @@
     UIAlertController *startAlertController;
     UIAlertAction *startAlertAction;
     NSTimer *timer;
-    NSUInteger countDown;
+    unsigned int countDown;
+    
+    PlayStatus status;
 }
 
+
 @property (weak, nonatomic) IBOutlet UIView *videoView;
+@property (weak, nonatomic) IBOutlet UIView *watchView;
+@property (weak, nonatomic) IBOutlet UILabel *queueLabel;
+@property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UIView *promptView;
+@property (weak, nonatomic) IBOutlet UIView *promptBackgroundView;
+@property (weak, nonatomic) IBOutlet UILabel *promptLabel;
 @property (weak, nonatomic) IBOutlet UIView *controlView;
-@property (weak, nonatomic) IBOutlet UIButton *cionButton;
+@property (weak, nonatomic) IBOutlet UIButton *fetchButton;
+@property (weak, nonatomic) IBOutlet UILabel *userNumberLabel;
+
+@property (assign, nonatomic) NSUInteger userNumber;
 
 @end
 
@@ -41,18 +60,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.navigationItem.title = self.machine;
-    
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
     
     [self loadMediaEngine];
     [self loadSignalEngine];
     [self joinSignalChannel];
+    [self queueUserNum];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
     
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [mediaEngine leaveChannel:nil];
@@ -62,15 +80,14 @@
         [signalEngine channelLeave:signalChannel];
     }
     signalEngine = nil;
+    
+    [timer invalidate];
+    timer = nil;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (IBAction)leave:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (IBAction)switchCamera:(id)sender {
@@ -100,54 +117,79 @@
     [mediaEngine setupRemoteVideo:newVideoCanvas];
 }
 
-- (IBAction)cion:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"PLAY"};
-    [self sendControlMessage:msgDic];
+- (IBAction)start:(id)sender {
+    if (status == PlayStatus_Initial) {
+        NSDictionary *msgDic = @{@"type" : @"PLAY"};
+        [self sendChannelMessage:msgDic];
+    }
+    else if (status == PlayStatus_Ready) {
+        NSDictionary *msgDic = @{@"type" : @"START"};
+        [self sendInstantMessage:msgDic];
+        
+        self.promptView.hidden = YES;
+        self.watchView.hidden = YES;
+        self.controlView.hidden = NO;
+        
+        status = PlayStatus_Playing;
+        countDown = 30;
+        NSString *title = [NSString stringWithFormat:@"(%d)", countDown];
+        [self.fetchButton setTitle:title forState:UIControlStateNormal];
+    }
+    else if (status == PlayStatus_Finish) {
+        self.promptBackgroundView.hidden = YES;
+        self.promptView.hidden = YES;
+        self.queueLabel.hidden = NO;
+        
+        NSString *startTitle = self.queueLabel.text.length > 0 ? NSLocalizedString(@"Prebook", nil) : NSLocalizedString(@"Start", nil);
+        [self.startButton setTitle:startTitle forState:UIControlStateNormal];
+        
+        status = PlayStatus_Initial;
+    }
 }
 
 - (IBAction)startUp:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"up", @"pressed" : @(YES)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)stopUp:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"up", @"pressed" : @(NO)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)startDown:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"down", @"pressed" : @(YES)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)stopDown:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"down", @"pressed" : @(NO)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)startLeft:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"left", @"pressed" : @(YES)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)stopLeft:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"left", @"pressed" : @(NO)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)startRight:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"right", @"pressed" : @(YES)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)stopRight:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CONTROL", @"data" : @"right", @"pressed" : @(NO)};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 - (IBAction)fetch:(id)sender {
     NSDictionary *msgDic = @{@"type" : @"CATCH"};
-    [self sendControlMessage:msgDic];
+    [self sendChannelMessage:msgDic];
 }
 
 // MARK: - Media Engine
@@ -162,8 +204,8 @@
     [mediaEngine muteLocalAudioStream:YES];
     [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
     
-    NSString *key = [KeyCenter generateMediaKey:kMediaChannel uid:0 expiredTime:0];
-    int result = [mediaEngine joinChannelByKey:key channelName:kMediaChannel info:nil uid:0 joinSuccess:nil];
+    NSString *key = [KeyCenter generateMediaKey:self.wawaji.videoChannel uid:0 expiredTime:0];
+    int result = [mediaEngine joinChannelByKey:key channelName:self.wawaji.videoChannel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {
         [UIApplication sharedApplication].idleTimerDisabled = YES;
     }
@@ -232,7 +274,8 @@
             NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf updateUI:dic[@"playing"] queue:dic[@"queue"]];
+                NSString *playing = dic[@"playing"] == [NSNull null] ? nil : dic[@"playing"];
+                [weakSelf updateUI:playing queue:dic[@"queue"]];
             });
         }
     };
@@ -249,103 +292,175 @@
             });
         }
     };
+    
+    signalEngine.onChannelQueryUserNumResult = ^(NSString* channelID, AgoraEcode ecode, int num) {
+        if (ecode == AgoraEcode_SUCCESS) {
+            NSLog(@"Query user num successfully, channel: %@, num: %d", channelID, num);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakSelf.userNumber = num;
+                weakSelf.userNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"RoomPeopleNumber", nil), num];
+                weakSelf.userNumberLabel.hidden = NO;
+            });
+        } else {
+            NSLog(@"Query user num failed, channel: %@, error: %lu",  channelID, (unsigned long)ecode);
+        }
+    };
+
+    signalEngine.onChannelUserJoined = ^(NSString* account, uint32_t uid) {
+        NSLog(@"onChannelUserJoined, account: %@, uid: %d", account, uid);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.userNumber = weakSelf.userNumber + 1;
+            weakSelf.userNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"RoomPeopleNumber", nil), weakSelf.userNumber];
+        });
+    };
+    
+    signalEngine.onChannelUserLeaved = ^(NSString* account, uint32_t uid) {
+        NSLog(@"onChannelUserLeaved, account: %@, uid: %d", account, uid);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.userNumber = weakSelf.userNumber - 1;
+            weakSelf.userNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"RoomPeopleNumber", nil), weakSelf.userNumber];
+        });
+    };
 }
 
 - (void)joinSignalChannel {
-    signalChannel = [NSString stringWithFormat:@"room_%@", self.machine];
+    signalChannel = [NSString stringWithFormat:@"room_%@", self.wawaji.name];
     [signalEngine channelJoin:signalChannel];
 }
 
-- (void)sendControlMessage:(NSDictionary *)msgDic {
+- (void)queueUserNum {
+    [signalEngine channelQueryUserNum:signalChannel];
+}
+
+- (void)sendChannelMessage:(NSDictionary *)msgDic {
     NSString *msgString = [msgDic JSONString];
-    NSLog(@"messageChannelSend: %@", msgString);
+    NSLog(@"sendChannelMessage: %@", msgString);
     [signalEngine messageChannelSend:signalChannel msg:msgString msgID:nil];
 }
 
+- (void)sendInstantMessage:(NSDictionary *)msgDic {
+    NSString *msgString = [msgDic JSONString];
+    NSLog(@"sendInstantMessage: %@", msgString);
+    [signalEngine messageInstantSend:self.wawaji.name uid:0 msg:msgString msgID:nil];
+}
+
 - (void)updateUI:(NSString *)playing queue:(NSArray *)queue {
-    if ([self.account isEqualToString:playing]) {
-        self.controlView.userInteractionEnabled = YES;
-        self.cionButton.enabled = NO;
-        
-        NSString *title = NSLocalizedString(@"Gaming", nil);
-        [self.cionButton setTitle:title forState:UIControlStateNormal];
+    if ([playing isEqualToString:self.account]) {
+        if (status == PlayStatus_Initial) {
+            self.watchView.hidden = YES;
+            self.controlView.hidden = NO;
+            
+            status = PlayStatus_Playing;
+            countDown = 30;
+            NSString *title = [NSString stringWithFormat:@"(%d)", countDown];
+            [self.fetchButton setTitle:title forState:UIControlStateNormal];
+            
+            timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countDownTimer) userInfo:nil repeats:YES];
+        }
+        else if (status == PlayStatus_Waiting) {
+            self.queueLabel.text = nil;
+        }
     }
     else {
-        self.controlView.userInteractionEnabled = NO;
+        if (status == PlayStatus_Playing) {
+            self.controlView.hidden = YES;
+            self.watchView.hidden = NO;
+            
+            self.promptBackgroundView.hidden = NO;
+            self.promptView.hidden = NO;
+            self.promptLabel.text = NSLocalizedString(@"Finish", nil);
+            
+            self.queueLabel.hidden = YES;
+            
+            NSString *startTitle = NSLocalizedString(@"TryAgain", nil);
+            [self.startButton setTitle:startTitle forState:UIControlStateNormal];
+
+            status = PlayStatus_Finish;
+            
+            [timer invalidate];
+            timer = nil;
+        }
+        else if (status == PlayStatus_Ready) {
+            self.promptView.hidden = YES;
+            status = PlayStatus_Initial;
+            
+            [timer invalidate];
+            timer = nil;
+        }
         
         NSUInteger index = [queue indexOfObject:self.account];
         if (index != NSNotFound) {
-            self.cionButton.enabled = NO;
+            self.queueLabel.text = [NSString stringWithFormat:NSLocalizedString(@"QueueInfo", nil), index + 1];
+            
+            if (status == PlayStatus_Initial) {
+                status = PlayStatus_Waiting;
 
-            NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Waiting", nil), index + 1];
-            [self.cionButton setTitle:title forState:UIControlStateNormal];
+                [self.startButton setTitle:NSLocalizedString(@"Start", nil) forState:UIControlStateNormal];
+                self.startButton.enabled = NO;
+            }
         }
         else {
-            self.cionButton.enabled = YES;
+            self.startButton.enabled = YES;
             
             if (queue.count > 0) {
-                NSString *title = [NSString stringWithFormat:NSLocalizedString(@"CionAndWait", nil), queue.count + 1];
-                [self.cionButton setTitle:title forState:UIControlStateNormal];
+                self.queueLabel.text = [NSString stringWithFormat:NSLocalizedString(@"QueueInfo", nil), queue.count + 1];
+                
+                if (status == PlayStatus_Initial) {
+                    [self.startButton setTitle:NSLocalizedString(@"Prebook", nil) forState:UIControlStateNormal];
+                }
             }
             else if (playing.length > 0) {
-                NSString *title = [NSString stringWithFormat:NSLocalizedString(@"CionAndWait", nil), 1];
-                [self.cionButton setTitle:title forState:UIControlStateNormal];
+                self.queueLabel.text = [NSString stringWithFormat:NSLocalizedString(@"QueueInfo", nil), 1];
+                
+                if (status == PlayStatus_Initial) {
+                    [self.startButton setTitle:NSLocalizedString(@"Prebook", nil) forState:UIControlStateNormal];
+                }
             }
             else {
-                NSString *title = NSLocalizedString(@"Cion", nil);
-                [self.cionButton setTitle:title forState:UIControlStateNormal];
+                self.queueLabel.text = nil;
+                
+                if (status == PlayStatus_Initial) {
+                    [self.startButton setTitle:NSLocalizedString(@"Start", nil) forState:UIControlStateNormal];
+                }
             }
         }
     }
 }
 
 - (void)startPlay {
+    status = PlayStatus_Ready;
+    
+    self.promptLabel.text = NSLocalizedString(@"YourTurn", nil);
+    self.promptView.hidden = NO;
+    self.startButton.enabled = YES;
+    
     countDown = 10;
-    timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countDownTimer) userInfo:nil repeats:YES];
-    
-    startAlertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:NSLocalizedString(@"YourTurn", nil)
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    
     NSString *startTitle = [NSString stringWithFormat:NSLocalizedString(@"StartPlay", nil), countDown];
-    startAlertAction = [UIAlertAction actionWithTitle:startTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [timer invalidate];
-        timer = nil;
-        startAlertController = nil;
-        startAlertAction = nil;
-
-        NSDictionary *msgDic = @{@"type" : @"START"};
-        NSString *msgString = [msgDic JSONString];
-        NSLog(@"messageInstantSend: %@", msgString);
-        [signalEngine messageInstantSend:self.machine uid:0 msg:msgString msgID:nil];
-    }];
-    [startAlertController addAction:startAlertAction];
-
-    UIAlertAction *giveUpAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"GiveUp", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        [timer invalidate];
-        timer = nil;
-        startAlertController = nil;
-        startAlertAction = nil;
-    }];
-    [startAlertController addAction:giveUpAlertAction];
-
-    [self presentViewController:startAlertController animated:YES completion:nil];
+    [self.startButton setTitle:startTitle forState:UIControlStateNormal];
+    
+    timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countDownTimer) userInfo:nil repeats:YES];
 }
 
 - (void)countDownTimer {
     countDown--;
     
     if (countDown > 0) {
-        NSString *startTitle = [NSString stringWithFormat:NSLocalizedString(@"StartPlay", nil), countDown];
-        [startAlertAction setValue:startTitle forKeyPath:@"title"];
+        if (status == PlayStatus_Ready) {
+            NSString *title = [NSString stringWithFormat:NSLocalizedString(@"StartPlay", nil), countDown];
+            [self.startButton setTitle:title forState:UIControlStateNormal];
+        }
+        else if (status == PlayStatus_Playing) {
+            NSString *title = [NSString stringWithFormat:@"(%ds)", countDown];
+            [self.fetchButton setTitle:title forState:UIControlStateNormal];
+        }
     }
     else {
+        if (status == PlayStatus_Playing) {
+            [self.fetchButton setTitle:@"(0s)" forState:UIControlStateNormal];
+        }
+        
         [timer invalidate];
         timer = nil;
-        
-        [startAlertController dismissViewControllerAnimated:YES completion:nil];
-        startAlertController = nil;
-        startAlertAction = nil;
     }
 }
 

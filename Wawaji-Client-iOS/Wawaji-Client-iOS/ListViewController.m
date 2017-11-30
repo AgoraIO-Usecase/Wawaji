@@ -11,23 +11,39 @@
 #import "NSObject+JSONString.h"
 #import "AlertUtil.h"
 #import "KeyCenter.h"
-#import "Constants.h"
+#import "WawajiInfo.h"
 #import <AgoraSignalKit/AgoraSignalKit.h>
 
-@interface ListViewController ()
+static NSString * const kControlServer = @"wawaji_cc_server_agora";
+
+@interface ListViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 {
     AgoraAPI *signalEngine;
     NSString *account;
 }
+
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (strong, nonatomic) NSArray *machines;
+
 @end
 
 @implementation ListViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self loadSignalEngine];
-    [self login];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    if (account == nil) {
+        account = [NSString stringWithFormat:@"wawaji-demo-iOS-%f", [NSDate date].timeIntervalSinceReferenceDate];
+        [self login];
+    }
+    else {
+        [self.collectionView reloadData];
+        [self getDeviceList];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -35,29 +51,56 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"playSegue"]) {
+        NSIndexPath *indexPath = self.collectionView.indexPathsForSelectedItems[0];
+        PlayViewController *vc = (PlayViewController *)segue.destinationViewController;
+        vc.account = account;
+        vc.wawaji = self.machines[indexPath.item];
+    }
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (IBAction)unwindToListView:(UIStoryboardSegue*)sender
+{
+}
+
+#pragma mark - Collection view data source
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.machines.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TableViewCell"];
-    cell.textLabel.text = self.machines[indexPath.row];
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionReusableView *reusableview = nil;
+    
+    if (kind == UICollectionElementKindSectionHeader) {
+        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
+        reusableview = headerView;
+    }
+    
+    return reusableview;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat width = (self.collectionView.frame.size.width - 24) / 2;
+    return CGSizeMake(width, width);
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionViewCell" forIndexPath:indexPath];
+    UILabel *nameLabel = [cell viewWithTag:102];
+    UIButton *statusButton = [cell viewWithTag:104];
+    
+    // Configure the cell
+    WawajiInfo *wawaji = self.machines[indexPath.item];
+    nameLabel.text = wawaji.name;
+    statusButton.selected = wawaji.isBusy;
+    
     return cell;
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"playSegue"]) {
-        PlayViewController *vc = (PlayViewController *)segue.destinationViewController;
-        vc.account = account;
-        vc.machine = self.machines[self.tableView.indexPathForSelectedRow.row];
-    }
-}
+#pragma mark -
 
 - (void)loadSignalEngine {
     __weak typeof(self) weakSelf = self;
@@ -82,9 +125,7 @@
     signalEngine.onLogout = ^(AgoraEcode ecode) {
         NSLog(@"onLogout, ecode: %lu", (unsigned long)ecode);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [AlertUtil showAlert:@"You have been logged out" completion:^{
-                [weakSelf.navigationController popToRootViewControllerAnimated:NO];
-            }];
+            [weakSelf login];
         });
     };
     
@@ -105,19 +146,22 @@
             NSArray *deviceArray = result[@"machines"];
             NSMutableArray *devices = [[NSMutableArray alloc] initWithCapacity:deviceArray.count];
             for(NSDictionary *device in deviceArray) {
-                [devices addObject:device[@"name"]];
+                WawajiInfo *wawaji = [[WawajiInfo alloc] init];
+                wawaji.name = device[@"name"];
+                wawaji.videoChannel = device[@"video_channel"];
+                wawaji.isBusy = ((NSArray *)device[@"players"]).count > 0;
+                [devices addObject:wawaji];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 weakSelf.machines = devices;
-                [weakSelf.tableView reloadData];
+                [weakSelf.collectionView reloadData];
             });
         }
     };
 }
 
 - (void)login {
-    account = [NSString stringWithFormat:@"signal-demo-iOS-%f", [NSDate date].timeIntervalSinceReferenceDate];
     [signalEngine login:[KeyCenter appId]
                 account:account
                   token:[KeyCenter generateSignalToken:account expiredTime:3600]

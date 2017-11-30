@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		70146F111FCC1E1A0055DC5D /* CALayer+LayerColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 70146F101FCC1E190055DC5D /* CALayer+LayerColor.m */; };
+		70146F171FCE65270055DC5D /* WawajiInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 70146F161FCE65270055DC5D /* WawajiInfo.m */; };
 		7056A46E1FC6987C00F1A43D /* KeyCenter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7056A46B1FC6987C00F1A43D /* KeyCenter.mm */; };
 		7056A48D1FC6A61A00F1A43D /* ListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7056A48C1FC6A61A00F1A43D /* ListViewController.m */; };
 		7056A48F1FC6AAE800F1A43D /* AgoraSignalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7056A48E1FC6AAE800F1A43D /* AgoraSignalKit.framework */; };
@@ -18,7 +20,6 @@
 		7090165F1FBD416100D18745 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7090165D1FBD416100D18745 /* LaunchScreen.storyboard */; };
 		709016621FBD416100D18745 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016611FBD416100D18745 /* main.m */; };
 		7090166A1FBD41D500D18745 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016691FBD41D500D18745 /* PlayViewController.m */; };
-		70EEB41A1FC6FADB00FBC5D9 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EEB4191FC6FADA00FBC5D9 /* Constants.m */; };
 		70F060831FBD63B1001BD148 /* AlertUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 70F060811FBD63B1001BD148 /* AlertUtil.m */; };
 		70F060851FBD67E9001BD148 /* AgoraRtcEngineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F060841FBD67E9001BD148 /* AgoraRtcEngineKit.framework */; };
 		70F060871FBD67FD001BD148 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F060861FBD67F5001BD148 /* VideoToolbox.framework */; };
@@ -29,6 +30,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		70146F0F1FCC1E190055DC5D /* CALayer+LayerColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+LayerColor.h"; sourceTree = "<group>"; };
+		70146F101FCC1E190055DC5D /* CALayer+LayerColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+LayerColor.m"; sourceTree = "<group>"; };
+		70146F151FCE65270055DC5D /* WawajiInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawajiInfo.h; sourceTree = "<group>"; };
+		70146F161FCE65270055DC5D /* WawajiInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WawajiInfo.m; sourceTree = "<group>"; };
 		7056A46B1FC6987C00F1A43D /* KeyCenter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyCenter.mm; sourceTree = "<group>"; };
 		7056A46C1FC6987C00F1A43D /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		7056A46D1FC6987C00F1A43D /* DynamicKey4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey4.h; sourceTree = "<group>"; };
@@ -48,8 +53,6 @@
 		709016611FBD416100D18745 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		709016681FBD41D500D18745 /* PlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		709016691FBD41D500D18745 /* PlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
-		70EEB4181FC6FADA00FBC5D9 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		70EEB4191FC6FADA00FBC5D9 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		70F0607B1FBD51F7001BD148 /* KeyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCenter.h; sourceTree = "<group>"; };
 		70F060811FBD63B1001BD148 /* AlertUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertUtil.m; sourceTree = "<group>"; };
 		70F060821FBD63B1001BD148 /* AlertUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertUtil.h; sourceTree = "<group>"; };
@@ -100,16 +103,18 @@
 		709016511FBD416100D18745 /* Wawaji-Client-iOS */ = {
 			isa = PBXGroup;
 			children = (
-				70EEB4181FC6FADA00FBC5D9 /* Constants.h */,
-				70EEB4191FC6FADA00FBC5D9 /* Constants.m */,
 				709016521FBD416100D18745 /* AppDelegate.h */,
 				709016531FBD416100D18745 /* AppDelegate.m */,
 				7056A48B1FC6A61A00F1A43D /* ListViewController.h */,
 				7056A48C1FC6A61A00F1A43D /* ListViewController.m */,
 				709016681FBD41D500D18745 /* PlayViewController.h */,
 				709016691FBD41D500D18745 /* PlayViewController.m */,
+				70146F151FCE65270055DC5D /* WawajiInfo.h */,
+				70146F161FCE65270055DC5D /* WawajiInfo.m */,
 				70F060821FBD63B1001BD148 /* AlertUtil.h */,
 				70F060811FBD63B1001BD148 /* AlertUtil.m */,
+				70146F0F1FCC1E190055DC5D /* CALayer+LayerColor.h */,
+				70146F101FCC1E190055DC5D /* CALayer+LayerColor.m */,
 				7056A4931FC6BD8500F1A43D /* NSObject+JSONString.h */,
 				7056A4941FC6BD8500F1A43D /* NSObject+JSONString.m */,
 				709016581FBD416100D18745 /* Main.storyboard */,
@@ -221,10 +226,11 @@
 			files = (
 				7056A46E1FC6987C00F1A43D /* KeyCenter.mm in Sources */,
 				7090166A1FBD41D500D18745 /* PlayViewController.m in Sources */,
+				70146F171FCE65270055DC5D /* WawajiInfo.m in Sources */,
 				7056A48D1FC6A61A00F1A43D /* ListViewController.m in Sources */,
-				70EEB41A1FC6FADB00FBC5D9 /* Constants.m in Sources */,
 				7056A4951FC6BD8500F1A43D /* NSObject+JSONString.m in Sources */,
 				70F060831FBD63B1001BD148 /* AlertUtil.m in Sources */,
+				70146F111FCC1E1A0055DC5D /* CALayer+LayerColor.m in Sources */,
 				709016621FBD416100D18745 /* main.m in Sources */,
 				709016541FBD416100D18745 /* AppDelegate.m in Sources */,
 			);
