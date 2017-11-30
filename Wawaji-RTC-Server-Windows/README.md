@@ -9,8 +9,9 @@
 
 在这个示例项目中包含了以下功能：
 
-- 加入频道；
-- 切换多摄像头视角
+-没有启用certId
+-修改UI,所有的应用参数全部开放给用户
+-加入publishRtmp
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "WawajiDemo/AgoraObject.h"
