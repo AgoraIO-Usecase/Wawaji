@@ -8,16 +8,12 @@
 
 #import "PlayViewController.h"
 #import "KeyCenter.h"
-#import "SocketRocket.h"
 #import "AlertUtil.h"
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocket Url#>;
-
-@interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
+@interface PlayViewController () <AgoraRtcEngineDelegate>
 {
     AgoraRtcEngineKit *mediaEngine;
-    SRWebSocket *webSocket;
     NSMutableArray *allStreamUids;
     NSUInteger currentStreamUid;
 }
@@ -32,7 +28,6 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     self.navigationItem.title = self.channel;
     
@@ -41,12 +36,7 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     
     [self loadMediaEngine];
     
-    if (self.player) {
-        [self connectWebSocket];
-    }
-    else {
-        [self.controlView removeFromSuperview];
-    }
+    NSLog(@"--- connect to Wawaji if needed ---");
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -55,10 +45,6 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [mediaEngine leaveChannel:nil];
     mediaEngine = nil;
-    
-    [webSocket close];
-    webSocket.delegate = nil;
-    webSocket = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -98,39 +84,56 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 }
 
 - (IBAction)cion:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Insert", @"data" : @"", @"extra" : @(123456)};
-    [self sendWebSocketMessage:msgDic];
+    NSLog(@"--- send cion command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
 }
 
-- (IBAction)up:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"u"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startUp:(id)sender {
+    NSLog(@"--- send move up command to wawaji ---");
 }
 
-- (IBAction)down:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"d"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopUp:(id)sender {
+    NSLog(@"--- send stop move up command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
 }
 
-- (IBAction)left:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"l"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startDown:(id)sender {
+    NSLog(@"--- send move up command to wawaji ---");
 }
 
-- (IBAction)right:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"r"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopDown:(id)sender {
+    NSLog(@"--- send stop move down command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
 }
 
-- (IBAction)grab:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"b"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startLeft:(id)sender {
+    NSLog(@"--- send move left command to wawaji ---");
+}
+
+- (IBAction)stopLeft:(id)sender {
+    NSLog(@"--- send stop move left command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
+}
+
+- (IBAction)startRight:(id)sender {
+    NSLog(@"--- send move right command to wawaji ---");
+    
+}
+
+- (IBAction)stopRight:(id)sender {
+    NSLog(@"--- send stop move right command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
+}
+
+- (IBAction)fetch:(id)sender {
+    NSLog(@"--- send catch command to wawaji ---");
+    [AlertUtil showAlert:@"Please add control module"];
 }
 
 // MARK: - Media Engine
 
 - (void)loadMediaEngine {
-    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppID delegate:self];
+    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAppID delegate:self];
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
@@ -152,7 +155,7 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurWarning:(AgoraRtcWarningCode)warningCode {
-    NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
+    //NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraRtcErrorCode)errorCode {
@@ -193,37 +196,6 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraRtcUserOfflineReason)reason {
     NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
-}
-
-// MARK: - WebSocket
-
-- (void)connectWebSocket {
-    webSocket.delegate = nil;
-    webSocket = nil;
-    
-    SRWebSocket *newWebSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:kWebSocketUrlString]];
-    newWebSocket.delegate = self;
-    [newWebSocket open];
-}
-
-- (void)sendWebSocketMessage:(NSDictionary *)message {
-    NSData *data = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
-    [webSocket send:data];
-}
-
-- (void)webSocketDidOpen:(SRWebSocket *)newWebSocket {
-    webSocket = newWebSocket;
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    [self connectWebSocket];
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    [self connectWebSocket];
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
 }
 
 @end

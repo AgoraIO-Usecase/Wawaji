@@ -31,16 +31,13 @@
                                 </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" returnKeyType="go"/>
-                                <connections>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="cPE-qi-uH4"/>
-                                </connections>
+                                <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Isw-Ra-v3m">
                                 <rect key="frame" x="170.5" y="255" width="34" height="30"/>
                                 <state key="normal" title="Start"/>
                                 <connections>
-                                    <action selector="start:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DAE-LN-fkY"/>
+                                    <segue destination="6LV-Uk-Eou" kind="show" identifier="playSegue" id="SRZ-Dq-pvE"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -60,7 +57,6 @@
                     </navigationItem>
                     <connections>
                         <outlet property="channelTextField" destination="mDN-oQ-HxM" id="Jnr-Ig-k1g"/>
-                        <segue destination="6LV-Uk-Eou" kind="show" identifier="playSegue" id="VvK-TD-E8E"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -111,28 +107,36 @@
                                         <rect key="frame" x="69" y="15" width="64" height="65"/>
                                         <state key="normal" backgroundImage="up"/>
                                         <connections>
-                                            <action selector="up:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="w14-9t-LbK"/>
+                                            <action selector="startUp:" destination="6LV-Uk-Eou" eventType="touchDown" id="LX1-km-sGp"/>
+                                            <action selector="stopUp:" destination="6LV-Uk-Eou" eventType="touchUpOutside" id="E0x-Ml-3sz"/>
+                                            <action selector="stopUp:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="bxd-u1-zoS"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iup-bv-Zlw" userLabel="down">
                                         <rect key="frame" x="69" y="125" width="64" height="65"/>
                                         <state key="normal" backgroundImage="down"/>
                                         <connections>
-                                            <action selector="down:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="nNG-55-zd8"/>
+                                            <action selector="startDown:" destination="6LV-Uk-Eou" eventType="touchDown" id="6k6-S0-fES"/>
+                                            <action selector="stopDown:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="XGk-gX-GCg"/>
+                                            <action selector="stopDown:" destination="6LV-Uk-Eou" eventType="touchUpOutside" id="XZ2-tP-ioE"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KHC-q0-ghr" userLabel="left">
                                         <rect key="frame" x="15" y="70" width="64" height="65"/>
                                         <state key="normal" backgroundImage="left"/>
                                         <connections>
-                                            <action selector="left:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="gz5-OB-OUC"/>
+                                            <action selector="startLeft:" destination="6LV-Uk-Eou" eventType="touchDown" id="F68-xj-n05"/>
+                                            <action selector="stopLeft:" destination="6LV-Uk-Eou" eventType="touchUpOutside" id="OKH-S2-2wT"/>
+                                            <action selector="stopLeft:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="Ogu-HJ-stJ"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uqi-IP-rTh" userLabel="right">
                                         <rect key="frame" x="123" y="70" width="64" height="65"/>
                                         <state key="normal" backgroundImage="right"/>
                                         <connections>
-                                            <action selector="right:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="nvX-Y3-9u3"/>
+                                            <action selector="startRight:" destination="6LV-Uk-Eou" eventType="touchDown" id="awx-OA-23J"/>
+                                            <action selector="stopRight:" destination="6LV-Uk-Eou" eventType="touchUpOutside" id="1jf-qt-W8j"/>
+                                            <action selector="stopRight:" destination="6LV-Uk-Eou" eventType="touchUpInside" id="CNC-f3-5Ib"/>
                                         </connections>
                                     </button>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RIy-uf-AWT">

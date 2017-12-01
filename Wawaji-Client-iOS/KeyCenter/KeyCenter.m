@@ -8,4 +8,4 @@
 
 #import "KeyCenter.h"
 
-NSString * const kAgoraAppID = <#Your App ID#>;
+NSString * const kAppID = <#Your App ID#>;
