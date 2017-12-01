@@ -11,37 +11,10 @@ schemes:
   - http
 paths:
   /machines/:
-    get:
-      tags:
-        - Machine
-      summary: Find Machine
-      operationId: findMachine
-      parameters:
-        - name: appid
-          in: query
-          description: App id of your Agora product
-          required: true
-          type: string
-        - name: channel
-          in: query
-          description: Media channel of your machine
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Machine'
-              
-        '500':
-          description: Server Error
-  /machines/start/:
     post:
       tags:
         - Machine
-      summary: Start a machine remotely
+      summary: start machines, if already started, return machine data directly
       operationId: startMachine
       parameters:
         - name: appid
@@ -63,18 +36,12 @@ paths:
         - application/json
       responses:
         '200':
-          description: Response message
+          description: successful operation
           schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                description: If the operation is successful
-              log:
-                type: string
-                description: The starting log
+            $ref: '#/definitions/Machine'
+              
         '500':
-          description: Server Error  
+          description: Server Error
 definitions:
   Machine:
     type: object

@@ -34,24 +34,38 @@ $(function () {
 
             if (position === 0) {
                 //front
-                player.player1 = new JSMpeg.Player(url, { canvas: canvas });
-                setTimeout(function () {
-                    $(canvas2).hide();
-                    $(canvas).show();
-                    player.player2 && player.player2.destroy();
-                    player.player2 = null;
-                    player.switching = false;
-                }, switching_time);
-            } else {
-                //side
-                player.player2 = new JSMpeg.Player(url, { canvas: canvas2 });
-                setTimeout(function () {
-                    $(canvas).hide();
-                    $(canvas2).show();
+                if(!player.player1){
+                    player.player1 = new JSMpeg.Player(url, { canvas: canvas });
+                    setTimeout(function () {
+                        $(canvas2).hide();
+                        $(canvas).show();
+                        player.player2 && player.player2.destroy();
+                        player.player2 = null;
+                        player.switching = false;
+                    }, switching_time);
+                } else {
                     player.player1 && player.player1.destroy();
                     player.player1 = null;
+                    player.player1 = new JSMpeg.Player(url, { canvas: canvas });
                     player.switching = false;
-                }, switching_time);
+                }
+            } else {
+                //side
+                if(!player.player2){
+                    player.player2 = new JSMpeg.Player(url, { canvas: canvas2 });
+                    setTimeout(function () {
+                        $(canvas).hide();
+                        $(canvas2).show();
+                        player.player1 && player.player1.destroy();
+                        player.player1 = null;
+                        player.switching = false;
+                    }, switching_time);
+                } else {
+                    player.player2 && player.player2.destroy();
+                    player.player2 = null;
+                    player.player2 = new JSMpeg.Player(url, { canvas: canvas });
+                    player.switching = false;
+                }
             }
         }
         this.switchCamera = function () {
@@ -78,7 +92,8 @@ $(function () {
         }
         $.ajax({
             url: "/v1/machine",
-            type: "GET",
+            // url: "http://wawa1.agoraio.cn:4000/v1/machine",
+            type: "POST",
             data: {
                 appid: appid,
                 channel: channel,
@@ -109,28 +124,5 @@ $(function () {
 
     $(".btn[data-type='switch']").off("click").on("click", function () {
         video_player.switchCamera();
-    });
-    $(".btn[data-type='start']").off("click").on("click", function () {
-        var appid = $("input[name='appid']").val();
-        var channel = $("input[name='channelName']").val();
-        var appcert = $("input[name='appcert']").val()
-
-        if (!appid || !channel) {
-            alert("appid or channel empty");
-            return;
-        }
-        $.ajax({
-            url: "/v1/machine/start",
-            type: "POST",
-            data: {
-                appid: appid,
-                channel: channel,
-                appcert: appcert
-            }
-        }).done(function (response) {
-            console.log(JSON.stringify(response));
-        }).fail(function (e) {
-            alert("err");
-        });
     });
 });

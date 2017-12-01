@@ -39,9 +39,10 @@ Wawaji.Server = function (io) {
         var collection = this;
         this.__machines = [];
         this.add = function (name, url, cb) {
-            collection.__machines.push(new Wawaji.Machine(name, url, cb));
+            var mac = new Wawaji.Machine(name, url, cb);
+            collection.__machines.push(mac);
             dbg("machine " + name + " added");
-            return collection;
+            return mac;
         }
 
         this.remove = function (name) {
@@ -90,7 +91,7 @@ Wawaji.Server = function (io) {
     /*------------------------------------------------
     |   Class : Machine
     \*----------------------------------------------*/
-    Wawaji.Machine = function (name, profile, cb) {
+    Wawaji.Machine = function (name, profile) {
         var machine = this;
         this.status = WawajiStatus.INITIAL;
         this.name = "wawaji_" + name;
@@ -118,19 +119,20 @@ Wawaji.Server = function (io) {
         this.online = false;
         // this.attributes = { queue: [], playing: null, cameras: { front: this.websocket_port1, back: this.websocket_port2 } };
 
-
-        dbg(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
-        if (machine.stream_method === StreamMethod.JSMPEG) {
-            if (profile.appcert) {
-                request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-                    machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body, cb);
-                });
+        this.init = function(cb){
+            dbg(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
+            if (machine.stream_method === StreamMethod.JSMPEG) {
+                if (profile.appcert) {
+                    request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
+                        machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body, cb);
+                    });
+                } else {
+                    machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, null, cb);
+                }
             } else {
-                machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, null, cb);
-            }
-        } else {
-            if (!profile.video_host) {
-                machine.stream = new ImageStream(io, profile.appid, profile.video_channel, null, "1", "2");
+                if (!profile.video_host) {
+                    machine.stream = new ImageStream(io, profile.appid, profile.video_channel, null, "1", "2");
+                }
             }
         }
     }
