@@ -20,6 +20,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
     protected final LayoutInflater mInflater;
     private Wawaji[] wawajiArr;
     private onClickButtonInterface onClickButtonInterface;
+    private int []imageArr = new int[]{R.drawable.img_one, R.drawable.img_two, R.drawable.img_three, R.drawable.img_four};
 
     public RoomListAdapter(Context context, Wawaji[] wawajiArr, onClickButtonInterface clickButtonInterface) {
         mInflater = ((Activity) context).getLayoutInflater();
@@ -31,7 +32,12 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        holder.tvName.setText(wawajiArr[position].getName());
+        holder.imageView.setBackgroundResource(imageArr[position]);
+        if (position % 2 == 0){
+            holder.imageStatus.setBackgroundResource(R.drawable.available);
+        }else {
+            holder.imageStatus.setBackgroundResource(R.drawable.busy);
+        }
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,11 +72,13 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
 
         private TextView tvName;
         private ImageView imageView;
+        private ImageView imageStatus;
 
         public MyViewHolder(View view) {
             super(view);
-            tvName = (TextView) view.findViewById(R.id.item_room_name);
-            imageView = (ImageView) view.findViewById(R.id.item_room_img);
+            tvName      = (TextView) view.findViewById(R.id.item_room_name);
+            imageView   = (ImageView) view.findViewById(R.id.item_room_img);
+            imageStatus = (ImageView) view.findViewById(R.id.item_room_state);
         }
 
     }

@@ -37,7 +37,7 @@ public class MyEngineEventHandler {
         this.mEventHandlerList.remove(handler);
     }
 
-    public void notifyAppLayer(int msg, Object... data) {
+    public void notifyAppLayer(int msg, Object[] data) {
         Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
         while (it.hasNext()) {
             AGEventHandler handler = it.next();
@@ -128,16 +128,12 @@ public class MyEngineEventHandler {
 
         @Override
         public void onLoginSuccess(int uid, int fd) {
-            log.debug("onLoginSuccess " + uid + " " + (uid & 0xFFFFFFFFL) + " " + fd);
+            log.debug("signal onLoginSuccess " + uid + " " + (uid & 0xFFFFFFFFL) + " " + fd);
         }
 
         @Override
         public void onLoginFailed(int error) {
             log.debug("onLoginFailed " + error);
-        }
-
-        private void doXXWhenDisconnected(int action) {
-
         }
 
         @Override
@@ -146,18 +142,8 @@ public class MyEngineEventHandler {
         }
 
         @Override
-        public void onLog(String txt) {
-//            log.debug("onLog " + txt);
-        }
-
-        @Override
-        public void onChannelUserJoined(String account, int uid) {
-
-        }
-
-        @Override
         public void onChannelJoined(String channelID) {
-            log.debug("onChannelJoined " + channelID + "  ");
+            log.debug("signal onChannelJoined " + channelID + "  ");
             Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
             while (it.hasNext()) {
                 AGEventHandler handler = it.next();
@@ -178,11 +164,6 @@ public class MyEngineEventHandler {
                 AGEventHandler handler = it.next();
                 handler.onChannelAttrUpdated(channelID, name, value, type);
             }
-        }
-
-        @Override
-        public void onChannelUserLeaved(String account, int uid) {
-
         }
 
         @Override
