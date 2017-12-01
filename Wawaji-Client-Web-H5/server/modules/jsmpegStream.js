@@ -105,7 +105,12 @@ var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websoc
         // console.log(`${stdout}`);
         setTimeout(function(){
             var file = path.join(__dirname, `../log/recorder_${channel}_${appid}_jsmpeg.log`);
-            var log = fs.readFileSync(file, "utf8");
+            var log = "";
+            try{
+                var log = fs.readFileSync(file, "utf8");
+            } catch(e){
+                console.log("failed to read log: " + file);
+            }
             console.log(log);
             exec_cb && exec_cb(log);
         }, 500);

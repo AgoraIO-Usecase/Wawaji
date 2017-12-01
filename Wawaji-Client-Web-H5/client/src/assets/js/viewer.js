@@ -22,7 +22,7 @@ $(function () {
 
 
         this.play = function (url, position) {
-            if(player.switching){
+            if (player.switching) {
                 console.log("switching...");
                 return;
             }
@@ -32,32 +32,26 @@ $(function () {
             player.switching = true;
             var switching_time = 1000;
 
-            if(position === 0){
+            if (position === 0) {
                 //front
-                if(!player.player1){
-                    player.player1 = new JSMpeg.Player(url, { canvas: canvas });
-                    setTimeout(function(){
-                        $(canvas2).hide();
-                        $(canvas).show();
-                        player.player2 && player.player2.destroy();
-                        player.player2 = null;
-                        player.switching = false;
-                    }, switching_time);
-                } else {
-                }
+                player.player1 = new JSMpeg.Player(url, { canvas: canvas });
+                setTimeout(function () {
+                    $(canvas2).hide();
+                    $(canvas).show();
+                    player.player2 && player.player2.destroy();
+                    player.player2 = null;
+                    player.switching = false;
+                }, switching_time);
             } else {
                 //side
-                if(!player.player2){
-                    player.player2 = new JSMpeg.Player(url, { canvas: canvas2 });
-                    setTimeout(function(){
-                        $(canvas).hide();
-                        $(canvas2).show();
-                        player.player1 && player.player1.destroy();
-                        player.player1 = null;
-                        player.switching = false;
-                    }, switching_time);
-                } else {
-                }
+                player.player2 = new JSMpeg.Player(url, { canvas: canvas2 });
+                setTimeout(function () {
+                    $(canvas).hide();
+                    $(canvas2).show();
+                    player.player1 && player.player1.destroy();
+                    player.player1 = null;
+                    player.switching = false;
+                }, switching_time);
             }
         }
         this.switchCamera = function () {
@@ -71,7 +65,7 @@ $(function () {
         }
     }
 
-    var video_player = new Player();
+    window.video_player = new Player();
 
     $(".btn[data-type='connect']").off("click").on("click", function () {
         var appid = $("input[name='appid']").val();
@@ -83,8 +77,7 @@ $(function () {
             return;
         }
         $.ajax({
-            // url: "/v1/machine",
-            url: "http://wawa1.agoraio.cn:4000/v1/machine",
+            url: "/v1/machine",
             type: "GET",
             data: {
                 appid: appid,
