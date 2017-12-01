@@ -4,17 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +19,6 @@ import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
-import io.agora.wawaji.utils.AppUtil;
 
 public class WawajiServerActivity extends Activity {
 
@@ -33,7 +29,7 @@ public class WawajiServerActivity extends Activity {
 
     private String mChannelName;
 
-    private RtcEngine mRtcEngine;// Step 1
+    private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
 
         @Override
@@ -128,7 +124,6 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine = null;
     }
 
-
     // Step 1
     private void initializeAgoraEngine() {
         try {
@@ -164,11 +159,11 @@ public class WawajiServerActivity extends Activity {
             @Override
             public void run() {
                 super.run();
-                String dynamicKey = AppUtil.getDynamicKeyForChannel(mChannelName ,0,getString(R.string.agora_app_id),getString(R.string.agora_appCertificate));
-                mRtcEngine.joinChannel(dynamicKey, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+                mRtcEngine.joinChannel(null, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
             }
         }.start();
     }
+
     // Step 5
     private void setupLocalVideo() {
         FrameLayout container = (FrameLayout) findViewById(R.id.local_video_view_container);
@@ -184,6 +179,7 @@ public class WawajiServerActivity extends Activity {
             mTextChannel.setText(mChannelName);
         }
     }
+
     // Step 6
     public void onSwitchCameraClicked(View view) {
         mRtcEngine.switchCamera();
@@ -198,7 +194,4 @@ public class WawajiServerActivity extends Activity {
     private void leaveChannel() {
         mRtcEngine.leaveChannel();
     }
-
-
-
 }
