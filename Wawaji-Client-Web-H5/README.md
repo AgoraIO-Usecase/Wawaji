@@ -12,23 +12,37 @@
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。
+
+确保机器安装了最新的nodejs，推荐版本：
+
+```
+$ node -v
+v8.9.0
+$ npm -v
+5.5.1
+```
+
 在根目录运行setup.js脚本：
 
 ```
-./setup -i <your app id>
+./setup.sh -i <your app id>
 ```
 
 
-
-在server.js中可以根据需要的娃娃机插件(Profile)把需要管理的娃娃机添加到中控系统中，例如：
+在server.js中可以根据需要的视频插件(Profile)把需要播放视频流的频道添加到中控系统中，例如：
 
 ```javascript
-var zhuazhua2_profile = new ZhuaZhuaProfile(StreamMethod.JSMPEG);
-var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
+//create video only profiles
+var test_profiles = [];
+for (var i = 1; i <= 8; i++) {
+    //we create 8 JSMpeg profiles, with channel name "wawaji<i>"
+    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i));
+}
+
 var manager = new WawajiManager(unique("server_agora"), io);
-manager.onStarted = function(){
-    manager.machines.add(unique('machine_leidi'), leidi_profile);
-    manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
+for (var i = 0; i < test_profiles.length; i++) {
+    //add profiles as machines to manager
+    manager.machines.add(unique('machine_pressure_test' + i), test_profiles[i]);
 }
 ```
   

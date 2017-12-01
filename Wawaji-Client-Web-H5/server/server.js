@@ -39,19 +39,20 @@ app.use(function (req, res, next) {
     next();
 });
 
-//create video only profiles
-var test_profiles = [];
-for (var i = 1; i <= 8; i++) {
-    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i));
-}
-
 var unique = function (s) {
     return s + (process.argv[2] ? "_" + process.argv[2] : "");
 }
 
+//create video only profiles
+var test_profiles = [];
+for (var i = 1; i <= 8; i++) {
+    //we create 8 JSMpeg profiles, with channel name "wawaji<i>"
+    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i));
+}
+
 var manager = new WawajiManager(unique("server_agora"), io);
 for (var i = 0; i < test_profiles.length; i++) {
-    //add machines to manager
+    //add profiles as machines to manager
     manager.machines.add(unique('machine_pressure_test' + i), test_profiles[i]);
 }
 
