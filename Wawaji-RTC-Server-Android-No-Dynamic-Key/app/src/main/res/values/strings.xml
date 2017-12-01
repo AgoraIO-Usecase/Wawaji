@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Agora Wawaji Server</string>
+
+    <string name="label_leave">Leave</string>
+    <string name="main_title">Welcome to Open Live!</string>
+    <string name="main_input">Input name of the Live?</string>
+    <string name="main_button">Join Room</string>
+</resources>
