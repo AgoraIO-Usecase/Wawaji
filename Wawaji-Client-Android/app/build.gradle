@@ -15,18 +15,10 @@ android {
         versionCode 8
         versionName "x.y.z"
 
-        jackOptions {
-            enabled false
-        }
-
         ndk {
             abiFilters "armeabi-v7a", "x86" // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
         }
-    }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     buildTypes {

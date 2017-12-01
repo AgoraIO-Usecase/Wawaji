@@ -15,7 +15,8 @@ public class Constant {
         MEDIA_SDK_VERSION = sdk;
     }
 
-    public static final String WAWAJI_CONTROL_CENTER = "wawaji_cc_server";
+
+    public static final String WAWAJI_CONTROL_CENTER = "wawaji_cc_server_agora";
 
     public static final int Wawaji_CAM_MAIN = 1;
     public static final int Wawaji_CAM_SECONDARY = 2;

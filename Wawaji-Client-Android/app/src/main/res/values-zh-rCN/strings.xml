@@ -19,6 +19,9 @@
 
     <string name="label_isplaying">游戏中</string>
 
-    <string name="label_queuing_success">"预约成功，你前面有%1$d人"</string>
+    <string name="label_queuing_success">预约成功，你前面有%1$d人</string>
+
+    <string name="label_catch_wawa_notice">抓娃娃温馨提示</string>
+    <string name="label_catch_wawa_notice_content">本机器只适用于抓娃娃Demo，没有上线！抓中娃娃都不发货哦!\n内测中，欢迎大家体验！\n内测中，欢迎大家体验！</string>
 
 </resources>

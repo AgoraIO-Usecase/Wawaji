@@ -78,8 +78,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         Wawaji wawaji = (Wawaji) i.getSerializableExtra(ConstantApp.ACTION_KEY_ROOM_WAWAJI);
         if (wawaji != null) {
 
-            String roomName = wawaji.getName();
-            roomName = "xcapture";
+            String roomName = wawaji.getVideo_channel();
             machinelName = wawaji.getName();
             signalChannelName = "room_" + machinelName;
             doConfigEngine(cRole);
@@ -117,9 +116,9 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     private void doLeaveChannel() {
         worker().leaveChannel(config().mChannel);
 
-        if (isBroadcaster()) {
-            worker().leaveSiginalChannel(signalChannelName);
-        }
+
+        worker().leaveSiginalChannel(signalChannelName);
+
     }
 
     public void onLeaveGameClicked(View view) {
@@ -348,8 +347,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (isJoinSignalRoom) {
             isOrder = true;
             worker().ctrlWawaji(signalChannelName, Constant.Wawaji_Ctrl_PLAY);
-            String str = getString(R.string.label_queuing_success);
-            textViewPlay.setText(String.format(str, queueCount));
+//            String str = getString(R.string.label_queuing_success);
+            textViewPlay.setText(getString(R.string.label_order_success));
         }
     }
 
