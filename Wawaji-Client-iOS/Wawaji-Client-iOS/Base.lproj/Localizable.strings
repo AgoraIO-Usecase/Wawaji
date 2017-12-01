@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  Wawaji-Client
+
+  Created by suleyu on 2017/11/22.
+  Copyright © 2017 Agora. All rights reserved.
+*/
+
+"OK" = "OK";
+
+"JoinChannelFailed" = "Join channel failed";
+"NoMoreCamera" = "No other connected camera";

@@ -838,7 +838,7 @@ public class MachineApiExample {
         String appid = appid_example; // String | App id of your Agora product
         String channel = channel_example; // String | Media channel of your machine
         try {
-            array[Machine] result = apiInstance.findMachine(appid, channel);
+            Machine result = apiInstance.findMachine(appid, channel);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling MachineApi#findMachine");
@@ -858,7 +858,7 @@ public class MachineApiExample {
         String appid = appid_example; // String | App id of your Agora product
         String channel = channel_example; // String | Media channel of your machine
         try {
-            array[Machine] result = apiInstance.findMachine(appid, channel);
+            Machine result = apiInstance.findMachine(appid, channel);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling MachineApi#findMachine");
@@ -880,7 +880,7 @@ MachineApi *apiInstance = [[MachineApi alloc] init];
 // Find Machine
 [apiInstance findMachineWith:appid
     channel:channel
-              completionHandler: ^(array[Machine] output, NSError* error) {
+              completionHandler: ^(Machine output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -936,7 +936,7 @@ namespace Example
             try
             {
                 // Find Machine
-                array[Machine] result = apiInstance.findMachine(appid, channel);
+                Machine result = apiInstance.findMachine(appid, channel);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -1083,10 +1083,7 @@ except ApiException as e:
                                         var schemaWrapper = {
   "description" : "successful operation",
   "schema" : {
-    "type" : "array",
-    "items" : {
-      "$ref" : "#/definitions/Machine"
-    }
+    "$ref" : "#/definitions/Machine"
   }
 };
                                         var schema = schemaWrapper.schema;
@@ -1501,7 +1498,7 @@ except ApiException as e:
           </div>
           <div id="generator">
             <div class="content">
-              Generated 2017-12-01T06:39:25.336Z
+              Generated 2017-12-01T10:13:15.298Z
             </div>
           </div>
       </div>
