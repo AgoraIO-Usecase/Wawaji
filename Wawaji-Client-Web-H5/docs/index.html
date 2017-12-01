@@ -695,6 +695,18 @@ margin-bottom: 20px;
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+            defs.inline_response_200 = {
+  "properties" : {
+    "success" : {
+      "type" : "boolean",
+      "description" : "If the operation is successful"
+    },
+    "log" : {
+      "type" : "string",
+      "description" : "The starting log"
+    }
+  }
+};
             defs.Machine = {
   "type" : "object",
   "properties" : {
@@ -751,6 +763,9 @@ margin-bottom: 20px;
                     <li data-group="Machine" data-name="findMachine" class="">
                       <a href="#api-Machine-findMachine">findMachine</a>
                     </li>
+                    <li data-group="Machine" data-name="startMachine" class="">
+                      <a href="#api-Machine-startMachine">startMachine</a>
+                    </li>
           </ul>
         </nav>
       </div>
@@ -781,7 +796,7 @@ margin-bottom: 20px;
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Multiple status values can be provided with comma separated strings</p>
+                        <p class="marked"></p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/machines/</span></code></pre>
@@ -1108,6 +1123,370 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Machine-startMachine">
+                      <article id="api-Machine-startMachine-0" data-group="User" data-name="startMachine" data-version="0">
+                        <div class="pull-left">
+                          <h1>startMachine</h1>
+                          <p>Start a machine remotely</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/machines/start/</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Machine-startMachine-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Machine-startMachine-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Machine-startMachine-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Machine-startMachine-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Machine-startMachine-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Machine-startMachine-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Machine-startMachine-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "http://localhost/v1/machines/start/?appid=&channel=&appcert="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Machine-startMachine-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.MachineApi;
+
+import java.io.File;
+import java.util.*;
+
+public class MachineApiExample {
+
+    public static void main(String[] args) {
+        
+        MachineApi apiInstance = new MachineApi();
+        String appid = appid_example; // String | App id of your Agora product
+        String channel = channel_example; // String | Media channel of your machine
+        String appcert = appcert_example; // String | App certificate if enabled
+        try {
+            inline_response_200 result = apiInstance.startMachine(appid, channel, appcert);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling MachineApi#startMachine");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Machine-startMachine-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.MachineApi;
+
+public class MachineApiExample {
+
+    public static void main(String[] args) {
+        MachineApi apiInstance = new MachineApi();
+        String appid = appid_example; // String | App id of your Agora product
+        String channel = channel_example; // String | Media channel of your machine
+        String appcert = appcert_example; // String | App certificate if enabled
+        try {
+            inline_response_200 result = apiInstance.startMachine(appid, channel, appcert);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling MachineApi#startMachine");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Machine-startMachine-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *appid = appid_example; // App id of your Agora product
+String *channel = channel_example; // Media channel of your machine
+String *appcert = appcert_example; // App certificate if enabled (optional)
+
+MachineApi *apiInstance = [[MachineApi alloc] init];
+
+// Start a machine remotely
+[apiInstance startMachineWith:appid
+    channel:channel
+    appcert:appcert
+              completionHandler: ^(inline_response_200 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AgoraWawajiServer = require('agora_wawaji_server');
+
+var api = new AgoraWawajiServer.MachineApi()
+
+var appid = appid_example; // {String} App id of your Agora product
+
+var channel = channel_example; // {String} Media channel of your machine
+
+var opts = { 
+  'appcert': appcert_example // {String} App certificate if enabled
+};
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.startMachine(appid, channel, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Machine-startMachine-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class startMachineExample
+    {
+        public void main()
+        {
+            
+            var apiInstance = new MachineApi();
+            var appid = appid_example;  // String | App id of your Agora product
+            var channel = channel_example;  // String | Media channel of your machine
+            var appcert = appcert_example;  // String | App certificate if enabled (optional) 
+
+            try
+            {
+                // Start a machine remotely
+                inline_response_200 result = apiInstance.startMachine(appid, channel, appcert);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling MachineApi.startMachine: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\Api\MachineApi();
+$appid = appid_example; // String | App id of your Agora product
+$channel = channel_example; // String | Media channel of your machine
+$appcert = appcert_example; // String | App certificate if enabled
+
+try {
+    $result = $api_instance->startMachine($appid, $channel, $appcert);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling MachineApi->startMachine: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::MachineApi;
+
+my $api_instance = WWW::SwaggerClient::MachineApi->new();
+my $appid = appid_example; # String | App id of your Agora product
+my $channel = channel_example; # String | Media channel of your machine
+my $appcert = appcert_example; # String | App certificate if enabled
+
+eval { 
+    my $result = $api_instance->startMachine(appid => $appid, channel => $channel, appcert => $appcert);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling MachineApi->startMachine: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Machine-startMachine-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.MachineApi()
+appid = appid_example # String | App id of your Agora product
+channel = channel_example # String | Media channel of your machine
+appcert = appcert_example # String | App certificate if enabled (optional)
+
+try: 
+    # Start a machine remotely
+    api_response = api_instance.start_machine(appid, channel, appcert=appcert)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling MachineApi->startMachine: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">appid*</td>
+<td>
+
+
+    <div id="d2e199_startMachine_appid">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        App id of your Agora product
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                <tr><td style="width:150px;">channel*</td>
+<td>
+
+
+    <div id="d2e199_startMachine_channel">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        Media channel of your machine
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                <tr><td style="width:150px;">appcert</td>
+<td>
+
+
+    <div id="d2e199_startMachine_appcert">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        App certificate if enabled
+                    </div>
+            </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Response message </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-startMachine-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-startMachine-200-schema">
+                                  <div id='responses-startMachine-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Response message",
+  "schema" : {
+    "$ref" : "#/definitions/inline_response_200"
+  }
+};
+                                        var schema = schemaWrapper.schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-startMachine-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-startMachine-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-startMachine-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 500 - Server Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                   </section>
           </div>
           <div id="footer">
@@ -1122,7 +1501,7 @@ except ApiException as e:
           </div>
           <div id="generator">
             <div class="content">
-              Generated 2017-11-30T02:41:16.343Z
+              Generated 2017-12-01T06:39:25.336Z
             </div>
           </div>
       </div>
