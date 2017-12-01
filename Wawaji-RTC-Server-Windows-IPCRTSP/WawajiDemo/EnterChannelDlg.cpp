@@ -5,6 +5,7 @@
 #include "AgoraWawajiDemo.h"
 #include "EnterChannelDlg.h"
 #include "afxdialogex.h"
+#include "commonFun.h"
 
 
 // CEnterChannelDlg ¶Ô»°¿ò
@@ -239,8 +240,10 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	m_lpAgoraObject->SetMsgHandlerWnd(GetSafeHwnd());
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
 	m_lpAgoraObject->EnableVideo(TRUE);
-	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);
-	m_lpAgoraObject->SetSelfUID(0);
+	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);;
+	CString param;
+	m_ctrUid.GetWindowText(param);
+	m_lpAgoraObject->SetSelfUID(str2int(cs2s(param)));
 	m_lpAgoraObject->SetAppCert(_T("164aa13965394ffbb5ebeb43c4c7ed5c"));
 	m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
 

@@ -25,7 +25,7 @@ bool CRtspSessionEx::startRtsp(const std::string &rtspURL)
 	m_rtmpUrl = rtspURL;
 	m_isStart = true;
 
-	m_fileYUV.openMedia(getAbsoluteDir() + "1yuv.yuv");
+	//m_fileYUV.openMedia(getAbsoluteDir() + "1yuv.yuv");
 	m_ThreadRtsp = CreateThread(nullptr, 0, ThreadRtspProc, this, 0, nullptr);
 
 	return true;

@@ -151,10 +151,11 @@ void CDeviceDlg::InitCtrls()
 
 	m_ckRtsp.SetFont(&m_ftDes);
 	m_ckRtsp.MoveWindow(80, 280, 50, 24, true);
+	m_ckRtsp.SetCheck(true);
 	m_ctlRTSP.MoveWindow(150, 280, 200, 24, TRUE);
 	m_ctlRTSP.SetCaretPos(CPoint(12, 148));
 	m_ctlRTSP.ShowCaret();
-	m_ctlRTSP.SetTip(_T("rtsp://admin:12345@192.168.2.200"));
+	m_ctlRTSP.SetTip(_T("rtsp://admin:a1234567@192.168.2.202"));
 	m_ctlRTSP.SetFocus();
 	
 	m_wndVideoTest.MoveWindow(155, 378, 192, 120, TRUE);

@@ -177,7 +177,7 @@ void CDeviceDlg::InitCtrls()
 	m_ctlExVideoHeight.SetTip(_T("720"));
 	m_ctlExVideoHeight.SetFocus();
 
-	m_ctrlIPCIP.SetTip(_T("192.168.1.201"));
+	m_ctrlIPCIP.SetTip(_T("192.168.2.202"));
 	m_ctrlIPCIP.SetFocus();
 	m_ctlIPCPort.SetTip(_T("8000"));
 	m_ctlIPCPort.SetFocus();
