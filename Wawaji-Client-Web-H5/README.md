@@ -13,6 +13,11 @@
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。
 
+###开启直播
+请参考官网文档使用SDK启动直播，并记录直播使用的appid, channel以备后用，进入频道时请将uid强制设为1和2 - 1为主摄像头，2为副摄像头
+
+###示例环境部署配置
+将Wawaji-Client-Web-H5下的代码部署到服务器
 确保机器安装了最新的nodejs，推荐版本：
 
 ```
@@ -28,39 +33,40 @@ $ npm -v
 ./setup.sh -i <your app id>
 ```
 
-
-在server.js中可以根据需要的视频插件(Profile)把需要播放视频流的频道添加到中控系统中，例如：
+若没有错误，将Agora转码SDK解压后重命名为**Agora_Recording_SDK_for_Linux_FULL**放入server目录。，与server.js平级, 该SDK的获取方式请看文章开头
+在server.js中可以根据需要的视频插件(VideoProfile)把需要播放视频流的频道添加到中控系统中，例如：
 
 ```javascript
 //create video only profiles
 var test_profiles = [];
 for (var i = 1; i <= 8; i++) {
     //we create 8 JSMpeg profiles, with channel name "wawaji<i>"
-    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i));
+    //app id is optional, if not set we will pick the one in modules/profiles/video/vault.js
+    test_profiles.push(new VideoProfile(StreamMethod.JSMPEG, "wawaji" + i, "<app id>"));
 }
 
+//create manager instance
 var manager = new WawajiManager(unique("server_agora"), io);
 for (var i = 0; i < test_profiles.length; i++) {
     //add profiles as machines to manager
     manager.machines.add(unique('machine_pressure_test' + i), test_profiles[i]);
 }
 ```
-  
-  
-*注意：项目预置的Profile需要对应的娃娃机才可以正常控制，若没有对应的娃娃机，也可以参考已有的插件撰写自己的插件*
-  
-  
 
+在以上的代码示例中，我们会启动8个视频流推送示例，相当于8个娃娃机房间
 
-将Agora转码SDK解压后重命名为**Agora_Recording_SDK_for_Linux_FULL**与server.js置于同一目录。
-
-完成后运行
+完成后进入server目录运行
 ```
 node server.js
 ```
 启动方案
 
+若启动成功，则可以访问：
+```
+http://<部署ip>:4000/viewer.html
+```
 
+在出现的页面中填入之前在server.js中添加的对应频道的名字与你的appid，点击连接即可播放视频。
 
 ## 运行环境
 - Linux, NodeJS v8.9.0或以上, Npm 5.1.1或以上
