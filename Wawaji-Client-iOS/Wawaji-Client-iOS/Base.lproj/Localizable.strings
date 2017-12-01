@@ -7,11 +7,6 @@
 */
 
 "OK" = "OK";
-"Cancel" = "Cancel";
-
-"PlayOrWatchMessage" = "Would you like to play or just watch?";
-"Play" = "Play";
-"Watch" = "Watch";
 
 "JoinChannelFailed" = "Join channel failed";
 "NoMoreCamera" = "No other connected camera";

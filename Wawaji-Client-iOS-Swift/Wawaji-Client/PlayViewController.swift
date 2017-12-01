@@ -7,36 +7,27 @@
 //
 
 import UIKit
-import SocketRocket
 import AgoraRtcEngineKit
 
 class PlayViewController: UIViewController {
-    static let WebSocketUrlString: String = <#Your Wawaji Controlling WebSocket Url#>
     
-    public var player : Bool!
     public var channel : String!
     
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var controlView: UIView!
     
-    var webSocket : SRWebSocket?
     var mediaEngine : AgoraRtcEngineKit!
     var allStreamUids = [UInt]()
     var currentStreamUid : UInt = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = channel
-        // Do any additional setup after loading the view.
         
-        if player {
-            connectWebSocket()
-        }
-        else {
-            controlView.removeFromSuperview()
-        }
+        self.navigationItem.title = channel
         
         loadMediaEngine();
+        
+        print("--- connect to Wawaji if needed ---")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -44,10 +35,6 @@ class PlayViewController: UIViewController {
         
         UIApplication.shared.isIdleTimerDisabled = false
         mediaEngine.leaveChannel(nil)
-        
-        webSocket?.close()
-        webSocket?.delegate = nil
-        webSocket = nil
     }
 
     override func didReceiveMemoryWarning() {
@@ -87,49 +74,50 @@ class PlayViewController: UIViewController {
     }
     
     @IBAction func cion(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Insert", "data" : "", "extra" : 123456]
-        sendWebSocketMessage(messageDic)
+        print("--- send cion command to wawaji ---")
+        showAlert("Please add control module")
     }
     
-    @IBAction func up(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "u"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func startUp(_ sender: Any) {
+        print("--- send move up command to wawaji ---")
     }
     
-    @IBAction func down(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "d"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func stopUp(_ sender: Any) {
+        print("--- send stop move up command to wawaji ---")
+        showAlert("Please add control module")
     }
     
-    @IBAction func left(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "l"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func startDown(_ sender: Any) {
+        print("--- send move up command to wawaji ---")
     }
     
-    @IBAction func right(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "r"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func stopDown(_ sender: Any) {
+        print("--- send stop move down command to wawaji ---")
+        showAlert("Please add control module")
     }
     
+    @IBAction func startLeft(_ sender: Any) {
+        print("--- send move left command to wawaji ---")
+    }
+    
+    @IBAction func stopLeft(_ sender: Any) {
+        print("--- send stop move left command to wawaji ---")
+        showAlert("Please add control module")
+    }
+    
+    @IBAction func startRight(_ sender: Any) {
+        print("--- send move right command to wawaji ---")
+
+    }
+    
+    @IBAction func stopRight(_ sender: Any) {
+        print("--- send stop move right command to wawaji ---")
+        showAlert("Please add control module")
+    }
+
     @IBAction func fetch(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "b"]
-        sendWebSocketMessage(messageDic)
-    }
-    
-    func connectWebSocket() {
-        if let oldWebSocket = webSocket {
-            oldWebSocket.delegate = nil
-            webSocket = nil
-        }
-        
-        let newWebSocket = SRWebSocket(url: URL(string: PlayViewController.WebSocketUrlString))
-        newWebSocket!.delegate = self
-        newWebSocket!.open()
-    }
-    
-    func sendWebSocketMessage(_ message: [String: Any]) {
-        let data = try! JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
-        webSocket?.send(data)
+        print("--- send catch command to wawaji ---")
+        showAlert("Please add control module")
     }
     
     func loadMediaEngine() {
@@ -201,22 +189,5 @@ extension PlayViewController : AgoraRtcEngineDelegate {
     
     func rtcEngine(_ engine: AgoraRtcEngineKit!, didOfflineOfUid uid: UInt, reason: AgoraRtcUserOfflineReason) {
         print("rtcEngine:didOfflineOfUid: \(uid)")
-    }
-}
-
-extension PlayViewController : SRWebSocketDelegate {
-    func webSocketDidOpen(_ newWebSocket: SRWebSocket!) {
-        webSocket = newWebSocket
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
-        connectWebSocket()
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
-        connectWebSocket()
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
     }
 }

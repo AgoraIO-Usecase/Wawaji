@@ -1,6 +1,6 @@
 # Wawaji Client for iOS
 
-- **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
+- **注意，本娃娃机项目缺少娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
 这个示例项目演示了如何快速集成 Agora 视频 SDK，实现在线抓娃娃。
@@ -18,18 +18,8 @@
 static let AppId: String = "Your App ID"
 ```
 
-本项目的第三方娃娃机控制使用 WebSocket 协议，您需要将娃娃机的控制 URL 填写进 PlayViewController.swift。
-
-```
-static let WebSocketUrlString: String = "Your Wawaji Controlling WebSocket Url";
-
-```
-
 然后在 [Agora.io SDK](https://www.agora.io/cn/download/)
 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs/AgoraRtcEngineKit.framework** 复制到本目录。
-
-本项目使用 Cocoapods 添加 [WebSocket](https://en.wikipedia.org/wiki/WebSocket) 开源库 [SocketRocket](https://github.com/square/SocketRocket)。
-如果你尚未安装 Cocoapods，首先在终端中执行 `gem install cocoapods` 和 `pod setup`，然后在终端中进入本目录执行 `pod install`。
 
 最后使用 XCode 打开 Wawaji-Client-iOS.xcworkspace，连接 iPhone／iPad 测试设备或模拟器，设置有效的开发者签名后即可运行。
 

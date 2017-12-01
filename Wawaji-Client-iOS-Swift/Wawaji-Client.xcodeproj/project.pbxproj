@@ -21,11 +21,9 @@
 		7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368D1FC55617005844ED /* VideoToolbox.framework */; };
 		707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368F1FC557BE005844ED /* AVFoundation.framework */; };
 		707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 707336911FC557D5005844ED /* CoreTelephony.framework */; };
-		D0C714EA8AE62853FCEBA9BB /* Pods_Wawaji_Client.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.release.xcconfig"; sourceTree = "<group>"; };
 		707336641FC53AEA005844ED /* Wawaji-Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		707336671FC53AEA005844ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		707336691FC53AEA005844ED /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -42,8 +40,6 @@
 		7073368D1FC55617005844ED /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		7073368F1FC557BE005844ED /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		707336911FC557D5005844ED /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		CEA1C40D486E0D18449BB377 /* Pods-Wawaji-Client.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.debug.xcconfig"; sourceTree = "<group>"; };
-		CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wawaji_Client.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +51,6 @@
 				707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */,
 				7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */,
 				707336801FC54597005844ED /* AgoraRtcEngineKit.framework in Frameworks */,
-				D0C714EA8AE62853FCEBA9BB /* Pods_Wawaji_Client.framework in Frameworks */,
 				7073368C1FC55603005844ED /* libc++.tbd in Frameworks */,
 				7073368A1FC555FD005844ED /* libresolv.tbd in Frameworks */,
 			);
@@ -73,7 +68,6 @@
 				7073368B1FC55603005844ED /* libc++.tbd */,
 				707336891FC555FD005844ED /* libresolv.tbd */,
 				7073367E1FC54597005844ED /* AgoraRtcEngineKit.framework */,
-				CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -83,7 +77,6 @@
 			children = (
 				707336661FC53AEA005844ED /* Wawaji-Client */,
 				707336651FC53AEA005844ED /* Products */,
-				99DB949480A421C59492517D /* Pods */,
 				1DBEB85AF8E7A1056D5A8E2B /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -112,15 +105,6 @@
 			path = "Wawaji-Client";
 			sourceTree = "<group>";
 		};
-		99DB949480A421C59492517D /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				CEA1C40D486E0D18449BB377 /* Pods-Wawaji-Client.debug.xcconfig */,
-				16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -128,12 +112,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 707336761FC53AEB005844ED /* Build configuration list for PBXNativeTarget "Wawaji-Client" */;
 			buildPhases = (
-				C700A1FE19114E9CF8C90324 /* [CP] Check Pods Manifest.lock */,
 				707336601FC53AEA005844ED /* Sources */,
 				707336611FC53AEA005844ED /* Frameworks */,
 				707336621FC53AEA005844ED /* Resources */,
-				932309BD5941A59D58727F41 /* [CP] Embed Pods Frameworks */,
-				6F97265451D9600D005F4B7B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -192,60 +173,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		6F97265451D9600D005F4B7B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		932309BD5941A59D58727F41 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C700A1FE19114E9CF8C90324 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Wawaji-Client-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		707336601FC53AEA005844ED /* Sources */ = {
@@ -398,7 +325,6 @@
 		};
 		707336771FC53AEB005844ED /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CEA1C40D486E0D18449BB377 /* Pods-Wawaji-Client.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -425,7 +351,6 @@
 		};
 		707336781FC53AEB005844ED /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
