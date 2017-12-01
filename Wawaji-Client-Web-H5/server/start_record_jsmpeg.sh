@@ -45,11 +45,12 @@ else
     echo {\"Recording_Dir\":\"`pwd`/public/${APP_ID}${CHANNEL_NAME}_jsmpeg\", \"BitrateKbps\":\"500\",\"${uid1}\":\"${push_url_1}\", \"${uid2}\":\"${push_url_2}\"} > ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json
 
     if [ -z "${CHANNEL_KEY}" ]; then
-        echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder.log 2>&1 &"
-        nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder_jsmpeg.log 2>&1 &
+        # echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder.log 2>&1 &"
+        nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./log/recorder_${CHANNEL_NAME}_${APP_ID}_jsmpeg.log 2>&1 &
     else
-        echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --channelKey ${CHANNEL_KEY} --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder.log 2>&1 &"
-        nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --channelKey ${CHANNEL_KEY} --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder_jsmpeg.log 2>&1 &
+        # echo "nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --channelKey ${CHANNEL_KEY} --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./recorder.log 2>&1 &"
+        nohup ./Agora_Recording_SDK_for_Linux_FULL/samples/release/bin/recorder --appId ${APP_ID} --channel ${CHANNEL_NAME} --getVideoFrame 5 --uid ${recorder} --cfgFilePath ./public/${APP_ID}${CHANNEL_NAME}_jsmpeg/cfg.json --channelKey ${CHANNEL_KEY} --appliteDir `pwd`/Agora_Recording_SDK_for_Linux_FULL/bin/ > ./log/recorder_${CHANNEL_NAME}_${APP_ID}_jsmpeg.log 2>&1 &
     fi
+    cat recorder_jsmpeg.log
 fi
 

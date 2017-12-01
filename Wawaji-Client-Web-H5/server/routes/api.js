@@ -32,7 +32,9 @@ function Api(manager, app) {
 
     app.post("/v1/machine/start", function (req, res) {
         var body = req.body;
-        if (!body.appid || !body.channel) {
+        var appid = body.appid || "", channel = body.channel || "";
+        var appcert = body.appcert || "";
+        if (!appid || !channel) {
             res.status(500);
             res.json({ err: "PARAMETER_MISSING" });
         }
@@ -40,15 +42,16 @@ function Api(manager, app) {
         var machines = manager.machines.all() || [];
 
         machines = machines.filter(function (item) {
-            return item.video_appid === query.appid && item.video_channel === query.channel;
+            return item.video_appid === appid && item.video_channel === channel;
         });
 
         if(machines.length > 0){
             manager.machines.remove(machines[0].name);
         }
 
-        manager.add(new VideoProfile(StreamMethod.JSMPEG, channel));
-
+        manager.machines.add(appid+channel, new VideoProfile(StreamMethod.JSMPEG, channel, appid, appcert), function(output){
+            res.json({success: output.indexOf("error") === -1, log: output});
+        });
     });
 }
 

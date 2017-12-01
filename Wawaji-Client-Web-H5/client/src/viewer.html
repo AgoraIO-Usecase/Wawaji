@@ -24,19 +24,9 @@
     <div class="container">
         <div class="alert alert-info" id="notification" role="alert">提示信息</div>
         <div class="panel panel-default">
-            <div class="panel-body" style="min-height:600px;">
-                <div class="main-box">
+            <div class="panel-body">
+                <div class="main-box" style="display: flex;justify-content: center;">
                     <canvas id="jsmpeg-player"></canvas>
-                </div>
-                <div class="video-box">
-                    <div class="local">
-                        <div class="local-video" id="div_id" style="width:133px;height:100px;"></div>
-                    </div>
-                </div>
-                <div class="video-items">
-                    <div class="" id="remote_video_box">
-
-                    </div>
                 </div>
             </div>
         </div>
@@ -47,6 +37,10 @@
                     <input type="text" class="form-control" name="appid" placeholder="App id">
                 </li>
                 <li class="list-group-item form-group">
+                    <div>App Certificate：</div>
+                    <input type="text" class="form-control" name="appcert" placeholder="App certificate">
+                </li>
+                <li class="list-group-item form-group">
                     <div>Channel Name：</div>
                     <input type="text" class="form-control" name="channelName" placeholder="Channel name">
                 </li>
@@ -55,6 +49,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="feature-option" id="js_option">
+                    <button type="button" class="btn btn-info" data-type="start">Start</button>
                     <button type="button" class="btn btn-primary" data-type="connect">Connect</button>
                     <button type="button" class="btn btn-primary" data-type="switch">Switch Camera</button>
                     <!-- <div class="hide" id="js_set_device_box">

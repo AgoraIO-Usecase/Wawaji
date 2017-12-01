@@ -44,6 +44,7 @@ $(function () {
     $(".btn[data-type='connect']").off("click").on("click", function () {
         var appid = $("input[name='appid']").val();
         var channel = $("input[name='channelName']").val();
+        var appcert = $("input[name='appcert']").val()
 
         if (!appid || !channel) {
             alert("appid or channel empty");
@@ -54,10 +55,11 @@ $(function () {
             type: "GET",
             data: {
                 appid: appid,
-                channel: channel
+                channel: channel,
+                appcert: appcert
             }
         }).done(function (machine) {
-            if (!machine || machine === {}) {
+            if (!machine || !machine.name) {
                 alert("no machine found");
                 return;
             }
@@ -81,5 +83,28 @@ $(function () {
 
     $(".btn[data-type='switch']").off("click").on("click", function () {
         video_player.switchCamera();
+    });
+    $(".btn[data-type='start']").off("click").on("click", function () {
+        var appid = $("input[name='appid']").val();
+        var channel = $("input[name='channelName']").val();
+        var appcert = $("input[name='appcert']").val()
+
+        if (!appid || !channel) {
+            alert("appid or channel empty");
+            return;
+        }
+        $.ajax({
+            url: "/v1/machine/start",
+            type: "POST",
+            data: {
+                appid: appid,
+                channel: channel,
+                appcert: appcert
+            }
+        }).done(function (response) {
+            console.log(JSON.stringify(response));
+        }).fail(function (e) {
+            alert("err");
+        });
     });
 });

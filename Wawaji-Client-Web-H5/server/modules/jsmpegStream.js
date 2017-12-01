@@ -8,10 +8,11 @@ var fs = require('fs'),
     http = require('http'),
     WebSocket = require('ws');
 const exec = require('child_process').exec;
+const path = require('path');
 
 
 
-var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websocket_port2, secret, appid, channel, key) {
+var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websocket_port2, secret, appid, channel, key, exec_cb) {
     // Websocket Server
     var stream = this;
 
@@ -95,18 +96,24 @@ var JsMpegStream = function (stream_port1, stream_port2, websocket_port1, websoc
     // console.log('Awaiting WebSocket connections on ws://127.0.0.1:' + WEBSOCKET_PORT + '/');
     // setTimeout(function () {
         //start record server
-        var rand_uid = Math.floor(Math.random() * 100000);
-        var push_url1 = `http://localhost:${stream_port1}/${secret}`
-        var push_url2 = `http://localhost:${stream_port2}/${secret}`
-        var script = key ? `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}` : `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}`;
-        console.log(script);
-        exec(script, (error, stdout, stderr) => {
-            console.log(`${stdout}`);
-            console.log(`${stderr}`);
-            if (error !== null) {
-                console.log(`exec error: ${error}`);
-            }
-        });
+    var rand_uid = Math.floor(Math.random() * 100000);
+    var push_url1 = `http://localhost:${stream_port1}/${secret}`
+    var push_url2 = `http://localhost:${stream_port2}/${secret}`
+    var script = key ? `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -k ${key} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}` : `bash start_record_jsmpeg.sh -i ${appid} -c ${channel} -m ${push_url1} -s ${push_url2} -a ${"1"} -b ${"2"} -r ${rand_uid}`;
+    console.log(script);
+    exec(script, (error, stdout, stderr) => {
+        // console.log(`${stdout}`);
+        setTimeout(function(){
+            var file = path.join(__dirname, `../log/recorder_${channel}_${appid}_jsmpeg.log`);
+            var log = fs.readFileSync(file, "utf8");
+            console.log(log);
+            exec_cb && exec_cb(log);
+        }, 500);
+        // console.log(`${stderr}`);
+        // if (error !== null) {
+        //     console.log(`exec error: ${error}`);
+        // }
+    });
     // }, 3000);
 }
 

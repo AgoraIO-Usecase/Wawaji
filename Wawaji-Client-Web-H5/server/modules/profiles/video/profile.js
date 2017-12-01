@@ -9,11 +9,11 @@ var dbg = function () {
     }
 };
 
-TestProfile = function(mode, video_channel){
+VideoProfile = function(mode, video_channel, video_appid, video_appcert){
     var profile = this;
     this.machine = null;
-    this.appid = vault.appid;
-    this.appcert = vault.appcert;
+    this.appid = video_appid || vault.appid;
+    this.appcert = video_appcert || vault.appcert;
     this.url = vault.url;
     this.video_channel = video_channel || vault.video_channel;
     this.video_host = vault.video_host;
@@ -80,4 +80,4 @@ TestProfile = function(mode, video_channel){
 }
 
 
-module.exports = TestProfile;
+module.exports = VideoProfile;
