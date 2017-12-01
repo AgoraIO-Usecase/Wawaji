@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,14 +12,12 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import io.agora.common.Constant;
+import io.agora.common.ToastUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
-import io.agora.wawaji.app.ToastUtils;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
 import org.slf4j.Logger;
@@ -174,7 +170,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
                 final boolean isBroadcaster = isBroadcaster();
                 log.debug("onJoinChannelSuccess " + channel + " " + (uid & 0xFFFFFFFFL) + " " + elapsed + " " + isBroadcaster);
-                Log.e("OnJoinSuccess-->" , "") ;
                 worker().getEngineConfig().mUid = uid;
             }
         });
@@ -185,45 +180,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         log.debug("onUserOffline " + (uid & 0xFFFFFFFFL) + " " + reason);
         doRemoveRemoteUi(uid);
         mUidList.delete(uid);
-    }
-
-    @Override
-    public void onExtraInfo(int msg, Object... data) {
-        if (isFinishing()) {
-            return;
-        }
-
-        int intv;
-        boolean boolv;
-
-        switch (msg) {
-            case Constant.Wawaji_Msg_TIMEOUT:
-                intv = (Integer) data[0];
-                break;
-            case Constant.Wawaji_Msg_RESULT:
-                boolv = (Boolean) data[0];
-                if (boolv) {
-                    showLongToast("Congrats, lucky day");
-                } else {
-                    showShortToast("Sorry oops");
-                }
-                finish();
-                break;
-            case Constant.Wawaji_Msg_FORCED_LOGOUT:
-                showShortToast("Forced logout by others " + data[0]);
-                finish();
-                break;
-        }
-    }
-
-    private void requestRemoteStreamType(int uid) {
-        log.debug("requestRemoteStreamType " + (uid & 0xFFFFFFFFL));
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }, 500);
     }
 
     public void onCatcherBtnClicked(View view) {

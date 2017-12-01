@@ -35,8 +35,6 @@ public class WorkerThread extends Thread {
 
     private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2015;
 
-    private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2016;
-
     private static final class WorkerThreadHandler extends Handler {
 
         private WorkerThread mWorkerThread;
@@ -60,9 +58,8 @@ public class WorkerThread extends Thread {
                 case ACTION_WORKER_THREAD_QUIT:
                     mWorkerThread.exit();
                     break;
-                case 123:
+                case ACTION_WORKER_JOIN_CHANNEL:
                     String[] data = (String[]) msg.obj;
-                    Log.e("Action_worker_join_" , "doit") ;
                     mWorkerThread.joinChannel(data[0], msg.arg1);
                     break;
                 case ACTION_WORKER_LEAVE_CHANNEL:
@@ -80,7 +77,6 @@ public class WorkerThread extends Thread {
                 case ACTION_WORKER_WAWAJI_PREPARE:
                     mWorkerThread.prepareWawaji();
                     break;
-
             }
         }
     }
@@ -121,7 +117,7 @@ public class WorkerThread extends Thread {
         if (Thread.currentThread() != this) {
             log.warn("joinChannel() - worker thread asynchronously " + channel + " " + (uid & 0xFFFFFFFFL));
             Message envelop = new Message();
-            envelop.what = 123;
+            envelop.what = ACTION_WORKER_JOIN_CHANNEL;
             envelop.obj = new String[]{channel};
             envelop.arg1 = uid;
             mWorkerHandler.sendMessage(envelop);

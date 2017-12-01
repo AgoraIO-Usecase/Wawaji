@@ -14,17 +14,4 @@ public class Constant {
         }
         MEDIA_SDK_VERSION = sdk;
     }
-
-    public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
-
-    public static final int Wawaji_Ctrl_START = 1;
-    public static final int Wawaji_Ctrl_UP = 2;
-    public static final int Wawaji_Ctrl_DOWN = 3;
-    public static final int Wawaji_Ctrl_LEFT = 4;
-    public static final int Wawaji_Ctrl_RIGHT = 5;
-    public static final int Wawaji_Ctrl_CATCH = 6;
-
-    public static final int Wawaji_Msg_TIMEOUT = 1;
-    public static final int Wawaji_Msg_RESULT = 2;
-    public static final int Wawaji_Msg_FORCED_LOGOUT = 3;
 }
