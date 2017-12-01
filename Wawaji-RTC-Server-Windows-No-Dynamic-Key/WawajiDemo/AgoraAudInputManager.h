@@ -25,5 +25,6 @@ private:
 	HWND						m_hOldMsgWnd;
 	AAudioDeviceManager			*m_ptrDeviceManager;
 	IAudioDeviceCollection		*m_lpCollection;
+	bool m_bIsCreateSuccess;
 };
 

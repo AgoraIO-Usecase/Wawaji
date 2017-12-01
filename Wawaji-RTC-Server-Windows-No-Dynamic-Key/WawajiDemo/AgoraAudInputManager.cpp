@@ -6,6 +6,7 @@ CAgoraAudInputManager::CAgoraAudInputManager()
 	: m_ptrDeviceManager(NULL)
 	, m_lpCollection(NULL)
 	, m_bTestingOn(FALSE)
+	, m_bIsCreateSuccess(FALSE)
 {
 }
 
@@ -29,7 +30,8 @@ BOOL CAgoraAudInputManager::Create(IRtcEngine *lpRtcEngine)
 		delete m_ptrDeviceManager;
 		m_ptrDeviceManager = NULL;
 	}
-
+	
+	m_bIsCreateSuccess = (m_lpCollection != NULL ? TRUE : FALSE);
 	return m_lpCollection != NULL ? TRUE : FALSE;
 }
 
@@ -50,7 +52,7 @@ UINT CAgoraAudInputManager::GetVolume()
 {
 	int nVol = 0;
 
-	if (*m_ptrDeviceManager != NULL)
+	if (m_bIsCreateSuccess && *m_ptrDeviceManager != NULL)
 		(*m_ptrDeviceManager)->getRecordingDeviceVolume(&nVol);
 
 	return (UINT)nVol;
@@ -60,7 +62,7 @@ BOOL CAgoraAudInputManager::SetVolume(UINT nVol)
 {
 	int nRet = -1;
 	
-	if (*m_ptrDeviceManager != NULL)
+	if (m_bIsCreateSuccess && *m_ptrDeviceManager != NULL)
 		nRet = (*m_ptrDeviceManager)->setRecordingDeviceVolume((int)nVol);
 
 	return nRet == 0 ? TRUE : FALSE;
@@ -68,7 +70,7 @@ BOOL CAgoraAudInputManager::SetVolume(UINT nVol)
 
 UINT CAgoraAudInputManager::GetDeviceCount()
 {
-	if (m_lpCollection != NULL)
+	if (m_bIsCreateSuccess && m_lpCollection != NULL)
 		return (UINT)m_lpCollection->getCount();
 
 	return 0;
@@ -79,6 +81,7 @@ BOOL CAgoraAudInputManager::GetDevice(UINT nIndex, CString &rDeviceName, CString
 	CHAR szDeviceName[MAX_DEVICE_ID_LENGTH];
 	CHAR szDeviceID[MAX_DEVICE_ID_LENGTH];
 
+	if (!m_bIsCreateSuccess)return FALSE;
 	ASSERT(nIndex < GetDeviceCount());
 
 	if (nIndex >= GetDeviceCount())
@@ -110,6 +113,7 @@ CString CAgoraAudInputManager::GetCurDeviceID()
 	CString		str;
 	CHAR		szDeviceID[MAX_DEVICE_ID_LENGTH];
 	
+	if (!m_bIsCreateSuccess)return _T("");
 	if (*m_ptrDeviceManager != NULL)
 		(*m_ptrDeviceManager)->getRecordingDevice(szDeviceID);
 
@@ -125,7 +129,7 @@ CString CAgoraAudInputManager::GetCurDeviceID()
 
 BOOL CAgoraAudInputManager::SetCurDevice(LPCTSTR lpDeviceID)
 {
-	if (*m_ptrDeviceManager == NULL)
+	if (!m_bIsCreateSuccess || *m_ptrDeviceManager == NULL)
 		return FALSE;
 
 #ifdef UNICODE
@@ -141,7 +145,7 @@ BOOL CAgoraAudInputManager::SetCurDevice(LPCTSTR lpDeviceID)
 
 void CAgoraAudInputManager::TestAudInputDevice(HWND hMsgWnd, BOOL bTestOn)
 {
-	if (m_ptrDeviceManager == NULL)
+	if (!m_bIsCreateSuccess || m_ptrDeviceManager == NULL)
 		return;
 
 	if (bTestOn && !m_bTestingOn) {
