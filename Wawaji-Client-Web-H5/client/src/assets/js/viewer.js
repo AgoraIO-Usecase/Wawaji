@@ -16,26 +16,58 @@ $(function () {
         var player = this;
         this.cameras = null;
         this.camera = null;
-        this.player = null;
+        this.player1 = null;
+        this.player2 = null;
+        this.switching = false;
 
 
-        this.play = function (url) {
+        this.play = function (url, position) {
+            if(player.switching){
+                console.log("switching...");
+                return;
+            }
+
             var canvas = document.getElementById('jsmpeg-player');
-            if (!player.player) {
-                player.player = new JSMpeg.Player(url, { canvas: canvas });
+            var canvas2 = document.getElementById('jsmpeg-player2');
+            player.switching = true;
+            var switching_time = 1000;
+
+            if(position === 0){
+                //front
+                if(!player.player1){
+                    player.player1 = new JSMpeg.Player(url, { canvas: canvas });
+                    setTimeout(function(){
+                        $(canvas2).hide();
+                        $(canvas).show();
+                        player.player2 && player.player2.destroy();
+                        player.player2 = null;
+                        player.switching = false;
+                    }, switching_time);
+                } else {
+                }
             } else {
-                player.player.destroy();
-                player.player = null;
-                player.player = new JSMpeg.Player(url, { canvas: canvas });
+                //side
+                if(!player.player2){
+                    player.player2 = new JSMpeg.Player(url, { canvas: canvas2 });
+                    setTimeout(function(){
+                        $(canvas).hide();
+                        $(canvas2).show();
+                        player.player1 && player.player1.destroy();
+                        player.player1 = null;
+                        player.switching = false;
+                    }, switching_time);
+                } else {
+                }
             }
         }
         this.switchCamera = function () {
             if (camera === cameras.main) {
                 camera = cameras.sub;
+                player.play(camera, 1);
             } else {
                 camera = cameras.main;
+                player.play(camera, 0);
             }
-            player.play(camera);
         }
     }
 
@@ -51,7 +83,8 @@ $(function () {
             return;
         }
         $.ajax({
-            url: "/v1/machine",
+            // url: "/v1/machine",
+            url: "http://wawa1.agoraio.cn:4000/v1/machine",
             type: "GET",
             data: {
                 appid: appid,
@@ -74,7 +107,7 @@ $(function () {
             } else {
                 cameras = machine.cameras;
                 camera = machine.cameras.main;
-                video_player.play(camera);
+                video_player.play(camera, 0);
             }
         }).fail(function (e) {
             alert("err");
