@@ -158,23 +158,23 @@ $(function () {
             }
             this.control = function (data, pressed) {
                 var action = data;
-                // if(!game.player.isUsingFrontCamera()){
-                //     //if is using side camera, update control
-                //     switch(data){
-                //         case 'left':
-                //         action = 'down';
-                //         break;
-                //         case 'right':
-                //         action = 'up';
-                //         break;
-                //         case 'up':
-                //         action = 'left';
-                //         break;
-                //         case 'down':
-                //         action = 'right';
-                //         break;
-                //     }
-                // }
+                if(!game.player.isUsingFrontCamera()){
+                    //if is using side camera, update control
+                    switch(data){
+                        case 'left':
+                        action = 'down';
+                        break;
+                        case 'right':
+                        action = 'up';
+                        break;
+                        case 'up':
+                        action = 'left';
+                        break;
+                        case 'down':
+                        action = 'right';
+                        break;
+                    }
+                }
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
             }
             this.catch = function () {
@@ -199,6 +199,10 @@ $(function () {
                 player.player2 = null;
                 player.slow_switch = parseInt(getParameterByName("slow_switch")) === 1;
 
+
+                player.isUsingFrontCamera = function(){
+                    return player.cameras && player.camera === player.cameras.front;
+                }
 
                 if (player.method === 1) {
                     if (game.machine.video_rotation === 90) {
@@ -335,8 +339,6 @@ $(function () {
                         setTimeout(player.play, 1000 / player.frame_rate);
                     }
                 }
-
-
             }
             game.player = new Lobby.VideoPlayer("player", game.machine.stream_method);
         }
