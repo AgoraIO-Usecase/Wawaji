@@ -226,12 +226,14 @@ void CEnterChannelDlg::OnBnClickedBtntestChannel()
 		return;
 	}
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
+	m_lpAgoraObject->EnableWebSdkInteroperability(TRUE);
 	m_lpAgoraObject->SetLogFilePath(NULL);
 	m_lpAgoraObject->SetMsgHandlerWnd(GetSafeHwnd());
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
 	m_lpAgoraObject->EnableVideo(TRUE);
 	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);
 	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);
+
 
 	m_dlgDevice.ShowWindow(SW_SHOW);
 	m_dlgDevice.CenterWindow();
