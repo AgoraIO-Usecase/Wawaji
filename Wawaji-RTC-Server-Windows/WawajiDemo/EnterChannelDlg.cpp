@@ -194,6 +194,7 @@ void CEnterChannelDlg::OnBnClickedBtntestChannel()
 		return;
 	}
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
+	m_lpAgoraObject->EnableWebSdkInteroperability(TRUE);
 	m_lpAgoraObject->SetLogFilePath(NULL);
 	m_lpAgoraObject->SetMsgHandlerWnd(GetSafeHwnd());
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
