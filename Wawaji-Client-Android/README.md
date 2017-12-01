@@ -2,15 +2,15 @@
 
 *Read this in other languages: [English](README.en.md)*
 
-- **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
+- **注意，本项目演示了基本的音视频通话界面，可进入娃娃机直播间观看娃娃机操作，用户不能自己操作娃娃机，控制部分需自己实现**
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
-这个示例项目演示了如何快速集成 Agora 视频和信令 SDK，实现在线抓娃娃。
+这个示例项目演示了如何快速集成 Agora 视频 SDK，实现进入直播间即可观看主播抓娃娃操作。
 
 在这个示例项目中包含了以下功能：
 
-- 进入娃娃机；
-- 上机和抓娃娃；
+- 进入直播间；
+- 观看主播抓娃娃（自己操作娃娃机功能需要单独实现）；
 - 离开
 
 ## 运行示例程序
@@ -18,13 +18,12 @@
 
 ```
 <string name="agora_app_id"><#YOUR APP ID#></string>
-```
-
-在本示例当中娃娃机的控制是使用第三方的基于 [WebSocket](https://en.wikipedia.org/wiki/WebSocket)，开发者需要根据自己的情况调整这部分代码，具体的控制协议格式也可能需要修改
 
 ```
-public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
-```
+
+[Agora.io SDK](https://www.agora.io/cn/download/) 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs** 文件夹下的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下。
+
+在本示例当中娃娃机的控制是没有实现的，需要开发者自己去实现这部分功能。
 
 最后用 Android Studio 打开该项目，连上设备，编译并运行。
 

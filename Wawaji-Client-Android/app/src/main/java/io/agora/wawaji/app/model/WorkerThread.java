@@ -8,25 +8,15 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.agora.common.Constant;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.CountDownLatch;
-
-import static io.agora.common.Constant.*;
 
 public class WorkerThread extends Thread {
     private final static Logger log = LoggerFactory.getLogger(WorkerThread.class);
@@ -44,8 +34,6 @@ public class WorkerThread extends Thread {
     private static final int ACTION_WORKER_PREVIEW = 0X2014;
 
     private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2015;
-
-    private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2016;
 
     private static final class WorkerThreadHandler extends Handler {
 
@@ -89,9 +77,6 @@ public class WorkerThread extends Thread {
                 case ACTION_WORKER_WAWAJI_PREPARE:
                     mWorkerThread.prepareWawaji();
                     break;
-                case ACTION_WORKER_WAWAJI_CTRL:
-                    mWorkerThread.ctrlWawaji(msg.arg1);
-                    break;
             }
         }
     }
@@ -128,8 +113,6 @@ public class WorkerThread extends Thread {
 
     private RtcEngine mRtcEngine;
 
-    private WebSocketClient mWawajiCtrl;
-
     public final void joinChannel(final String channel, int uid) {
         if (Thread.currentThread() != this) {
             log.warn("joinChannel() - worker thread asynchronously " + channel + " " + (uid & 0xFFFFFFFFL));
@@ -161,11 +144,6 @@ public class WorkerThread extends Thread {
 
         if (mRtcEngine != null) {
             mRtcEngine.leaveChannel();
-        }
-
-        if (mWawajiCtrl != null) {
-            mWawajiCtrl.close();
-            mWawajiCtrl = null;
         }
 
         int clientRole = mEngineConfig.mClientRole;
@@ -222,61 +200,9 @@ public class WorkerThread extends Thread {
             return;
         }
 
-        URI uri;
-        try {
-            uri = new URI(Constant.WAWAJI_SERVER_URL);
-        } catch (URISyntaxException e) {
-            log.error(Log.getStackTraceString(e));
-            return;
-        }
 
         mConnectLatch = new CountDownLatch(1);
         mReadyLatch = new CountDownLatch(1);
-
-        mWawajiCtrl = new WebSocketClient(uri) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                log.debug("onOpen " + serverHandshake);
-                mWawajiCtrl.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
-                mConnectLatch.countDown();
-            }
-
-            @Override
-            public void onMessage(String message) {
-                log.debug("onMessage " + message);
-
-                JsonParser parser = new JsonParser();
-                JsonElement jElem = parser.parse(message);
-                JsonObject obj = jElem.getAsJsonObject();
-                jElem = obj.get("type");
-
-                String type = jElem.getAsString();
-                if ("Ready".equals(type)) {
-                    mReadyLatch.countDown();
-                } else if ("Time".equals(type)) {
-                    jElem = obj.get("data");
-                    int timeout = jElem.getAsInt();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_TIMEOUT, timeout);
-                } else if ("Result".equals(type)) {
-                    jElem = obj.get("data");
-                    boolean gotone = jElem.getAsBoolean();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, gotone);
-                }
-            }
-
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                log.debug("onClose " + i + " " + s + " " + b);
-                WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_FORCED_LOGOUT, s);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                log.error("onError " + Log.getStackTraceString(e));
-            }
-        };
-
-        mWawajiCtrl.connect();
 
         try {
             mConnectLatch.await();
@@ -284,52 +210,6 @@ public class WorkerThread extends Thread {
             e.printStackTrace();
         }
 
-        log.debug("prepareWawaji " + " " + mEngineConfig.mVideoProfile + " " + mWawajiCtrl + " " + mConnectLatch.getCount());
-    }
-
-    public final void ctrlWawaji(int ctrl) {
-        if (Thread.currentThread() != this) {
-            log.warn("ctrlWawaji() - worker thread asynchronously " + ctrl);
-            Message envelop = new Message();
-            envelop.what = ACTION_WORKER_WAWAJI_CTRL;
-            envelop.arg1 = ctrl;
-            mWorkerHandler.sendMessage(envelop);
-            return;
-        }
-
-        if (mReadyLatch.getCount() > 0) {
-            try {
-                mReadyLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        switch (ctrl) {
-            case Wawaji_Ctrl_START:
-                mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":\"\",\"extra\":123456}");
-                break;
-            case Wawaji_Ctrl_DOWN:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"d\"}");
-                break;
-            case Wawaji_Ctrl_UP:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"u\"}");
-                break;
-            case Wawaji_Ctrl_LEFT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"l\"}");
-                break;
-            case Wawaji_Ctrl_RIGHT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"r\"}");
-                break;
-            case Wawaji_Ctrl_CATCH:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"b\"}");
-                break;
-            default:
-                log.warn("Unknown ctrl " + ctrl);
-                break;
-        }
-
-        log.warn("ctrlWawaji done " + ctrl + " " + mReadyLatch.getCount());
     }
 
     public final void preview(boolean start, SurfaceView view, int uid) {

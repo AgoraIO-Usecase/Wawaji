@@ -1,6 +1,7 @@
 package io.agora.wawaji.app.model;
 
 import android.content.Context;
+
 import io.agora.rtc.IRtcEngineEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,6 @@ public class MyEngineEventHandler {
 
     public void removeEventHandler(AGEventHandler handler) {
         this.mEventHandlerList.remove(handler);
-    }
-
-    public void notifyAppLayer(int msg, Object... data) {
-        Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
-        while (it.hasNext()) {
-            AGEventHandler handler = it.next();
-            handler.onExtraInfo(msg, data);
-        }
     }
 
     final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
@@ -112,7 +105,6 @@ public class MyEngineEventHandler {
         public void onWarning(int warn) {
             log.debug("onWarning " + warn);
         }
-
     };
 
 }
