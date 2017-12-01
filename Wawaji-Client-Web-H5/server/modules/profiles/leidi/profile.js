@@ -22,6 +22,7 @@ LeiDiProfile = function(mode){
     this.mode = mode;
     this.actions = {};
 
+    dbg(`${this.appid}, ${vault.appid}, ${vault.appcert}`);
 
     this.onResult = null;
     this.onError = null;

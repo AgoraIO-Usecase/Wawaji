@@ -12,6 +12,7 @@ var bodyParser = require('body-parser');
 var vault = require('./modules/vault')
 var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
 var LeiDiProfile = require('./modules/profiles/leidi/profile');
+var LeyaoyaoProfile = require('./modules/profiles/leyaoyao/profile');
 var TestProfile = require('./modules/profiles/test/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
 var api  = require('./routes/api');
@@ -45,6 +46,7 @@ app.use(function (req, res, next) {
 var zhuazhua_profile = new ZhuaZhuaProfile(StreamMethod.IMAGES);
 var zhuazhua2_profile = new ZhuaZhuaProfile(StreamMethod.JSMPEG);
 var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
+var leyaoyao_profile = new LeyaoyaoProfile(StreamMethod.JSMPEG);
 var test_profile = new TestProfile(StreamMethod.JSMPEG);
 // var test = new TestProfile(StreamMethod.IMAGES);
 
@@ -52,14 +54,19 @@ var unique = function(s){
     return s + (process.argv[2] ? "_" + process.argv[2] :  "");
 }
 
+request(leyaoyao_profile.http_url, function (err, response, body) {
+	console.log(body);
+    var msg = JSON.parse(body);
+    if (msg) {
+        leyaoyao_profile.url = msg.data.wsUrl;
+    }
+});
+
 var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
-    // 85
-    manager.machines.add(unique('machine_zhuazhua'), zhuazhua2_profile);
-    manager.machines.add(unique('machine_zhuazhua2'), zhuazhua_profile);
-    // 87
-    // manager.machines.add(unique('machine_leidi'), leidi_profile);
-    // manager.machines.add(unique('machine_test'), test_profile);
+    manager.machines.add(unique('machine_leyaoyao'), leyaoyao_profile);
+    manager.machines.add(unique('machine_leidi'), leidi_profile);
+    manager.machines.add(unique('machine_zhuazhua2'), zhuazhua2_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }
 

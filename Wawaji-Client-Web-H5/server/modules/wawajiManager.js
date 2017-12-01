@@ -164,12 +164,13 @@ Wawaji.Server = function (serverid, io) {
 
         dbg(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
         if (this.stream_method === StreamMethod.JSMPEG) {
+            var rand_uid = Math.floor(Math.random() * 100000);
             if (profile.appcert) {
-                request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-                    machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body);
+                request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=${rand_uid}&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
+                    machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body, rand_uid);
                 });
             } else {
-                machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel);
+                machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, null, rand_uid);
             }
         } else {
             if (!profile.video_host) {
@@ -193,6 +194,7 @@ Wawaji.Server = function (serverid, io) {
                 return;
             }
             if (machine.url) {
+                dbg(machine.url);
                 var socket = new WebSocket(machine.url);
                 machine.socket = socket;
 
@@ -407,6 +409,12 @@ Wawaji.Server = function (serverid, io) {
             machine.channel.messageChannelSend(JSON.stringify({ type: "RESULT", data: result, player: machine.playing }));
             machine.setStatus(WawajiStatus.WAITING);
             machine.processQueue();
+        }
+
+        profile.onReinitWS = function(cb){
+            initWS(function(){
+                cb && cb();
+            });
         }
 
         this.sendInfo = function (account, m) {
