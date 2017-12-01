@@ -2,22 +2,22 @@
 
 *Read this in other languages: [English](README.en.md)*
 
+- **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
+
 这个示例项目演示了如何快速集成 Agora 视频 SDK，实现直播抓娃娃。
 
 在这个示例项目中包含了以下功能：
 
+- 不启用动态密钥鉴权；
 - 进入直播间；
 - 直播抓娃娃；
 - 离开
 
 ## 运行示例程序
-首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。
-
-将 AppID 填写进 "app/src/main/res/values/strings_config.xml"
+首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "app/src/main/res/values/strings_config.xml"
 
 ```
 <string name="agora_app_id"><#YOUR APP ID#></string>
-
 ```
 
 [Agora.io SDK](https://www.agora.io/cn/download/) 下载 **视频通话 SDK**，解压后将其中的 **libs** 文件夹下的 ***.jar** 复制到本项目的 **app/libs** 下，其中的 **libs** 文件夹下的 **arm64-v8a**/**x86**/**armeabi-v7a** 复制到本项目的 **app/src/main/libs** 下。

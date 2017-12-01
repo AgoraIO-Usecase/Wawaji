@@ -2,16 +2,15 @@
 
 *Read this in other languages: [English](README.en.md)*
 
-- **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
 这个示例项目演示了如何快速集成 Agora 视频和信令 SDK，实现在线抓娃娃的音视频采集服务端。
 
 在这个示例项目中包含了以下功能：
 
--没有启用certId
--修改UI,所有的应用参数全部开放给用户
--加入publishRtmp
+- 不启用动态密钥鉴权；
+- 自定义 UI，所有的应用参数全部开放给用户；
+- 启用服务端旁路推流
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "WawajiDemo/AgoraObject.h"
