@@ -707,8 +707,9 @@ margin-bottom: 20px;
       "description" : "Machine video channel name"
     },
     "stream_method" : {
-      "type" : "integer",
-      "description" : "Stream method of machine 0 - Image, 1 - JSMpeg"
+      "type" : "string",
+      "description" : "Stream method of machine 0 - Image, 1 - JSMpeg",
+      "enum" : [ "Image", "JSMpeg" ]
     },
     "video_rotation" : {
       "type" : "integer",
@@ -1150,7 +1151,7 @@ except ApiException as e:
           </div>
           <div id="generator">
             <div class="content">
-              Generated 2017-12-01T12:27:40.062Z
+              Generated 2017-12-01T14:23:54.321Z
             </div>
           </div>
       </div>
