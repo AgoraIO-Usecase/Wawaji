@@ -1,6 +1,8 @@
 package io.agora.wawaji.app.model;
 
 import android.content.Context;
+import android.util.Log;
+
 import io.agora.rtc.IRtcEngineEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +94,7 @@ public class MyEngineEventHandler {
         public void onError(int err) {
             super.onError(err);
             log.debug("onError " + err);
+            Log.e("onError-->" , err + "") ;
         }
 
         @Override
@@ -103,16 +106,17 @@ public class MyEngineEventHandler {
                 AGEventHandler handler = it.next();
                 handler.onJoinChannelSuccess(channel, uid, elapsed);
             }
+            Log.e("joinChannelSuccess-->" , uid + "") ;
         }
 
         public void onRejoinChannelSuccess(String channel, int uid, int elapsed) {
             log.debug("onRejoinChannelSuccess " + channel + " " + uid + " " + elapsed);
+            Log.e("rejoinChannelSuccess-->" , uid + "") ;
         }
 
         public void onWarning(int warn) {
             log.debug("onWarning " + warn);
         }
-
     };
 
 }

@@ -1,10 +1,12 @@
 package io.agora.wawaji.app.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,15 +14,20 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import io.agora.common.Constant;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
+import io.agora.wawaji.app.ToastUtils;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.ref.WeakReference;
 
 public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler {
 
@@ -66,11 +73,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         String roomName = i.getStringExtra(ConstantApp.ACTION_KEY_ROOM_NAME);
 
         doConfigEngine(cRole);
-
-        if (isBroadcaster(cRole)) {
-            worker().prepareWawaji();
-            worker().ctrlWawaji(Constant.Wawaji_Ctrl_START);
-        }
 
         worker().joinChannel(roomName, config().mUid);
 
@@ -172,7 +174,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
                 final boolean isBroadcaster = isBroadcaster();
                 log.debug("onJoinChannelSuccess " + channel + " " + (uid & 0xFFFFFFFFL) + " " + elapsed + " " + isBroadcaster);
-
+                Log.e("OnJoinSuccess-->" , "") ;
                 worker().getEngineConfig().mUid = uid;
             }
         });
@@ -230,7 +232,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_CATCH);
+        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
     }
 
     public void onRightBtnClicked(View view) {
@@ -239,7 +241,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT);
+        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
     }
 
     public void onDownBtnClicked(View view) {
@@ -248,7 +250,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN);
+        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
     }
 
     public void onUpBtnClicked(View view) {
@@ -257,7 +259,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP);
+        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
     }
 
     public void onLeftBtnClicked(View view) {
@@ -266,7 +268,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT);
+        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
     }
 
     public void onSwitchCameraClicked(View view) {
