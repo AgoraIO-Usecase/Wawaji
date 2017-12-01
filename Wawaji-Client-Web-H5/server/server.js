@@ -9,7 +9,6 @@ const ps = require('ps-node');
 const request = require('request');
 var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
-var vault = require('./modules/vault')
 var VideoProfile = require('./modules/profiles/video/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
 var api = require('./routes/api');
