@@ -7,25 +7,19 @@
 这个示例项目演示了如何快速集成 Agora视频，实现在线抓娃娃的音视频采集服务端。
 
 ## 功能说明
--1.不需要获取channelKey加入房间
-
--2.用户自定义配置appID,channelName,UID以及推流地址
-
--3.自定义摄像头采集参数
+- 1.不需要获取channelKey加入房间
+- 2.用户自定义配置appID,channelName,UID以及推流地址
+- 3.自定义摄像头采集参数
 
 ## 集成编译说明
--1.登录房间参数配置在EnterDlg.cpp文件中的InitCtrl() 部分修改
-
--2.推流参数 在DeviceDlg.cpp的InitCtrl()中修改
-
+-1 .登录房间参数配置在EnterDlg.cpp文件中的InitCtrl() 部分修改
+-2 .推流参数 在DeviceDlg.cpp的InitCtrl()中修改
 最后用 Visual Studio 打开该项目，编译并运行。
 
 ## 执行说明
-- 1.SDK环境1.14.2
-
--2.需要将SDK中的dll文件拷贝到编译执行文件目录
-
--3.确保音频录制设备，音频播放设备，摄像头设备驱动正常，否则可能出现error.
+-1 .SDK环境1.14.2
+-2 .需要将SDK中的dll文件拷贝到编译执行文件目录
+-3 .确保音频录制设备，音频播放设备，摄像头设备驱动正常，否则可能出现error.
 
 ## 运行环境
 - 运行 Windows 的个人电脑或者工业主板
