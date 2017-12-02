@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		706EFAAE1FD174B50014278F /* WawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAD1FD174B50014278F /* WawajiController.swift */; };
+		706EFAB01FD178300014278F /* ZinianWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAF1FD178300014278F /* ZinianWawajiController.swift */; };
 		707336681FC53AEA005844ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707336671FC53AEA005844ED /* AppDelegate.swift */; };
 		7073366A1FC53AEA005844ED /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707336691FC53AEA005844ED /* MainViewController.swift */; };
 		7073366D1FC53AEA005844ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7073366B1FC53AEA005844ED /* Main.storyboard */; };
@@ -21,11 +23,15 @@
 		7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368D1FC55617005844ED /* VideoToolbox.framework */; };
 		707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368F1FC557BE005844ED /* AVFoundation.framework */; };
 		707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 707336911FC557D5005844ED /* CoreTelephony.framework */; };
+		709DC31D1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */; };
+		709DC33B1FD25B1500DFBE68 /* WawajiControllerCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */; };
 		D0C714EA8AE62853FCEBA9BB /* Pods_Wawaji_Client.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.release.xcconfig"; sourceTree = "<group>"; };
+		706EFAAD1FD174B50014278F /* WawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WawajiController.swift; sourceTree = "<group>"; };
+		706EFAAF1FD178300014278F /* ZinianWawajiController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZinianWawajiController.swift; sourceTree = "<group>"; };
 		707336641FC53AEA005844ED /* Wawaji-Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		707336671FC53AEA005844ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		707336691FC53AEA005844ED /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -42,6 +48,8 @@
 		7073368D1FC55617005844ED /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		7073368F1FC557BE005844ED /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		707336911FC557D5005844ED /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeyaoyaoWawajiController.swift; sourceTree = "<group>"; };
+		709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WawajiControllerCreator.swift; sourceTree = "<group>"; };
 		CEA1C40D486E0D18449BB377 /* Pods-Wawaji-Client.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.debug.xcconfig"; sourceTree = "<group>"; };
 		CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wawaji_Client.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -102,6 +110,10 @@
 				707336671FC53AEA005844ED /* AppDelegate.swift */,
 				707336691FC53AEA005844ED /* MainViewController.swift */,
 				707336791FC53C7C005844ED /* PlayViewController.swift */,
+				706EFAAD1FD174B50014278F /* WawajiController.swift */,
+				709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */,
+				709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */,
+				706EFAAF1FD178300014278F /* ZinianWawajiController.swift */,
 				707336851FC54E37005844ED /* KeyCenter.swift */,
 				7073366B1FC53AEA005844ED /* Main.storyboard */,
 				7073366E1FC53AEB005844ED /* Assets.xcassets */,
@@ -134,6 +146,7 @@
 				707336621FC53AEA005844ED /* Resources */,
 				932309BD5941A59D58727F41 /* [CP] Embed Pods Frameworks */,
 				6F97265451D9600D005F4B7B /* [CP] Copy Pods Resources */,
+				709DC33C1FD26F2900DFBE68 /* Report warning for TODO & FIXME comments */,
 			);
 			buildRules = (
 			);
@@ -209,6 +222,20 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		709DC33C1FD26F2900DFBE68 /* Report warning for TODO & FIXME comments */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Report warning for TODO & FIXME comments";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TAGS=\"TODO:|FIXME:\"\necho \"searching ${SRCROOT} for ${TAGS}\"\nfind \"${SRCROOT}\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($TAGS).*\\$\" | perl -p -e \"s/($TAGS)/ warning: \\$1/\"";
+		};
 		932309BD5941A59D58727F41 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -252,10 +279,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				706EFAB01FD178300014278F /* ZinianWawajiController.swift in Sources */,
+				709DC31D1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift in Sources */,
 				707336861FC54E37005844ED /* KeyCenter.swift in Sources */,
 				7073366A1FC53AEA005844ED /* MainViewController.swift in Sources */,
 				7073367A1FC53C7C005844ED /* PlayViewController.swift in Sources */,
 				707336681FC53AEA005844ED /* AppDelegate.swift in Sources */,
+				706EFAAE1FD174B50014278F /* WawajiController.swift in Sources */,
+				709DC33B1FD25B1500DFBE68 /* WawajiControllerCreator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,15 +15,32 @@
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 KeyCenter.swift。
 
 ```
-static let AppId: String = "Your App ID"
+static let appId: String = "Your App ID"
 ```
 
-本项目的第三方娃娃机控制使用 WebSocket 协议，您需要将娃娃机的控制 URL 填写进 PlayViewController.swift。
+本项目目前支持乐摇摇和和梓年两个厂家的娃娃机。默认连接乐摇摇娃娃机，请将乐摇摇 AppID 和房间号填写进 LeyaoyaoWawajiController.swift
 
 ```
-static let WebSocketUrlString: String = "Your Wawaji Controlling WebSocket Url";
+static let leyaoyaoServer: String = "Leyaoyao Server Address"
+static let leyaoyaoAppID: String = "Your App ID from Leyaoyao"
+
+let binding = "Your User ID"
+let roomId : Int! = Leyaoyao Room ID
+```
+
+
+如需连接梓年娃娃机，请修改 PlayViewController.swift 中 wawajiManufacturer 常量的值。
 
 ```
+let wawajiManufacturer = WawajiManufacturer.ZiNian
+```
+
+并将娃娃机的控制 URL 填写进 ZinianWawajiController.swift。
+
+```
+let webSocketUrl: String = "Your Wawaji Controlling WebSocket Url"
+```
+
 
 然后在 [Agora.io SDK](https://www.agora.io/cn/download/)
 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs/AgoraRtcEngineKit.framework** 复制到本目录。
