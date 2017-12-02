@@ -14,7 +14,7 @@
 ## 集成编译说明
 - 1.登录房间参数配置在EnterDlg.cpp文件中的InitCtrl() 部分修改
 - 2.推流参数 在DeviceDlg.cpp的InitCtrl()中修改
-最后用 Visual Studio 打开该项目，编译并运行。
+- 3.最后用 Visual Studio 打开该项目，编译并运行。
 
 ## 执行说明
 - 1.SDK环境1.14.2
