@@ -82,9 +82,6 @@
     <ClCompile Include="FileIO.cpp">
       <Filter>Single</Filter>
     </ClCompile>
-    <ClCompile Include="SingleWrap.cpp">
-      <Filter>Single</Filter>
-    </ClCompile>
     <ClCompile Include="AgoraWawajiDemoDlg.cpp">
       <Filter>UI\Dialog</Filter>
     </ClCompile>
@@ -184,15 +181,6 @@
       <Filter>Single</Filter>
     </ClInclude>
     <ClInclude Include="FileIO.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleWrap.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="generatorSignalToken.h">
       <Filter>Single</Filter>
     </ClInclude>
     <ClInclude Include="AgoraWawajiDemoDlg.h">

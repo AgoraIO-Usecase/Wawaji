@@ -71,7 +71,6 @@ BOOL CChatDlg::PreTranslateMessage(MSG* pMsg)
 			m_edtChatBox.GetWindowText(str);
 			if (str.GetLength() > 0) {
 				//CAgoraObject::GetAgoraObject()->SendChatMessage(m_nStreamID, str);
-				::SendMessage(GetParent()->m_hWnd, WM_SingleInstanceSendMsg, m_nStreamID, LPARAM(&str));
 				AddChatMessage(0, str);
 				m_edtChatBox.SetWindowText(_T(""));
 			}
