@@ -4,26 +4,22 @@
 
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
-这个示例项目演示了如何快速集成 Agora 视频和信令 SDK，实现在线抓娃娃的音视频采集服务端。
+这个示例项目演示了如何快速集成 Agora视频，实现在线抓娃娃的音视频采集服务端。
 
-在这个示例项目中包含了以下功能：
+功能说明：
+1.不需要获取channelKey加入房间
+2.用户自定义配置appID,channelName,UID以及推流地址
+3.自定义摄像头采集参数
 
-- 不启用动态密钥鉴权；
-- 自定义 UI，所有的应用参数全部开放给用户；
-- 启用服务端旁路推流
-
-## 运行示例程序
-首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "WawajiDemo/AgoraObject.h"
-
-```
-#define APP_ID				_T("YOUR APP ID")
-```
-```
-appId_ = "YOUR SIGNALING APP ID";
-appCertificateId_ = "YOUR SIGNALING APP CERTIFICATE";
-```
+集成编译说明：
+1.登录房间参数配置在EnterDlg.cpp文件中的InitCtrl() 部分修改
+2.推流参数 在DeviceDlg.cpp的InitCtrl()中修改
 
 最后用 Visual Studio 打开该项目，编译并运行。
+执行说明：
+1.SDK环境1.14.2
+2.需要将SDK中的dll文件拷贝到编译执行文件目录
+3.确保音频录制设备，音频播放设备，摄像头设备驱动正常，否则可能出现error.
 
 ## 运行环境
 - 运行 Windows 的个人电脑或者工业主板
