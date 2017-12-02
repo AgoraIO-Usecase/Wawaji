@@ -25,6 +25,8 @@ class LeyaoyaoWawajiController: NSObject, WawajiController {
         webSocket = nil
     }
     
+    // MARK: - Public Methods
+    
     func initialize() {
 //        getRooms()
         createUser()
@@ -88,6 +90,8 @@ class LeyaoyaoWawajiController: NSObject, WawajiController {
         return sendWebSocketMessage(messageDic)
     }
     
+    // MARK: - HTTP Connection
+
     private func getRooms() {
         let url = URL(string: LeyaoyaoWawajiController.leyaoyaoServer + "/api/rooms?appId=" + LeyaoyaoWawajiController.leyaoyaoAppID)!
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10)
@@ -259,6 +263,8 @@ class LeyaoyaoWawajiController: NSObject, WawajiController {
         }
         dataTask.resume()
     }
+
+    // MARK: - WebSocket
 
     private func connectWebSocket(_ urlString: String) {
         if let oldWebSocket = webSocket {

@@ -13,5 +13,9 @@
 "Play" = "Play";
 "Watch" = "Watch";
 
+"PleaseInsertCion" = "Please insert cion";
+"FetchSuccess" = "Catch success";
+"FetchFailed" = "Catch failed";
+
 "JoinChannelFailed" = "Join channel failed";
 "NoMoreCamera" = "No other connected camera";

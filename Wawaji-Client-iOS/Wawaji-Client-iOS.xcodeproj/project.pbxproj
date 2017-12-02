@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2798A66EE3FCE7CC3059190F /* libPods-Wawaji-Client-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B061C0C246E8B6A3DD7515DF /* libPods-Wawaji-Client-iOS.a */; };
+		707CB4A31FD2A5F700A9DAA6 /* ZinianWawajiController.m in Sources */ = {isa = PBXBuildFile; fileRef = 707CB4A21FD2A5F700A9DAA6 /* ZinianWawajiController.m */; };
+		707CB4A61FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m in Sources */ = {isa = PBXBuildFile; fileRef = 707CB4A51FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m */; };
+		707CB4A91FD2ABC600A9DAA6 /* WawajiControllerCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = 707CB4A81FD2ABC600A9DAA6 /* WawajiControllerCreator.m */; };
 		70840F031FC5AD0B00BCAB7D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 70840F011FC5AD0B00BCAB7D /* Localizable.strings */; };
 		709016541FBD416100D18745 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016531FBD416100D18745 /* AppDelegate.m */; };
 		709016571FBD416100D18745 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016561FBD416100D18745 /* MainViewController.m */; };
@@ -28,6 +31,13 @@
 
 /* Begin PBXFileReference section */
 		2431C93EDAF31FC7F6294502 /* Pods-Wawaji-Client-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client-iOS/Pods-Wawaji-Client-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		707CB4A01FD2A13900A9DAA6 /* WawajiController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawajiController.h; sourceTree = "<group>"; };
+		707CB4A11FD2A57200A9DAA6 /* ZinianWawajiController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZinianWawajiController.h; sourceTree = "<group>"; };
+		707CB4A21FD2A5F700A9DAA6 /* ZinianWawajiController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZinianWawajiController.m; sourceTree = "<group>"; };
+		707CB4A41FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeyaoyaoWawajiController.h; sourceTree = "<group>"; };
+		707CB4A51FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeyaoyaoWawajiController.m; sourceTree = "<group>"; };
+		707CB4A71FD2ABC600A9DAA6 /* WawajiControllerCreator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawajiControllerCreator.h; sourceTree = "<group>"; };
+		707CB4A81FD2ABC600A9DAA6 /* WawajiControllerCreator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WawajiControllerCreator.m; sourceTree = "<group>"; };
 		70840F021FC5AD0B00BCAB7D /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7090164F1FBD416100D18745 /* Wawaji-Client-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		709016521FBD416100D18745 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -101,6 +111,13 @@
 				709016561FBD416100D18745 /* MainViewController.m */,
 				709016681FBD41D500D18745 /* PlayViewController.h */,
 				709016691FBD41D500D18745 /* PlayViewController.m */,
+				707CB4A01FD2A13900A9DAA6 /* WawajiController.h */,
+				707CB4A71FD2ABC600A9DAA6 /* WawajiControllerCreator.h */,
+				707CB4A81FD2ABC600A9DAA6 /* WawajiControllerCreator.m */,
+				707CB4A41FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.h */,
+				707CB4A51FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m */,
+				707CB4A11FD2A57200A9DAA6 /* ZinianWawajiController.h */,
+				707CB4A21FD2A5F700A9DAA6 /* ZinianWawajiController.m */,
 				70F060821FBD63B1001BD148 /* AlertUtil.h */,
 				70F060811FBD63B1001BD148 /* AlertUtil.m */,
 				709016581FBD416100D18745 /* Main.storyboard */,
@@ -276,7 +293,10 @@
 				709016571FBD416100D18745 /* MainViewController.m in Sources */,
 				70F060831FBD63B1001BD148 /* AlertUtil.m in Sources */,
 				709016621FBD416100D18745 /* main.m in Sources */,
+				707CB4A91FD2ABC600A9DAA6 /* WawajiControllerCreator.m in Sources */,
 				709016541FBD416100D18745 /* AppDelegate.m in Sources */,
+				707CB4A31FD2A5F700A9DAA6 /* ZinianWawajiController.m in Sources */,
+				707CB4A61FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

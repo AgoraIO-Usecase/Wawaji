@@ -18,7 +18,7 @@
 static let appId: String = "Your App ID"
 ```
 
-本项目目前支持乐摇摇和和梓年两个厂家的娃娃机。默认连接乐摇摇娃娃机，请将乐摇摇 AppID 和房间号填写进 LeyaoyaoWawajiController.swift
+本项目目前支持乐摇摇和和梓年两个厂家的娃娃机。默认连接乐摇摇娃娃机，请将乐摇摇 AppID 和房间号填写进 LeyaoyaoWawajiController.swift。
 
 ```
 static let leyaoyaoServer: String = "Leyaoyao Server Address"

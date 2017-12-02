@@ -8,16 +8,17 @@
 
 #import "PlayViewController.h"
 #import "KeyCenter.h"
-#import "SocketRocket.h"
 #import "AlertUtil.h"
+#import "WawajiControllerCreator.h"
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocket Url#>;
+static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeYaoYao;
 
-@interface PlayViewController () <AgoraRtcEngineDelegate, SRWebSocketDelegate>
+@interface PlayViewController () <AgoraRtcEngineDelegate>
 {
+    id<WawajiController> wawajiController;
+    
     AgoraRtcEngineKit *mediaEngine;
-    SRWebSocket *webSocket;
     NSMutableArray *allStreamUids;
     NSUInteger currentStreamUid;
 }
@@ -42,23 +43,31 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
     [self loadMediaEngine];
     
     if (self.player) {
-        [self connectWebSocket];
+        wawajiController = [WawajiControllerCreator getWawajiController:kWawajiManufacturer];
+        [wawajiController initialize];
+        if ([wawajiController respondsToSelector:@selector(setFetchResultBlock:)]) {
+            wawajiController.fetchResultBlock = ^(BOOL result) {
+                if (result) {
+                    [AlertUtil showAlert:NSLocalizedString(@"FetchSuccess", nil)];
+                }
+                else {
+                    [AlertUtil showAlert:NSLocalizedString(@"FetchFailed", nil)];
+                }
+            };
+        }
     }
     else {
         [self.controlView removeFromSuperview];
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
     
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [mediaEngine leaveChannel:nil];
     mediaEngine = nil;
-    
-    [webSocket close];
-    webSocket.delegate = nil;
-    webSocket = nil;
+    wawajiController = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -98,39 +107,59 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 }
 
 - (IBAction)cion:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Insert", @"data" : @"", @"extra" : @(123456)};
-    [self sendWebSocketMessage:msgDic];
+    [wawajiController insertCion];
 }
 
-- (IBAction)up:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"u"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startMoveUp:(id)sender {
+    if (![wawajiController startMoveUp]) {
+        [AlertUtil showAlert:NSLocalizedString(@"PleaseInsertCion", nil)];
+    }
 }
 
-- (IBAction)down:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"d"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopMoveUp:(id)sender {
+    [wawajiController stopMoveUp];
 }
 
-- (IBAction)left:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"l"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startMoveDown:(id)sender {
+    if (![wawajiController startMoveDown]) {
+        [AlertUtil showAlert:NSLocalizedString(@"PleaseInsertCion", nil)];
+    }
 }
 
-- (IBAction)right:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"r"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)stopMoveDown:(id)sender {
+    [wawajiController stopMoveDown];
 }
 
-- (IBAction)grab:(id)sender {
-    NSDictionary *msgDic = @{@"type" : @"Control", @"data" : @"b"};
-    [self sendWebSocketMessage:msgDic];
+- (IBAction)startMoveLeft:(id)sender {
+    if (![wawajiController startMoveLeft]) {
+        [AlertUtil showAlert:NSLocalizedString(@"PleaseInsertCion", nil)];
+    }
+}
+
+- (IBAction)stopMoveLeft:(id)sender {
+    [wawajiController stopMoveLeft];
+}
+
+- (IBAction)startMoveRight:(id)sender {
+    if (![wawajiController startMoveRight]) {
+        [AlertUtil showAlert:NSLocalizedString(@"PleaseInsertCion", nil)];
+    }
+}
+
+- (IBAction)stopMoveRight:(id)sender {
+    [wawajiController stopMoveRight];
+}
+
+- (IBAction)fetch:(id)sender {
+    if (![wawajiController fetch]) {
+        [AlertUtil showAlert:NSLocalizedString(@"PleaseInsertCion", nil)];
+    }
 }
 
 // MARK: - Media Engine
 
 - (void)loadMediaEngine {
-    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppID delegate:self];
+    mediaEngine = [AgoraRtcEngineKit sharedEngineWithAppId:kAppID delegate:self];
     [mediaEngine setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
@@ -152,7 +181,7 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurWarning:(AgoraRtcWarningCode)warningCode {
-    NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
+//    NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraRtcErrorCode)errorCode {
@@ -193,37 +222,6 @@ static NSString * const kWebSocketUrlString = <#Your Wawaji Controlling WebSocke
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraRtcUserOfflineReason)reason {
     NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
-}
-
-// MARK: - WebSocket
-
-- (void)connectWebSocket {
-    webSocket.delegate = nil;
-    webSocket = nil;
-    
-    SRWebSocket *newWebSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:kWebSocketUrlString]];
-    newWebSocket.delegate = self;
-    [newWebSocket open];
-}
-
-- (void)sendWebSocketMessage:(NSDictionary *)message {
-    NSData *data = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
-    [webSocket send:data];
-}
-
-- (void)webSocketDidOpen:(SRWebSocket *)newWebSocket {
-    webSocket = newWebSocket;
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    [self connectWebSocket];
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    [self connectWebSocket];
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
 }
 
 @end
