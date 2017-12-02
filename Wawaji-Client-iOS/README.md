@@ -12,18 +12,35 @@
 - 离开
 
 ## 运行示例程序
-首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 KeyCenter.mm。
+首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 KeyCenter.m。
 
 ```
-NSString * const kAgoraAppID = @"Your App ID"
+NSString * const kAppID = @"Your App ID";
 ```
 
-本项目的第三方娃娃机控制使用 WebSocket 协议，您需要将娃娃机的控制 URL 填写进 PlayViewController.m。
+本项目目前支持乐摇摇和和梓年两个厂家的娃娃机。默认连接乐摇摇娃娃机，请将乐摇摇 AppID 和房间号填写进 LeyaoyaoWawajiController.m。
 
 ```
-static NSString * const kWebSocketUrlString = @"Your Wawaji Controlling WebSocket Url";
+static NSString * const kLeyaoyaoServer = @"Leyaoyao Server Address";
+static NSString * const kLeyaoyaoAppID = @"Your App ID from Leyaoya";
+
+static NSString * const kBinding = @"Your User ID";
+static const int kRoomId = Leyaoyao Room ID;
+```
+
+
+如需连接梓年娃娃机，请修改 PlayViewController.m 中 wawajiManufacturer 常量的值。
 
 ```
+static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_ZiNian;
+```
+
+并将娃娃机的控制 URL 填写进 ZinianWawajiController.m。
+
+```
+static NSString * const kWebSocketUrl = @"Your Wawaji Controlling WebSocket Url";
+```
+
 
 然后在 [Agora.io SDK](https://www.agora.io/cn/download/)
 下载 **视频通话 + 直播 SDK**，解压后将其中的 **libs/AgoraRtcEngineKit.framework** 复制到本目录。

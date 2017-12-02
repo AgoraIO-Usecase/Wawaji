@@ -7,11 +7,10 @@
 //
 
 import UIKit
-import SocketRocket
 import AgoraRtcEngineKit
 
 class PlayViewController: UIViewController {
-    static let WebSocketUrlString: String = <#Your Wawaji Controlling WebSocket Url#>
+    let wawajiManufacturer = WawajiManufacturer.LeYaoYao
     
     public var player : Bool!
     public var channel : String!
@@ -19,7 +18,7 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var controlView: UIView!
     
-    var webSocket : SRWebSocket?
+    var wawajiController : WawajiController?
     var mediaEngine : AgoraRtcEngineKit!
     var allStreamUids = [UInt]()
     var currentStreamUid : UInt = 0
@@ -30,7 +29,16 @@ class PlayViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         if player {
-            connectWebSocket()
+            wawajiController = WawajiControllerCreator.getWawajiController(manufacturer: wawajiManufacturer)
+            wawajiController!.initialize()
+            wawajiController!.fetchResult = { [unowned self] result in
+                if (result) {
+                    self.showAlert(NSLocalizedString("FetchSuccess", comment: ""))
+                }
+                else {
+                    self.showAlert(NSLocalizedString("FetchFailed", comment: ""))
+                }
+            }
         }
         else {
             controlView.removeFromSuperview()
@@ -39,15 +47,13 @@ class PlayViewController: UIViewController {
         loadMediaEngine();
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
         UIApplication.shared.isIdleTimerDisabled = false
         mediaEngine.leaveChannel(nil)
-        
-        webSocket?.close()
-        webSocket?.delegate = nil
-        webSocket = nil
+        mediaEngine = nil
+        wawajiController = nil
     }
 
     override func didReceiveMemoryWarning() {
@@ -87,49 +93,53 @@ class PlayViewController: UIViewController {
     }
     
     @IBAction func cion(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Insert", "data" : "", "extra" : 123456]
-        sendWebSocketMessage(messageDic)
+        wawajiController?.insertCion()
     }
     
-    @IBAction func up(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "u"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func startMoveUp(_ sender: Any) {
+        if wawajiController?.startMoveUp() == false {
+            showAlert(NSLocalizedString("PleaseInsertCion", comment: ""));
+        }
     }
     
-    @IBAction func down(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "d"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func stopMoveUp(_ sender: Any) {
+        _ = wawajiController?.stopMoveUp()
     }
     
-    @IBAction func left(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "l"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func startMoveDown(_ sender: Any) {
+        if wawajiController?.startMoveDown() == false {
+            showAlert(NSLocalizedString("PleaseInsertCion", comment: ""));
+        }
     }
     
-    @IBAction func right(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "r"]
-        sendWebSocketMessage(messageDic)
+    @IBAction func stopMoveDown(_ sender: Any) {
+        _ = wawajiController?.stopMoveDown()
+    }
+    
+    @IBAction func startMoveLeft(_ sender: Any) {
+        if wawajiController?.startMoveLeft() == false {
+            showAlert(NSLocalizedString("PleaseInsertCion", comment: ""));
+        }
+    }
+    
+    @IBAction func stopMoveLeft(_ sender: Any) {
+        _ = wawajiController?.stopMoveLeft()
+    }
+    
+    @IBAction func startMoveRight(_ sender: Any) {
+        if wawajiController?.startMoveRight() == false {
+            showAlert(NSLocalizedString("PleaseInsertCion", comment: ""));
+        }
+    }
+    
+    @IBAction func stopMoveRight(_ sender: Any) {
+        _ = wawajiController?.stopMoveRight()
     }
     
     @IBAction func fetch(_ sender: Any) {
-        let messageDic : [String : Any] = ["type" : "Control", "data" : "b"]
-        sendWebSocketMessage(messageDic)
-    }
-    
-    func connectWebSocket() {
-        if let oldWebSocket = webSocket {
-            oldWebSocket.delegate = nil
-            webSocket = nil
+        if wawajiController?.fetch() == false {
+            showAlert(NSLocalizedString("PleaseInsertCion", comment: ""));
         }
-        
-        let newWebSocket = SRWebSocket(url: URL(string: PlayViewController.WebSocketUrlString))
-        newWebSocket!.delegate = self
-        newWebSocket!.open()
-    }
-    
-    func sendWebSocketMessage(_ message: [String: Any]) {
-        let data = try! JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
-        webSocket?.send(data)
     }
     
     func loadMediaEngine() {
@@ -204,19 +214,3 @@ extension PlayViewController : AgoraRtcEngineDelegate {
     }
 }
 
-extension PlayViewController : SRWebSocketDelegate {
-    func webSocketDidOpen(_ newWebSocket: SRWebSocket!) {
-        webSocket = newWebSocket
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
-        connectWebSocket()
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
-        connectWebSocket()
-    }
-    
-    func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
-    }
-}
