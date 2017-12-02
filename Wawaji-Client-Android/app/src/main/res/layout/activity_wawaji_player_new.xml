@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg">
+    <RelativeLayout
+        android:id="@+id/awp_top"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="9dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+        <ImageView
+            android:id="@+id/iv_awj_back"
+            android:layout_width="16dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="14dp"
+            android:layout_centerVertical="true"
+            android:onClick="onLeaveGameClicked"
+            android:background="@drawable/btn_back" />
+        <ImageView
+            android:id="@+id/iv_awj_top_middle"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/title"/>
+
+        <ImageView
+            android:id="@+id/iv_awj_top_right"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_info"
+            android:layout_marginRight="14dp" />
+
+    </RelativeLayout>
+
+
+    <FrameLayout
+        android:id="@+id/awp_middle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/awp_bottom"
+        android:layout_below="@+id/awp_top"
+        android:layout_marginTop="9dp"
+        android:background="@color/blue_dark">
+
+        <FrameLayout
+            android:id="@+id/awp_game_vide"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_awp_room_nums"
+                android:layout_width="106dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/tv_bg"
+                android:gravity="center"
+                android:text="279人在房间"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/iv_awj_users_big"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="19dp"
+                android:src="@drawable/user_big" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_awj_user_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp" />
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/iv_awj_switch_camera"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="onSwitchCameraClicked"
+            android:layout_gravity="center_vertical|end"
+            android:src="@drawable/switch_camera" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/awp_bottom"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="148dp">
+        <RelativeLayout
+            android:id="@+id/awp_bottom_order"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_awp_order_time"
+                android:layout_gravity="center_vertical"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="32dp"
+                android:background="@drawable/order_time"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+            <ImageView
+                android:id="@+id/iv_awp_order_start"
+                android:layout_width="128dp"
+                android:layout_height="64dp"
+                android:background="@drawable/order_start"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:onClick="onStartBtnClicked"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/tv_awp_order_nums"
+                android:layout_width="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="9dp"
+                android:text="前面还有2个人排队"
+                android:layout_centerHorizontal="true"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/iv_awp_order_message"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/order_msg"
+                android:layout_marginRight="32dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/awp_bottom_ctrl"
+            android:visibility="gone"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/awp_ctrl_mod"
+                android:layout_marginLeft="24dp"
+                android:layout_width="148dp"
+                android:layout_height="148dp">
+                <ImageView
+                    android:id="@+id/btn_awp_up"
+                    android:src="@drawable/btn_up"
+                    android:layout_marginTop="12dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:onClick="onUpBtnClicked"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+                <ImageView
+                    android:id="@+id/btn_awp_left"
+                    android:src="@drawable/btn_left"
+                    android:layout_marginLeft="6dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="onLeftBtnClicked"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+                <ImageView
+                    android:id="@+id/btn_awp_down"
+                    android:src="@drawable/btn_down"
+                    android:layout_marginBottom="12dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:onClick="onDownBtnClicked"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+                <ImageView
+                    android:id="@+id/btn_awp_right"
+                    android:src="@drawable/btn_right"
+                    android:layout_marginRight="6dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="onRightBtnClicked"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/awp_ctrl_go"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/iv_awp_go"
+                    android:layout_width="96dp"
+                    android:layout_height="196dp"
+                    android:layout_gravity="center"
+                    android:onClick="onCatcherBtnClicked"
+                    android:src="@drawable/btn_grep"/>
+            </FrameLayout>
+        </RelativeLayout>
+
+    </FrameLayout>
+    <RelativeLayout
+        android:id="@+id/wawa_result_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dark_black"
+            android:alpha="0.8"/>
+        <TextView
+            android:id="@+id/wawa_result_textview"
+            android:layout_width="200dp"
+            android:layout_height="125dp"
+            android:background="@drawable/message_box"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            android:gravity="center"
+            android:layout_centerInParent="true"/>
+        <Button
+            android:id="@+id/wawa_result_button"
+            android:layout_width="128dp"
+            android:layout_height="64dp"
+            android:background="@drawable/game_main"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="top|center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:layout_marginBottom="40dp"/>
+        
+    </RelativeLayout>
+</RelativeLayout>

@@ -6,6 +6,13 @@
     <!-- After you entered the App ID, remove <##> outside of Your App ID -->
     <!-- For formal released project, please use Dynamic Key
         http://docs.agora.io/en/user_guide/Component_and_Others/Dynamic_Key_User_Guide.html -->
-    <string name="agora_app_id"><#YOUR APP ID#></string>
-    <string name="agora_app_certificate"><#YOUR APP CERTIFICATE#></string>
+<string name="agora_app_id_leidi"><#LEIDI APP ID#></string>
+<string name="agora_app_certificate_leidi"><#LEIDI APP CERTIFICATE#></string>
+<string name="agora_app_id_leyaoyao"><#LEYAOYAO APP ID#></string>
+<string name="agora_app_id_zhuazhua"><#ZHUAZHUA APP ID#></string>
+<string name="agora_app_id_huizhi"><#HUIZHI APP ID#></string>
+
+<string name="agora_app_id_signal"><#SIGNAL APP ID#></string>
+<string name="agora_app_certificate_signal"<#SIGNAL APP CERTIFICATE#></string>
+
 </resources>

@@ -200,6 +200,15 @@ public class MyEngineEventHandler {
         @Override
         public void onMessageChannelReceive(String channel, String account, int uid, String msg) {
             log.debug("onMessageChannelReceive " + channel + " " + account + " " + uid + " " + msg + " " + mConfig.mUid + " " + mConfig.mChannel);
+            if (Constant.WAWAJI_CONTROL_CENTER.equals(account)) {
+
+            } else {
+                Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+                while (it.hasNext()) {
+                    AGEventHandler handler = it.next();
+                    handler.onMessageInstantReceive(account, uid, msg);
+                }
+            }
         }
     };
 }

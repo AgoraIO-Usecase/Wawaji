@@ -2,6 +2,7 @@ package io.agora.wawaji.app.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -77,7 +78,8 @@ public class WorkerThread extends Thread {
                     break;
                 case ACTION_WORKER_JOIN_CHANNEL:
                     String[] data = (String[]) msg.obj;
-                    mWorkerThread.joinChannel(data[0], msg.arg1);
+                    Bundle bundle = msg.getData();
+                    mWorkerThread.joinChannel(bundle.getString("appid"), bundle.getString("appcertifer"), data[0], msg.arg1);
                     break;
                 case ACTION_WORKER_LEAVE_CHANNEL:
                     String channel = (String) msg.obj;
@@ -85,11 +87,7 @@ public class WorkerThread extends Thread {
                     break;
                 case ACTION_WORKER_CONFIG_ENGINE:
                     Object[] configData = (Object[]) msg.obj;
-                    mWorkerThread.configEngine((int) configData[0], (int) configData[1]);
-                    break;
-                case ACTION_WORKER_PREVIEW:
-                    Object[] previewData = (Object[]) msg.obj;
-                    mWorkerThread.preview((boolean) previewData[0], (SurfaceView) previewData[1], (int) previewData[2]);
+                    mWorkerThread.configEngine((int) configData[0], (int) configData[1] , (String) configData[2]);
                     break;
                 case ACTION_WORKER_WAWAJI_FETCH:
                     mWorkerThread.fetchWawaji();
@@ -133,8 +131,8 @@ public class WorkerThread extends Thread {
 
         mWorkerHandler = new WorkerThreadHandler(this);
 
-        ensureRtcEngineReadyLock();
-
+//        ensureRtcEngineReadyLock();
+//
         mReady = true;
 
         // enter thread looper
@@ -143,24 +141,33 @@ public class WorkerThread extends Thread {
 
     private RtcEngine mRtcEngine;
 
-    public final void joinChannel(final String channel, int uid) {
+    public final void joinChannel(String appid ,String appcertifer,final String channel, int uid) {
         if (Thread.currentThread() != this) {
             log.warn("joinChannel() - worker thread asynchronously " + channel + " " + (uid & 0xFFFFFFFFL));
             Message envelop = new Message();
             envelop.what = ACTION_WORKER_JOIN_CHANNEL;
             envelop.obj = new String[]{channel};
             envelop.arg1 = uid;
+            Bundle data = new Bundle();
+            data.putString("appid" ,appid);
+            data.putString("appcertifer", appcertifer);
+            envelop.setData(data);
             mWorkerHandler.sendMessage(envelop);
             return;
         }
 
-        String channelKey = TokenUtils.getDynamicKeyForJoinChannel(channel, uid, mContext.getString(R.string.agora_app_id), mContext.getString(R.string.agora_app_certificate));
 
-        ensureRtcEngineReadyLock();
-        mRtcEngine.joinChannel(channelKey, channel, "Wawa", uid);
+        ensureRtcEngineReadyLock(appid);
+        if (appcertifer == null){
+            mRtcEngine.joinChannel(null, channel, "Wawa", uid);
+        }else {
+            String channelKey = TokenUtils.getDynamicKeyForJoinChannel(channel, uid, appid, appcertifer);
+            mRtcEngine.joinChannel(channelKey, channel, "Wawa", uid);
+        }
+
 
         ensureSignalingSDKReadyLock(false);
-        mSignalSDK.channelJoin(channel);
+//        mSignalSDK.channelJoin(channel);
 
         mEngineConfig.mChannel = channel;
 
@@ -198,17 +205,17 @@ public class WorkerThread extends Thread {
 
     private final MyEngineEventHandler mEngineEventHandler;
 
-    public final void configEngine(int cRole, int vProfile) {
+    public final void configEngine(int cRole, int vProfile, String appid) {
         if (Thread.currentThread() != this) {
             log.warn("configEngine() - worker thread asynchronously " + cRole + " " + vProfile);
             Message envelop = new Message();
             envelop.what = ACTION_WORKER_CONFIG_ENGINE;
-            envelop.obj = new Object[]{cRole, vProfile};
+            envelop.obj = new Object[]{cRole, vProfile, appid};
             mWorkerHandler.sendMessage(envelop);
             return;
         }
 
-        ensureRtcEngineReadyLock();
+        ensureRtcEngineReadyLock(appid);
         mEngineConfig.mClientRole = cRole;
         mEngineConfig.mVideoProfile = vProfile;
 
@@ -331,24 +338,6 @@ public class WorkerThread extends Thread {
         log.warn("ctrlWawaji done " + ctrl + " " + signalRoomName);
     }
 
-    public final void preview(boolean start, SurfaceView view, int uid) {
-        if (Thread.currentThread() != this) {
-            log.warn("preview() - worker thread asynchronously " + start + " " + view + " " + (uid & 0XFFFFFFFFL));
-            Message envelop = new Message();
-            envelop.what = ACTION_WORKER_PREVIEW;
-            envelop.obj = new Object[]{start, view, uid};
-            mWorkerHandler.sendMessage(envelop);
-            return;
-        }
-
-        ensureRtcEngineReadyLock();
-        if (start) {
-            mRtcEngine.setupLocalVideo(new VideoCanvas(view, VideoCanvas.RENDER_MODE_HIDDEN, uid));
-            mRtcEngine.startPreview();
-        } else {
-            mRtcEngine.stopPreview();
-        }
-    }
 
     public static String getDeviceID(Context context) {
         // XXX according to the API docs, this value may change after factory reset
@@ -356,9 +345,8 @@ public class WorkerThread extends Thread {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    private RtcEngine ensureRtcEngineReadyLock() {
+    private RtcEngine ensureRtcEngineReadyLock(String appId) {
         if (mRtcEngine == null) {
-            String appId = mContext.getString(R.string.agora_app_id);
             if (TextUtils.isEmpty(appId)) {
                 throw new RuntimeException("NEED TO use your App ID, get your own ID at https://dashboard.agora.io/");
             }
@@ -380,7 +368,7 @@ public class WorkerThread extends Thread {
     private AgoraAPIOnlySignal mSignalSDK;
 
     private AgoraAPIOnlySignal ensureSignalingSDKReadyLock(boolean logout) {
-        String appId = mContext.getString(R.string.agora_app_id);
+        String appId = mContext.getString(R.string.agora_app_id_signal);
         if (mSignalSDK == null) {
             mSignalSDK = AgoraAPIOnlySignal.getInstance(mContext, appId);
         }
@@ -394,7 +382,7 @@ public class WorkerThread extends Thread {
         log.debug("ensureSignalingSDKReadyLock mEngineConfig.mUid :" + mEngineConfig.mUid);
 
         long expiredTime = System.currentTimeMillis() / 1000 + 3600;
-        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_app_certificate), String.valueOf(mEngineConfig.mUid), expiredTime);
+        String token = TokenUtils.calcToken(appId, mContext.getString(R.string.agora_app_certificate_signal), String.valueOf(mEngineConfig.mUid), expiredTime);
 
         mSignalSDK.login2(appId, String.valueOf(mEngineConfig.mUid), token, 0, "", 5, 1);
         log.debug("login " + (mEngineConfig.mUid & 0XFFFFFFFFL) + " " + identification);
@@ -446,5 +434,11 @@ public class WorkerThread extends Thread {
         }
 
         this.mEngineEventHandler = new MyEngineEventHandler(mContext, this.mEngineConfig);
+    }
+
+    public void destroyRtcEngine(){
+        if (mRtcEngine != null){
+            mRtcEngine = null;
+        }
     }
 }
