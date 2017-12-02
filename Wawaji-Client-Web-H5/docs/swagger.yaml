@@ -1,0 +1,75 @@
+swagger: '2.0'
+info:
+  description: Agora Server API Docs
+  version: 1.0.0
+  title: Agora Wawaji Server
+basePath: /v1
+tags:
+  - name: Machine
+    description: Access to Game Machines
+schemes:
+  - http
+paths:
+  /machines/:
+    post:
+      tags:
+        - Machine
+      summary: start machines, if already started, return machine data directly
+      operationId: startMachine
+      parameters:
+        - name: appid
+          in: query
+          description: App id of your Agora product
+          required: true
+          type: string
+        - name: channel
+          in: query
+          description: Media channel of your machine
+          required: true
+          type: string
+        - name: appcert
+          in: query
+          description: App certificate if enabled
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Machine'
+              
+        '500':
+          description: Server Error
+definitions:
+  Machine:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Machine name
+      video_channel:
+        type: string
+        description: Machine video channel name
+      stream_method:
+        type: integer
+        description: 'Stream method of machine 0 - Image, 1 - JSMpeg'
+        enum:
+          - "Image"
+          - "JSMpeg"
+      video_rotation:
+        type: integer
+        description: Angles of screen to be rotated
+        enum:
+          - 0
+          - 90
+      cameras:
+        type: object
+        properties:
+          main:
+            type: string
+            description: Url of main camera stream
+          sub:
+            type: string
+            description: Url of sub camera stream
