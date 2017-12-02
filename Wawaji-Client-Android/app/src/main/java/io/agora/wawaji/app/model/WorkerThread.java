@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 import static io.agora.common.Constant.*;
@@ -46,6 +47,8 @@ public class WorkerThread extends Thread {
     private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2015;
 
     private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2016;
+
+    private static final int ACTION_WORKER_WAWAJI_WEBSOCKET = 0X2017;
 
     private static final class WorkerThreadHandler extends Handler {
 
@@ -91,6 +94,9 @@ public class WorkerThread extends Thread {
                     break;
                 case ACTION_WORKER_WAWAJI_CTRL:
                     mWorkerThread.ctrlWawaji(msg.arg1);
+                    break;
+                case ACTION_WORKER_WAWAJI_WEBSOCKET:
+                    mWorkerThread.getWebSocket();
                     break;
             }
         }
@@ -222,6 +228,21 @@ public class WorkerThread extends Thread {
             return;
         }
 
+        mConnectLatch = new CountDownLatch(1);
+        mReadyLatch = new CountDownLatch(1);
+
+        log.debug("prepareWawaji " + " " + mEngineConfig.mVideoProfile + " " + mWawajiCtrl + " " + mConnectLatch.getCount());
+    }
+
+    public void getWebSocket(){
+        if (Thread.currentThread() != this) {
+            log.warn("prepareWawaji() - worker thread asynchronously");
+            Message envelop = new Message();
+            envelop.what = ACTION_WORKER_WAWAJI_WEBSOCKET;
+            mWorkerHandler.sendMessage(envelop);
+            return;
+        }
+
         URI uri;
         try {
             uri = new URI(Constant.WAWAJI_SERVER_URL);
@@ -229,9 +250,6 @@ public class WorkerThread extends Thread {
             log.error(Log.getStackTraceString(e));
             return;
         }
-
-        mConnectLatch = new CountDownLatch(1);
-        mReadyLatch = new CountDownLatch(1);
 
         mWawajiCtrl = new WebSocketClient(uri) {
             @Override
@@ -261,6 +279,8 @@ public class WorkerThread extends Thread {
                     jElem = obj.get("data");
                     boolean gotone = jElem.getAsBoolean();
                     WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, gotone);
+                }  else if ("Coin".equals(type)) {
+                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_STARTCATCH);
                 }
             }
 
@@ -284,7 +304,13 @@ public class WorkerThread extends Thread {
             e.printStackTrace();
         }
 
-        log.debug("prepareWawaji " + " " + mEngineConfig.mVideoProfile + " " + mWawajiCtrl + " " + mConnectLatch.getCount());
+    }
+
+    public void closeWebsocket(){
+        if (mWawajiCtrl != null && mWawajiCtrl.isOpen()){
+            mWawajiCtrl.close();
+            mWawajiCtrl = null;
+        }
     }
 
     public final void ctrlWawaji(int ctrl) {
@@ -307,22 +333,66 @@ public class WorkerThread extends Thread {
 
         switch (ctrl) {
             case Wawaji_Ctrl_START:
-                mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":\"\",\"extra\":123456}");
-                break;
-            case Wawaji_Ctrl_DOWN:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"d\"}");
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":null,\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
                 break;
             case Wawaji_Ctrl_UP:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"u\"}");
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"u\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
+                break;
+            case Wawaji_Ctrl_UP_S:
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"W\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
+                break;
+            case Wawaji_Ctrl_DOWN:
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"d\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
+                break;
+            case Wawaji_Ctrl_DOWN_S:
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"S\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
                 break;
             case Wawaji_Ctrl_LEFT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"l\"}");
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"l\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
+                break;
+            case Wawaji_Ctrl_LEFT_S:
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"A\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
                 break;
             case Wawaji_Ctrl_RIGHT:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"r\"}");
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"r\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"r\"}");
+                }
+                break;
+            case Wawaji_Ctrl_RIGHT_S:
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"D\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
                 break;
             case Wawaji_Ctrl_CATCH:
-                mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"b\"}");
+                if (BEFIRSTWAWAJI){
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"b\"},\"extra\":"+ new Date().getTime()+"}");
+                }else {
+                }
+
                 break;
             default:
                 log.warn("Unknown ctrl " + ctrl);

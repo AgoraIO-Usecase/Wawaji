@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,15 +13,25 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import io.agora.common.Constant;
+import io.agora.common.HttpTool;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
+
+import org.json.JSONStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler {
 
@@ -28,11 +39,17 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     private final SparseBooleanArray mUidList = new SparseBooleanArray();
 
+    private int leyaoyaoRoomid = leyaoyao room id;//you can get it from leyaoyao room list
+
+    private boolean startBtnCanbeClick = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wawaji_player);
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,15 +84,13 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
         doConfigEngine(cRole);
 
-        if (isBroadcaster(cRole)) {
-            worker().prepareWawaji();
-            worker().ctrlWawaji(Constant.Wawaji_Ctrl_START);
-        }
+        worker().prepareWawaji();
 
         worker().joinChannel(roomName, config().mUid);
 
         TextView textRoomName = (TextView) findViewById(R.id.room_name);
         textRoomName.setText(roomName);
+
     }
 
     private void doConfigEngine(int cRole) {
@@ -97,6 +112,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     private void doLeaveChannel() {
         worker().leaveChannel(config().mChannel);
+        worker().closeWebsocket();
         if (isBroadcaster()) {
         }
     }
@@ -197,6 +213,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         switch (msg) {
             case Constant.Wawaji_Msg_TIMEOUT:
                 intv = (Integer) data[0];
+                startBtnCanbeClick = true;
                 break;
             case Constant.Wawaji_Msg_RESULT:
                 boolv = (Boolean) data[0];
@@ -205,11 +222,17 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                 } else {
                     showShortToast("Sorry oops");
                 }
-                finish();
+                worker().closeWebsocket();
+                startBtnCanbeClick = true;
+//                finish();
                 break;
             case Constant.Wawaji_Msg_FORCED_LOGOUT:
                 showShortToast("Forced logout by others " + data[0]);
-                finish();
+                startBtnCanbeClick = true;
+//                finish();
+                break;
+            case Constant.Wawaji_Msg_STARTCATCH:
+                showShortToast("Start catch wawa");
                 break;
         }
     }
@@ -224,6 +247,17 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }, 500);
     }
 
+
+    public void onStartBtnClicked(View view) {
+        if (!isBroadcaster()) {
+            showShortToast(getString(R.string.label_not_a_player));
+            return;
+        }
+        if (startBtnCanbeClick){
+            getWebSocket();
+        }
+
+    }
     public void onCatcherBtnClicked(View view) {
         if (!isBroadcaster()) {
             showShortToast(getString(R.string.label_not_a_player));
@@ -240,6 +274,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
 
         worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT);
+        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT_S);
     }
 
     public void onDownBtnClicked(View view) {
@@ -249,6 +284,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
 
         worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN);
+        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN_S);
     }
 
     public void onUpBtnClicked(View view) {
@@ -258,6 +294,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
 
         worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP);
+        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP_S);
     }
 
     public void onLeftBtnClicked(View view) {
@@ -267,6 +304,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
 
         worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT);
+        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT_S);
     }
 
     public void onSwitchCameraClicked(View view) {
@@ -298,4 +336,48 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             showShortToast(getString(R.string.label_can_not_switch_cam));
         }
     }
+
+    private void getWebSocket(){
+        if (Constant.BEFIRSTWAWAJI){
+            worker().prepareWawaji();
+            startBtnCanbeClick = false;
+            new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    String result = null;
+                    try {
+                        result = HttpTool.getLeyaoyaoWawajiWebsocket(leyaoyaoRoomid);
+
+                        JsonParser parser = new JsonParser();
+                        JsonElement jElem = parser.parse(result);
+                        JsonObject obj = jElem.getAsJsonObject();
+                        jElem = obj.get("result");
+
+                        int ret = jElem.getAsInt();
+                        if (ret == 0) {
+                            JsonObject jdata = obj.getAsJsonObject("data");
+                            if (!jdata.isJsonNull()) {
+                                JsonElement jwsUrl = jdata.get("wsUrl");
+                                String wsUrl = jwsUrl.getAsString();
+                                Constant.WAWAJI_SERVER_URL = wsUrl;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        worker().getWebSocket();
+                                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_START);
+                                    }
+                                });
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+
+        }
+    }
+
 }

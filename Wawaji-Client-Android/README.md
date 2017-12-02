@@ -5,7 +5,7 @@
 - **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
 
-这个示例项目演示了如何快速集成 Agora 视频和信令 SDK，实现在线抓娃娃。
+这个示例项目演示了如何快速集成 Agora 视频 SDK，实现在线抓娃娃。
 
 在这个示例项目中包含了以下功能：
 
@@ -29,6 +29,18 @@ public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol
 最后用 Android Studio 打开该项目，连上设备，编译并运行。
 
 也可以使用 `Gradle` 直接编译运行。
+
+不同厂商接入需要的参数不同,demo中演示的接入厂商接口需要定义的地方:
+```
+public static String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
+public static final String LEYAOYAO_SERVER_URL = "leyaoyao server url";
+public static final String LEYAOYAO_APP_ID     = "leyaoyao app id";
+public static final String LEYAOYAO_BINDING    = "leyaoyao binding";
+public static boolean BEFIRSTWAWAJI            = true;
+
+private int leyaoyaoRoomid = leyaoyao room id
+
+```
 
 ## 运行环境
 - Android Studio 2.0 +

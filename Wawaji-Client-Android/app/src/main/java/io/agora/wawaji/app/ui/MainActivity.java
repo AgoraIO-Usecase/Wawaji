@@ -6,19 +6,42 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.IOException;
+
+import io.agora.common.Constant;
+import io.agora.common.HttpTool;
+import io.agora.common.JsonUtil;
+import io.agora.common.LeyaoyaoRoom;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.ConstantApp;
 
 public class MainActivity extends BaseActivity {
+    private TextView textViewRoom;
+    private String text = "room name:";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Constant.BEFIRSTWAWAJI){
+            createLeyaoyaoUser();
+            getLeyaoyaoRoomlist();
+        }
+
     }
 
     @Override
@@ -45,6 +68,8 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button_join).setEnabled(textRoomName.getText().length() > 4);
 
         textRoomName.setSelection(textRoomName.getText().length());
+
+        textViewRoom = (TextView) findViewById(R.id.main_roomlist);
     }
 
     @Override
@@ -91,5 +116,73 @@ public class MainActivity extends BaseActivity {
         i.putExtra(ConstantApp.ACTION_KEY_ROOM_NAME, room);
 
         startActivity(i);
+    }
+
+    private void createLeyaoyaoUser() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                String result = null;
+                String resultCent = null;
+                try {
+                    result = HttpTool.postLeyaoyaoWawajiWS();
+                    resultCent = HttpTool.postLeyaoyaoWawajiCharge(100);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("MainActivity", "createLeyaoyaoUser:"+result);
+                Log.d("MainActivity", "createLeyaoyaoUser resultCent:"+resultCent);
+
+            }
+        }.start();
+
+    }
+    private void getLeyaoyaoRoomlist(){
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                String result = null;
+                try {
+                    result = HttpTool.getLeyaoyaoWawajiRooms();
+
+                    JsonParser parser = new JsonParser();
+                    JsonElement jElem = parser.parse(result);
+                    JsonObject obj = jElem.getAsJsonObject();
+                    jElem = obj.get("result");
+
+                    int ret = jElem.getAsInt();
+                    if (ret == 0){
+                        JsonObject jdata = obj.getAsJsonObject("data");
+                        if (!jdata.isJsonNull()){
+                            JsonArray machines = jdata.getAsJsonArray("rooms");
+                            LeyaoyaoRoom[] rooms = JsonUtil.getGson().fromJson(machines, LeyaoyaoRoom[].class);
+
+                            for (int i = 0; i < rooms.length; i++){
+                                text += "\n" + rooms[i].getId();
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textViewRoom.setText(text);
+                                }
+                            });
+                        }
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("MainActivity", "getLeyaoyaoRoomlist "+result);
+
+            }
+        }.start();
     }
 }
