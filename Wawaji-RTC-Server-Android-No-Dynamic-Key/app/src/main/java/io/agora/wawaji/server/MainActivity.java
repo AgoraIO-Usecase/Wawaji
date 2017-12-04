@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public void onClickJoin(View view) {
         final EditText v_room = (EditText) findViewById(R.id.room_name);
         String room = v_room.getText().toString();
