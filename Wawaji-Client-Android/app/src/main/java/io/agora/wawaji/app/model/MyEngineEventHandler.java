@@ -1,15 +1,18 @@
 package io.agora.wawaji.app.model;
 
 import android.content.Context;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import io.agora.AgoraAPIOnlySignal;
 import io.agora.common.Constant;
 import io.agora.common.JsonUtil;
 import io.agora.common.Wawaji;
 import io.agora.rtc.IRtcEngineEventHandler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

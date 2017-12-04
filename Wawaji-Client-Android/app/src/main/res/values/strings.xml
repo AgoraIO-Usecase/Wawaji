@@ -43,6 +43,7 @@
 
     <string name="label_catch_once_more">once more</string>
 
+    <string name="label_catch_to_you">Agora catch turn to you！</string>
 
     <string-array
         name="string_array_resolutions">

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.ref.WeakReference;
 
 import io.agora.common.Constant;
+import io.agora.common.ToastUtils;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
@@ -46,9 +47,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     private String machinelName;
     private String signalChannelName;
-    //    private TextView textViewPlay;
     private ImageView mIvStartOrder;
-//    private TextView textPlayPersonName;
     private boolean isJoinSignalRoom = false;
     private boolean isPlaying = false;
     private boolean isOrder = false;
@@ -62,7 +61,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     private RelativeLayout mRlBottomOrder;
     private RelativeLayout mRlBottomCtrl;
     private RelativeLayout mRlCatchResult;
-
 
 
     @Override
@@ -107,25 +105,24 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             machinelName = wawaji.getName();
             signalChannelName = "room_" + machinelName;
 
-            log.debug("initUIandEvent isBroadcaster(cRole) :" + isBroadcaster(cRole));
             String appid = null;
             String appcertifer = null;
 
-            if (roomName.equals(leidiroomname)){
+            if (roomName.equals(leidiroomname)) {
                 appid = getString(R.string.agora_app_id_leidi);
                 appcertifer = getString(R.string.agora_app_certificate_leidi);
 
-            }else if (roomName.equals(huizhiroomname)){
+            } else if (roomName.equals(huizhiroomname)) {
                 appid = getString(R.string.agora_app_id_huizhi);
 
-            }else if (roomName.contains(leyaoyaoroomname)){
+            } else if (roomName.contains(leyaoyaoroomname)) {
                 appid = getString(R.string.agora_app_id_leyaoyao);
 
-            }else if (roomName.contains(zhuazhuaroomname)){
+            } else if (roomName.contains(zhuazhuaroomname)) {
                 appid = getString(R.string.agora_app_id_zhuazhua);
 
             }
-            doConfigEngine(cRole ,appid);
+            doConfigEngine(cRole, appid);
             worker().joinChannel(appid, appcertifer, roomName, config().mUid);
             worker().joinSiginalChannel(signalChannelName);
             selfName = String.valueOf(worker().getEngineConfig().mUid);
@@ -134,7 +131,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         mIvStartOrder = (ImageView) findViewById(R.id.iv_awp_order_start);
         mTextQueue = (TextView) findViewById(R.id.tv_awp_order_nums);
         mTextCatchResult = (TextView) findViewById(R.id.wawa_result_textview);
-        mImgCatchResult  = (Button) findViewById(R.id.wawa_result_button);
+        mImgCatchResult = (Button) findViewById(R.id.wawa_result_button);
         mImgCatchResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,7 +146,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         mRlCatchResult = (RelativeLayout) findViewById(R.id.wawa_result_layout);
     }
 
-    private void doConfigEngine(int cRole,String appid) {
+    private void doConfigEngine(int cRole, String appid) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         int prefIndex = pref.getInt(ConstantApp.PrefManager.PREF_PROPERTY_PROFILE_IDX, ConstantApp.DEFAULT_PROFILE_IDX);
         if (prefIndex > ConstantApp.VIDEO_PROFILES.length - 1) {
@@ -349,28 +346,24 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
                     // set play game button
                     if (isPlaying) {
-//                        textViewPlay.setText(getString(R.string.label_isplaying));
-
                         if (mRlBottomCtrl.getVisibility() != View.VISIBLE) {
                             mRlBottomCtrl.setVisibility(View.VISIBLE);
                             mRlBottomOrder.setVisibility(View.GONE);
-                            ToastUtils.show(new WeakReference<Context>(WawajiPlayerActivity.this), "Agora×¥ÍÞÍÞ£¬ ÂÖµ½ÄãÁË£¡");
+                            ToastUtils.show(new WeakReference<Context>(WawajiPlayerActivity.this), getString(R.string.label_catch_to_you));
                         }
                     } else {
                         String str = getString(R.string.label_queuing_success);
                         mTextQueue.setText(String.format(str, queueCount));
 
-                        if (!isOrder){
-                            if(queueCount == 0){
+                        if (!isOrder) {
+                            if (queueCount == 0) {
                                 mIvStartOrder.setBackgroundResource(R.drawable.order_start);
-                            }else if(queueCount > 0){
+                            } else if (queueCount > 0) {
                                 mIvStartOrder.setBackgroundResource(R.drawable.order_order);
                             }
                         }
 
                     }
-
-
                 }
             }
         });
@@ -392,36 +385,38 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     if ("PREPARE".equals(type)) {
                         log.debug("signal onMessageInstantReceive  machinelName:" + machinelName);
                         worker().startWawaji(machinelName);
-                    }else if ("RESULT".equals(type)){
-                        JsonElement jData = obj.get("data");
-                        if (!jData.isJsonNull()){
-                            mRlCatchResult.setVisibility(View.VISIBLE);
-                            isPlaying = false;
-                            isOrder = false;
-                            boolean catchResult = false;
+                    } else if ("RESULT".equals(type)) {
+                        JsonElement jPlayer = obj.get("player");
+                        if (jPlayer.getAsString().equals(selfName)) {
+                            JsonElement jData = obj.get("data");
+                            if (!jData.isJsonNull()) {
+                                mRlCatchResult.setVisibility(View.VISIBLE);
+                                isPlaying = false;
+                                isOrder = false;
+                                boolean catchResult = false;
 
-                            if (account.contains("leyaoyao") || account.contains("zhuazhua") || account.contains("huizhi")){
-                                catchResult = jData.getAsBoolean();
-                            }else if (account.contains("leidi")){
-                                int result = jData.getAsInt();
-                                if (result == 0){
-                                    catchResult = false;
-                                }else {
-                                    catchResult = true;
+                                if (account.contains("leyaoyao") || account.contains("zhuazhua") || account.contains("huizhi")) {
+                                    catchResult = jData.getAsBoolean();
+                                } else if (account.contains("leidi")) {
+                                    int result = jData.getAsInt();
+                                    if (result == 0) {
+                                        catchResult = false;
+                                    } else {
+                                        catchResult = true;
+                                    }
                                 }
-                            }else if (account.contains("")){
 
-                            }
+                                if (catchResult) {
+                                    mTextCatchResult.setText(getString(R.string.label_catch_success));
+                                    mImgCatchResult.setText(getString(R.string.label_catch_once_more));
 
-                            if (catchResult){
-                                mTextCatchResult.setText(getString(R.string.label_catch_success));
-                                mImgCatchResult.setText(getString(R.string.label_catch_once_more));
-
-                            }else {
-                                mTextCatchResult.setText(getString(R.string.label_regrettable));
-                                mImgCatchResult.setText(getString(R.string.label_not_convinced));
+                                } else {
+                                    mTextCatchResult.setText(getString(R.string.label_regrettable));
+                                    mImgCatchResult.setText(getString(R.string.label_not_convinced));
+                                }
                             }
                         }
+
                     }
                 }
             }

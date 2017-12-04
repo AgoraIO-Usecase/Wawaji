@@ -11,14 +11,14 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.SurfaceView;
+
 import io.agora.AgoraAPIOnlySignal;
 import io.agora.common.TokenUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
-import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.BuildConfig;
 import io.agora.wawaji.app.R;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class WorkerThread extends Thread {
 
     private static final int ACTION_WORKER_WAWAJI_FETCH = 0X2015;
 
-//    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2016;
+    private static final int ACTION_WORKER_WAWAJI_PREPARE = 0X2016;
 
     private static final int ACTION_WORKER_WAWAJI_CTRL = 0X2017;
 
@@ -87,7 +87,7 @@ public class WorkerThread extends Thread {
                     break;
                 case ACTION_WORKER_CONFIG_ENGINE:
                     Object[] configData = (Object[]) msg.obj;
-                    mWorkerThread.configEngine((int) configData[0], (int) configData[1] , (String) configData[2]);
+                    mWorkerThread.configEngine((int) configData[0], (int) configData[1], (String) configData[2]);
                     break;
                 case ACTION_WORKER_WAWAJI_FETCH:
                     mWorkerThread.fetchWawaji();
@@ -128,20 +128,15 @@ public class WorkerThread extends Thread {
     public void run() {
         log.trace("start to run");
         Looper.prepare();
-
         mWorkerHandler = new WorkerThreadHandler(this);
-
-//        ensureRtcEngineReadyLock();
-//
         mReady = true;
-
         // enter thread looper
         Looper.loop();
     }
 
     private RtcEngine mRtcEngine;
 
-    public final void joinChannel(String appid ,String appcertifer,final String channel, int uid) {
+    public final void joinChannel(String appid, String appcertifer, final String channel, int uid) {
         if (Thread.currentThread() != this) {
             log.warn("joinChannel() - worker thread asynchronously " + channel + " " + (uid & 0xFFFFFFFFL));
             Message envelop = new Message();
@@ -149,25 +144,20 @@ public class WorkerThread extends Thread {
             envelop.obj = new String[]{channel};
             envelop.arg1 = uid;
             Bundle data = new Bundle();
-            data.putString("appid" ,appid);
+            data.putString("appid", appid);
             data.putString("appcertifer", appcertifer);
             envelop.setData(data);
             mWorkerHandler.sendMessage(envelop);
             return;
         }
-
-
         ensureRtcEngineReadyLock(appid);
-        if (appcertifer == null){
+        if (appcertifer == null) {
             mRtcEngine.joinChannel(null, channel, "Wawa", uid);
-        }else {
+        } else {
             String channelKey = TokenUtils.getDynamicKeyForJoinChannel(channel, uid, appid, appcertifer);
             mRtcEngine.joinChannel(channelKey, channel, "Wawa", uid);
         }
-
-
         ensureSignalingSDKReadyLock(false);
-//        mSignalSDK.channelJoin(channel);
 
         mEngineConfig.mChannel = channel;
 
@@ -214,7 +204,6 @@ public class WorkerThread extends Thread {
             mWorkerHandler.sendMessage(envelop);
             return;
         }
-
         ensureRtcEngineReadyLock(appid);
         mEngineConfig.mClientRole = cRole;
         mEngineConfig.mVideoProfile = vProfile;
@@ -227,9 +216,7 @@ public class WorkerThread extends Thread {
             mRtcEngine.setExternalVideoSource(true, false, true);
             mRtcEngine.muteLocalVideoStream(true);
             mRtcEngine.muteLocalAudioStream(true);
-
         }
-
         log.debug("configEngine " + cRole + " " + mEngineConfig.mVideoProfile);
     }
 
@@ -241,7 +228,6 @@ public class WorkerThread extends Thread {
             mWorkerHandler.sendMessage(envelop);
             return;
         }
-
         ensureSignalingSDKReadyLock(false);
 
         mSignalSDK.messageInstantSend(WAWAJI_CONTROL_CENTER, 0, "{ \"type\": \"LIST\" }", String.valueOf(System.currentTimeMillis()));
@@ -436,8 +422,8 @@ public class WorkerThread extends Thread {
         this.mEngineEventHandler = new MyEngineEventHandler(mContext, this.mEngineConfig);
     }
 
-    public void destroyRtcEngine(){
-        if (mRtcEngine != null){
+    public void destroyRtcEngine() {
+        if (mRtcEngine != null) {
             mRtcEngine = null;
         }
     }

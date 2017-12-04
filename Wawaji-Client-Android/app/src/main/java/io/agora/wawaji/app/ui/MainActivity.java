@@ -7,18 +7,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import io.agora.common.Constant;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-public class MainActivity extends BaseActivity implements AGEventHandler ,RoomListAdapter.onClickButtonInterface {
+public class MainActivity extends BaseActivity implements AGEventHandler, RoomListAdapter.onClickButtonInterface {
     private final static Logger log = LoggerFactory.getLogger(MainActivity.class);
     private RecyclerView recyclerView;
     private RoomListAdapter roomListAdapter;
@@ -37,13 +39,14 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RoomLi
 
         recyclerView = (RecyclerView) findViewById(R.id.main_room_recycleview);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this ,2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
 
 
     }
+
     private void refreshRoomView() {
         if (roomListAdapter == null) {
             roomListAdapter = new RoomListAdapter(this, wawajiArr, this);
@@ -59,7 +62,6 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RoomLi
     protected void workerReady() {
         super.workerReady();
         log.debug("workerReady ");
-
         worker().fetchWawaji();
     }
 
@@ -80,14 +82,13 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RoomLi
     }
 
     public void onRoomBtnClicked(final int position) {
-        forwardToLiveRoom(position ,Constants.CLIENT_ROLE_AUDIENCE);
+        forwardToLiveRoom(position, Constants.CLIENT_ROLE_AUDIENCE);
     }
 
-    public void forwardToLiveRoom(int position ,int cRole) {
+    public void forwardToLiveRoom(int position, int cRole) {
         Intent i = new Intent(MainActivity.this, WawajiPlayerActivity.class);
         i.putExtra(ConstantApp.ACTION_KEY_CROLE, cRole);
         i.putExtra(ConstantApp.ACTION_KEY_ROOM_WAWAJI, (Serializable) wawajiArr[position]);
-
         startActivity(i);
     }
 
@@ -123,7 +124,6 @@ public class MainActivity extends BaseActivity implements AGEventHandler ,RoomLi
                 }
             }
         });
-
     }
 
     @Override
