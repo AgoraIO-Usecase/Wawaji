@@ -94,7 +94,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentBottom="true">
 
-            <io.agora.ui.AGRelativeLayout
+            <RelativeLayout
                     android:id="@+id/bottom_action_container"
                     android:layout_width="wrap_content"
                     android:layout_height="180dp"
@@ -105,6 +105,12 @@
                       android:background="@color/agora_blue"
                       android:layout_alignParentBottom="true"
                       android:clickable="false" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:onClick="onStartBtnClicked"
+                    android:text="Catch Wawa"/>
 
                 <ImageView
                         android:layout_width="60dp"
@@ -167,7 +173,7 @@
                         android:layout_marginRight="30dp"
                         android:layout_centerVertical="true"
                         android:onClick="onCatcherBtnClicked" />
-            </io.agora.ui.AGRelativeLayout>
+            </RelativeLayout>
 
         </LinearLayout>
 

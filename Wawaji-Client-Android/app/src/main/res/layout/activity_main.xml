@@ -30,8 +30,7 @@
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="40dp"
                 android:gravity="center"
-                android:text="wawaji_demo"
-                android:hint="Input name of the Wawaji?"
+                android:hint="Input name of the Wawaji room?"
                 android:inputType="text" />
 
         <Button
@@ -43,5 +42,9 @@
                 android:onClick="onJoinBtnClicked"
                 android:enabled="false"
                 android:text="Enjoy" />
+        <TextView
+            android:id="@+id/main_roomlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </RelativeLayout>
