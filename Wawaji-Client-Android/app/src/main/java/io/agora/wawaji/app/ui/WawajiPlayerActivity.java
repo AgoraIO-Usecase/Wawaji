@@ -50,7 +50,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return false;
@@ -206,7 +205,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (isFinishing()) {
             return;
         }
-
         int intv;
         boolean boolv;
 
@@ -224,12 +222,10 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                 }
                 worker().closeWebsocket();
                 startBtnCanbeClick = true;
-//                finish();
                 break;
             case Constant.Wawaji_Msg_FORCED_LOGOUT:
                 showShortToast("Forced logout by others " + data[0]);
                 startBtnCanbeClick = true;
-//                finish();
                 break;
             case Constant.Wawaji_Msg_STARTCATCH:
                 showShortToast("Start catch wawa");
@@ -253,11 +249,12 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
-        if (startBtnCanbeClick){
+        if (startBtnCanbeClick) {
             getWebSocket();
         }
 
     }
+
     public void onCatcherBtnClicked(View view) {
         if (!isBroadcaster()) {
             showShortToast(getString(R.string.label_not_a_player));
@@ -308,40 +305,14 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     public void onSwitchCameraClicked(View view) {
-        if (!isBroadcaster()) {
-            showShortToast(getString(R.string.label_not_a_player));
-            return;
-        }
 
-        // running on UI thread
-        if (mUidList.size() > 1) {
-            int targetUid = 0;
-            for (int i = 0, size = mUidList.size(); i < size; i++) {
-                int uid = mUidList.keyAt(i);
-                boolean current = mUidList.get(uid);
-
-                if (current) {
-                    mUidList.put(uid, false);
-                    if (i < size - 1) {
-                        targetUid = mUidList.keyAt(i + 1);
-                    } else {
-                        targetUid = mUidList.keyAt(0);
-                    }
-                    break;
-                }
-            }
-            // targetUid should not be 0
-            doSetupView(targetUid);
-        } else {
-            showShortToast(getString(R.string.label_can_not_switch_cam));
-        }
     }
 
-    private void getWebSocket(){
-        if (Constant.BEFIRSTWAWAJI){
+    private void getWebSocket() {
+        if (Constant.BEFIRSTWAWAJI) {
             worker().prepareWawaji();
             startBtnCanbeClick = false;
-            new Thread(){
+            new Thread() {
                 @Override
                 public void run() {
                     super.run();

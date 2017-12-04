@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Constant.BEFIRSTWAWAJI){
+        if (Constant.BEFIRSTWAWAJI) {
             createLeyaoyaoUser();
             getLeyaoyaoRoomlist();
         }
@@ -133,14 +133,15 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
-                Log.d("MainActivity", "createLeyaoyaoUser:"+result);
-                Log.d("MainActivity", "createLeyaoyaoUser resultCent:"+resultCent);
+                Log.d("MainActivity", "createLeyaoyaoUser:" + result);
+                Log.d("MainActivity", "createLeyaoyaoUser resultCent:" + resultCent);
 
             }
         }.start();
 
     }
-    private void getLeyaoyaoRoomlist(){
+
+    private void getLeyaoyaoRoomlist() {
         new Thread() {
             @Override
             public void run() {
@@ -156,13 +157,13 @@ public class MainActivity extends BaseActivity {
                     jElem = obj.get("result");
 
                     int ret = jElem.getAsInt();
-                    if (ret == 0){
+                    if (ret == 0) {
                         JsonObject jdata = obj.getAsJsonObject("data");
-                        if (!jdata.isJsonNull()){
+                        if (!jdata.isJsonNull()) {
                             JsonArray machines = jdata.getAsJsonArray("rooms");
                             LeyaoyaoRoom[] rooms = JsonUtil.getGson().fromJson(machines, LeyaoyaoRoom[].class);
 
-                            for (int i = 0; i < rooms.length; i++){
+                            for (int i = 0; i < rooms.length; i++) {
                                 text += "\n" + rooms[i].getId();
                             }
 
@@ -179,8 +180,7 @@ public class MainActivity extends BaseActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                Log.d("MainActivity", "getLeyaoyaoRoomlist "+result);
+                Log.d("MainActivity", "getLeyaoyaoRoomlist " + result);
 
             }
         }.start();

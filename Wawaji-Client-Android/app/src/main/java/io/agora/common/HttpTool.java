@@ -1,6 +1,7 @@
 package io.agora.common;
 
 import java.io.IOException;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,7 +17,7 @@ public class HttpTool {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=UTF-8");
 
-    private static String get(OkHttpClient client, String url) throws IOException{
+    private static String get(OkHttpClient client, String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -37,27 +38,29 @@ public class HttpTool {
 
     public static String postLeyaoyaoWawajiWS() throws IOException {
         OkHttpClient client = new OkHttpClient();
-        String json = "{\"appId\":\"" + Constant.LEYAOYAO_APP_ID + "\",\"binding\":\""+ Constant.LEYAOYAO_BINDING+"\",\"}";
+        String json = "{\"appId\":\"" + Constant.LEYAOYAO_APP_ID + "\",\"binding\":\"" + Constant.LEYAOYAO_BINDING + "\",\"}";
 
         return post(client, Constant.LEYAOYAO_SERVER_URL + "/api/users", json);
     }
+
     public static String postLeyaoyaoWawajiCharge(int amount) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        String json = "{\"appId\":\"" + Constant.LEYAOYAO_APP_ID + "\",\"binding\":\""+ Constant.LEYAOYAO_BINDING + ",\"amount\":" +amount+"}";
+        String json = "{\"appId\":\"" + Constant.LEYAOYAO_APP_ID + "\",\"binding\":\"" + Constant.LEYAOYAO_BINDING + ",\"amount\":" + amount + "}";
 
         return post(client, Constant.LEYAOYAO_SERVER_URL + "/api/charge", json);
     }
+
     public static String getLeyaoyaoWawajiRooms() throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        return get(client, Constant.LEYAOYAO_SERVER_URL + "/api/rooms?appId="+Constant.LEYAOYAO_APP_ID);
+        return get(client, Constant.LEYAOYAO_SERVER_URL + "/api/rooms?appId=" + Constant.LEYAOYAO_APP_ID);
     }
 
-    public static String getLeyaoyaoWawajiWebsocket(int roomid ) throws IOException {
+    public static String getLeyaoyaoWawajiWebsocket(int roomid) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        return get(client, Constant.LEYAOYAO_SERVER_URL + "/api/websocket_url?appId="+Constant.LEYAOYAO_APP_ID
-               +"&binding="+ Constant.LEYAOYAO_BINDING +"&roomId=" + roomid);
+        return get(client, Constant.LEYAOYAO_SERVER_URL + "/api/websocket_url?appId=" + Constant.LEYAOYAO_APP_ID
+                + "&binding=" + Constant.LEYAOYAO_BINDING + "&roomId=" + roomid);
     }
 
 }
