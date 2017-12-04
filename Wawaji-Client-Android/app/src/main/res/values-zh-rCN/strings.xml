@@ -11,7 +11,7 @@
 
     <string name="label_leave">离开</string>
 
-    <string name="label_incert_coins">投币</string>
+    <string name="label_incert_coins">预约排队</string>
 
     <string name="label_not_a_player">仅玩家可以控制娃娃机</string>
 
@@ -19,9 +19,20 @@
 
     <string name="label_isplaying">游戏中</string>
 
-    <string name="label_queuing_success">预约成功，你前面有%1$d人</string>
+    <string name="label_queuing_success">前面还有%1$d人排队</string>
 
     <string name="label_catch_wawa_notice">抓娃娃温馨提示</string>
+
     <string name="label_catch_wawa_notice_content">本机器只适用于抓娃娃Demo，没有上线！抓中娃娃都不发货哦!\n内测中，欢迎大家体验！\n内测中，欢迎大家体验！</string>
+
+    <string name="label_regrettable">好遗憾</string>
+
+    <string name="label_not_convinced">我不服</string>
+
+    <string name="label_catch_success">恭喜你抓到啦</string>
+
+    <string name="label_catch_once_more">再来一次</string>
+
+    <string name="label_catch_to_you">Agora抓娃娃，轮到你了！</string>
 
 </resources>

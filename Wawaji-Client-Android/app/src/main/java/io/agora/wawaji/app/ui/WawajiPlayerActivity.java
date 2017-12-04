@@ -1,18 +1,36 @@
 package io.agora.wawaji.app.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.ref.WeakReference;
+
 import io.agora.common.Constant;
+import io.agora.common.ToastUtils;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
@@ -20,8 +38,6 @@ import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler {
 
@@ -31,19 +47,26 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     private String machinelName;
     private String signalChannelName;
-    private TextView textViewPlay;
-    private TextView textPlayPersonName;
+    private ImageView mIvStartOrder;
     private boolean isJoinSignalRoom = false;
     private boolean isPlaying = false;
     private boolean isOrder = false;
     private String playPersonName;
     private String selfName = "";
-    private int queueCount;
+    private int queueCount = -1;
+    private TextView mTextQueue;
+    private TextView mTextCatchResult;
+    private Button mImgCatchResult;
+
+    private RelativeLayout mRlBottomOrder;
+    private RelativeLayout mRlBottomCtrl;
+    private RelativeLayout mRlCatchResult;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wawaji_player);
+        setContentView(R.layout.activity_wawaji_player_new);
     }
 
     @Override
@@ -81,22 +104,49 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             String roomName = wawaji.getVideo_channel();
             machinelName = wawaji.getName();
             signalChannelName = "room_" + machinelName;
-            doConfigEngine(cRole);
 
-            log.debug("initUIandEvent isBroadcaster(cRole) :" + isBroadcaster(cRole));
+            String appid = null;
+            String appcertifer = null;
 
-            worker().joinChannel(roomName, config().mUid);
+            if (roomName.equals(leidiroomname)) {
+                appid = getString(R.string.agora_app_id_leidi);
+                appcertifer = getString(R.string.agora_app_certificate_leidi);
+
+            } else if (roomName.equals(huizhiroomname)) {
+                appid = getString(R.string.agora_app_id_huizhi);
+
+            } else if (roomName.contains(leyaoyaoroomname)) {
+                appid = getString(R.string.agora_app_id_leyaoyao);
+
+            } else if (roomName.contains(zhuazhuaroomname)) {
+                appid = getString(R.string.agora_app_id_zhuazhua);
+
+            }
+            doConfigEngine(cRole, appid);
+            worker().joinChannel(appid, appcertifer, roomName, config().mUid);
             worker().joinSiginalChannel(signalChannelName);
             selfName = String.valueOf(worker().getEngineConfig().mUid);
 
-            TextView textRoomName = (TextView) findViewById(R.id.room_name);
-            textRoomName.setText(roomName);
         }
-        textViewPlay = (TextView) findViewById(R.id.wawaji_play);
-        textPlayPersonName = (TextView) findViewById(R.id.play_name);
+        mIvStartOrder = (ImageView) findViewById(R.id.iv_awp_order_start);
+        mTextQueue = (TextView) findViewById(R.id.tv_awp_order_nums);
+        mTextCatchResult = (TextView) findViewById(R.id.wawa_result_textview);
+        mImgCatchResult = (Button) findViewById(R.id.wawa_result_button);
+        mImgCatchResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRlCatchResult.setVisibility(View.GONE);
+                mRlBottomCtrl.setVisibility(View.GONE);
+                mRlBottomOrder.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mRlBottomCtrl = (RelativeLayout) findViewById(R.id.awp_bottom_ctrl);
+        mRlBottomOrder = (RelativeLayout) findViewById(R.id.awp_bottom_order);
+        mRlCatchResult = (RelativeLayout) findViewById(R.id.wawa_result_layout);
     }
 
-    private void doConfigEngine(int cRole) {
+    private void doConfigEngine(int cRole, String appid) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         int prefIndex = pref.getInt(ConstantApp.PrefManager.PREF_PROPERTY_PROFILE_IDX, ConstantApp.DEFAULT_PROFILE_IDX);
         if (prefIndex > ConstantApp.VIDEO_PROFILES.length - 1) {
@@ -104,7 +154,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
         int vProfile = ConstantApp.VIDEO_PROFILES[prefIndex];
 
-        worker().configEngine(cRole, vProfile);
+        worker().configEngine(cRole, vProfile, appid);
     }
 
     @Override
@@ -116,8 +166,11 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     private void doLeaveChannel() {
         worker().leaveChannel(config().mChannel);
 
-
         worker().leaveSiginalChannel(signalChannelName);
+
+        worker().destroyRtcEngine();
+
+        RtcEngine.destroy();
 
     }
 
@@ -162,7 +215,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
         }
 
-        FrameLayout container = (FrameLayout) findViewById(R.id.gaming_video);
+        FrameLayout container = (FrameLayout) findViewById(R.id.awp_game_vide);
         if (container.getChildCount() >= 2) {
             return;
         }
@@ -250,7 +303,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     @Override
-    public void onChannelAttrUpdated(String channelID, final String name, final String value,final String type) {
+    public void onChannelAttrUpdated(String channelID, final String name, final String value, final String type) {
         log.debug("onChannelAttrUpdated " + channelID + " name :" + name + " value :" + value + " type:" + type);
 
         runOnUiThread(new Runnable() {
@@ -291,26 +344,26 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                         queueCount = jsonArrQueue.size();
                     }
 
-                    // set play person name
-                    if (playPersonName != null && !playPersonName.equals("")) {
-                        textPlayPersonName.setText(playPersonName + getString(R.string.label_isplaying));
-                    } else {
-                        textPlayPersonName.setText("");
-                    }
-
                     // set play game button
                     if (isPlaying) {
-                        textViewPlay.setText(getString(R.string.label_isplaying));
-                    } else {
-                        if (isOrder) {
-                            String str = getString(R.string.label_queuing_success);
-                            textViewPlay.setText(String.format(str, queueCount));
-                        } else {
-
-                            textViewPlay.setText(getString(R.string.label_incert_coins));
+                        if (mRlBottomCtrl.getVisibility() != View.VISIBLE) {
+                            mRlBottomCtrl.setVisibility(View.VISIBLE);
+                            mRlBottomOrder.setVisibility(View.GONE);
+                            ToastUtils.show(new WeakReference<Context>(WawajiPlayerActivity.this), getString(R.string.label_catch_to_you));
                         }
-                    }
+                    } else {
+                        String str = getString(R.string.label_queuing_success);
+                        mTextQueue.setText(String.format(str, queueCount));
 
+                        if (!isOrder) {
+                            if (queueCount == 0) {
+                                mIvStartOrder.setBackgroundResource(R.drawable.order_start);
+                            } else if (queueCount > 0) {
+                                mIvStartOrder.setBackgroundResource(R.drawable.order_order);
+                            }
+                        }
+
+                    }
                 }
             }
         });
@@ -332,6 +385,38 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     if ("PREPARE".equals(type)) {
                         log.debug("signal onMessageInstantReceive  machinelName:" + machinelName);
                         worker().startWawaji(machinelName);
+                    } else if ("RESULT".equals(type)) {
+                        JsonElement jPlayer = obj.get("player");
+                        if (jPlayer.getAsString().equals(selfName)) {
+                            JsonElement jData = obj.get("data");
+                            if (!jData.isJsonNull()) {
+                                mRlCatchResult.setVisibility(View.VISIBLE);
+                                isPlaying = false;
+                                isOrder = false;
+                                boolean catchResult = false;
+
+                                if (account.contains("leyaoyao") || account.contains("zhuazhua") || account.contains("huizhi")) {
+                                    catchResult = jData.getAsBoolean();
+                                } else if (account.contains("leidi")) {
+                                    int result = jData.getAsInt();
+                                    if (result == 0) {
+                                        catchResult = false;
+                                    } else {
+                                        catchResult = true;
+                                    }
+                                }
+
+                                if (catchResult) {
+                                    mTextCatchResult.setText(getString(R.string.label_catch_success));
+                                    mImgCatchResult.setText(getString(R.string.label_catch_once_more));
+
+                                } else {
+                                    mTextCatchResult.setText(getString(R.string.label_regrettable));
+                                    mImgCatchResult.setText(getString(R.string.label_not_convinced));
+                                }
+                            }
+                        }
+
                     }
                 }
             }
@@ -347,8 +432,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (isJoinSignalRoom) {
             isOrder = true;
             worker().ctrlWawaji(signalChannelName, Constant.Wawaji_Ctrl_PLAY);
-//            String str = getString(R.string.label_queuing_success);
-            textViewPlay.setText(getString(R.string.label_order_success));
+            mIvStartOrder.setBackgroundResource(R.drawable.order_in_order);
+
         }
     }
 
@@ -484,4 +569,9 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        doLeaveChannel();
+    }
 }

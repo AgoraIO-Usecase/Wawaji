@@ -11,7 +11,7 @@
 
     <string name="label_leave">Leave</string>
 
-    <string name="label_incert_coins">Incert Coins</string>
+    <string name="label_incert_coins">Order Queue</string>
 
     <string name="label_not_a_player">Only player can control Wawaji</string>
 
@@ -24,11 +24,26 @@
     <string name="label_queuing_success">Order success,%1$d person in front of you</string>
 
     <string name="label_catch_wawa">Catch Wawa</string>
+
     <string name="label_catch_wawa_notice">Notice</string>
-    <string name="label_catch_wawa_notice_content">Only for catch doll Demo，not being published!Won't give you the doll\nWelcome to test！\nWelcome to test！</string>
+
+    <string name="label_catch_wawa_notice_content">Only for catch doll Demo，not being published!Won\'t give you the doll\nWelcome to test！\nWelcome to test！</string>
+
     <string name="label_24cents">24/times</string>
+
     <string name="label_agora_wawa">Agora doll</string>
+
     <string name="label_order_success">Order Success</string>
+
+    <string name="label_regrettable">regrettable</string>
+
+    <string name="label_not_convinced">not convinced</string>
+
+    <string name="label_catch_success">catch success</string>
+
+    <string name="label_catch_once_more">once more</string>
+
+    <string name="label_catch_to_you">Agora catch turn to you！</string>
 
     <string-array
         name="string_array_resolutions">

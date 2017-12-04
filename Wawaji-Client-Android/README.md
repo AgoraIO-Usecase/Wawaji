@@ -18,16 +18,22 @@
 将 AppID  和App Certificate填写进 "app/src/main/res/values/strings_config.xml"
 
 ```
-<string name="agora_app_id"><#YOUR APP ID#></string>
-<string name="agora_app_certificate"><#YOUR APP CERTIFICATE#></string>
+<string name="agora_app_id_leidi"><#LEIDI APP ID#></string>
+<string name="agora_app_certificate_leidi"><#LEIDI APP CERTIFICATE#></string>
+<string name="agora_app_id_leyaoyao"><#LEYAOYAO APP ID#></string>
+<string name="agora_app_id_zhuazhua"><#ZHUAZHUA APP ID#></string>
+<string name="agora_app_id_huizhi"><#HUIZHI APP ID#></string>
+
+<string name="agora_app_id_signal"><#SIGNAL APP ID#></string>
+<string name="agora_app_certificate_signal"<#SIGNAL APP CERTIFICATE#></string>
 ```
 
-在本示例当中娃娃机的控制是使用第三方的基于 [WebSocket](https://en.wikipedia.org/wiki/WebSocket)，开发者需要根据自己的情况调整这部分代码，具体的控制协议格式也可能需要修改
-
+在本示例当中娃娃机的控制是基于 Agora Signal Sdk 做的。
 ```
 public static final String WAWAJI_SERVER_URL = "Your Wawaji Controlling Protocol Server";
 ```
 
+WawajiPlayerActivity文件中修改对应娃娃机的房间名,做不同的 APP ID 判断。
 最后用 Android Studio 打开该项目，连上设备，编译并运行。
 
 也可以使用 `Gradle` 直接编译运行。
