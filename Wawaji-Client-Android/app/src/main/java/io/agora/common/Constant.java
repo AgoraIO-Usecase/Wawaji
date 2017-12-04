@@ -21,6 +21,9 @@ public class Constant {
     public static final String LEYAOYAO_BINDING    = "leyaoyao binding";
     public static boolean BEFIRSTWAWAJI            = true;
 
+    public static final int Wawaji_CAM_MAIN = 1;
+    public static final int Wawaji_CAM_SECONDARY = 2;
+
     public static final int Wawaji_Ctrl_START = 1;
     public static final int Wawaji_Ctrl_UP = 2;
     public static final int Wawaji_Ctrl_UP_S = 3;

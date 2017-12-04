@@ -1,9 +1,7 @@
 package io.agora.wawaji.app.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -88,31 +86,16 @@ public class MainActivity extends BaseActivity {
 
     public void onJoinBtnClicked(View view) {
         // show dialog to choose role
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.msg_choose_role);
-        builder.setNegativeButton(R.string.label_audience, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(Constants.CLIENT_ROLE_AUDIENCE);
-            }
-        });
-        builder.setPositiveButton(R.string.label_broadcaster, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(Constants.CLIENT_ROLE_BROADCASTER);
-            }
-        });
-        AlertDialog dialog = builder.create();
-
-        dialog.show();
+        forwardToLiveRoom();
     }
 
-    public void forwardToLiveRoom(int cRole) {
+    public void forwardToLiveRoom() {
         final EditText v_room = (EditText) findViewById(R.id.room_name);
         String room = v_room.getText().toString();
 
         Intent i = new Intent(MainActivity.this, WawajiPlayerActivity.class);
-        i.putExtra(ConstantApp.ACTION_KEY_CROLE, cRole);
+        i.putExtra(ConstantApp.ACTION_KEY_CROLE, Constants.CLIENT_ROLE_AUDIENCE);
+        ;
         i.putExtra(ConstantApp.ACTION_KEY_ROOM_NAME, room);
 
         startActivity(i);
