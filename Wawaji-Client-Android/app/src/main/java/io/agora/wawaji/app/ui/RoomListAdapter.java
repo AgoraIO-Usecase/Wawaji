@@ -20,7 +20,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
     protected final LayoutInflater mInflater;
     private Wawaji[] wawajiArr;
     private onClickButtonInterface onClickButtonInterface;
-    private int []imageArr = new int[]{R.drawable.img_one, R.drawable.img_two, R.drawable.img_three, R.drawable.img_four};
 
     public RoomListAdapter(Context context, Wawaji[] wawajiArr, onClickButtonInterface clickButtonInterface) {
         mInflater = ((Activity) context).getLayoutInflater();
@@ -32,7 +31,20 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        holder.imageView.setBackgroundResource(imageArr[position]);
+        switch (position % 4){
+            case 0:
+                holder.imageView.setBackgroundResource(R.drawable.img_one);
+                break;
+            case 1:
+                holder.imageView.setBackgroundResource(R.drawable.img_two);
+                break;
+            case 2:
+                holder.imageView.setBackgroundResource(R.drawable.img_three);
+                break;
+            case 3:
+                holder.imageView.setBackgroundResource(R.drawable.img_four);
+                break;
+        }
         if (position % 2 == 0){
             holder.imageStatus.setBackgroundResource(R.drawable.available);
         }else {
