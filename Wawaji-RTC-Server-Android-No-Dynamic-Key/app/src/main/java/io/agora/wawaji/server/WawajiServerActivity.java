@@ -141,13 +141,16 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.enableVideo();
         mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, "");
         mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
+        mRtcEngine.muteAllRemoteAudioStreams(true);
+        mRtcEngine.muteAllRemoteVideoStreams(true);
+        mRtcEngine.enableWebSdkInteroperability(true);
     }
 
     // Step 3
     private void setupUI() {
         Intent intent = getIntent();
         mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null){
+        if (mChannelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
             mTextChannel.setText(mChannelName);
         }
@@ -155,7 +158,7 @@ public class WawajiServerActivity extends Activity {
 
     // Step 4
     private void joinChannel() {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 super.run();
@@ -174,7 +177,7 @@ public class WawajiServerActivity extends Activity {
 
         Intent intent = getIntent();
         mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null){
+        if (mChannelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
             mTextChannel.setText(mChannelName);
         }
