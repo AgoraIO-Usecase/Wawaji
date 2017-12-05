@@ -146,13 +146,16 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.enableVideo();
         mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, "");
         mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
+        mRtcEngine.muteAllRemoteAudioStreams(true);
+        mRtcEngine.muteAllRemoteVideoStreams(true);
+        mRtcEngine.enableWebSdkInteroperability(true);
     }
 
     // Step 3
     private void setupUI() {
         Intent intent = getIntent();
         mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null){
+        if (mChannelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
             mTextChannel.setText(mChannelName);
         }
@@ -160,15 +163,16 @@ public class WawajiServerActivity extends Activity {
 
     // Step 4
     private void joinChannel() {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 super.run();
-                String dynamicKey = AppUtil.getDynamicKeyForChannel(mChannelName ,0,getString(R.string.agora_app_id),getString(R.string.agora_appCertificate));
+                String dynamicKey = AppUtil.getDynamicKeyForChannel(mChannelName, 0, getString(R.string.agora_app_id), getString(R.string.agora_appCertificate));
                 mRtcEngine.joinChannel(dynamicKey, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
             }
         }.start();
     }
+
     // Step 5
     private void setupLocalVideo() {
         FrameLayout container = (FrameLayout) findViewById(R.id.local_video_view_container);
@@ -179,11 +183,12 @@ public class WawajiServerActivity extends Activity {
 
         Intent intent = getIntent();
         mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null){
+        if (mChannelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
             mTextChannel.setText(mChannelName);
         }
     }
+
     // Step 6
     public void onSwitchCameraClicked(View view) {
         mRtcEngine.switchCamera();
@@ -198,7 +203,6 @@ public class WawajiServerActivity extends Activity {
     private void leaveChannel() {
         mRtcEngine.leaveChannel();
     }
-
 
 
 }
