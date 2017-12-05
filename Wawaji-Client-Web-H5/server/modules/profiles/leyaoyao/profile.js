@@ -38,10 +38,9 @@ LeyaoyaoProfile = function(mode){
     this.onInit = function(machine, done){
         profile.machine = machine;
 
-        done();
-
         machine.socket.on('open', function open() {
             dbg("WebSocket opened");
+            done();
         });
 
         machine.socket.on('message', function incoming(data) {

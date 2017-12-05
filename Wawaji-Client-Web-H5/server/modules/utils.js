@@ -16,7 +16,17 @@ var getIp = function () {
     return addresses.length > 0 ? addresses[0] : null;
 }
 
+var getDomain = function(){
+    var domain = "";
+    try{
+        domain = fs.readFileSync('/etc/wwj_dns', 'utf8');
+    } catch(e){
+        console.log("[ERROR] Fail to read domain");
+    }
+    return domain;
+}
 
 module.exports = {
-    getIp: getIp
+    getIp: getIp,
+    getDomain: getDomain
 }

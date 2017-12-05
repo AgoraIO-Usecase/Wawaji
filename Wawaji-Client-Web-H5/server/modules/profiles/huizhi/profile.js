@@ -6,8 +6,8 @@ const request = require('request');
 const ACTION = {
     LEFT:  'SXActionLeft',
     RIGHT: 'SXActionRight',
-    UP:    'SXActionFront',
-    DOWN:  'SXActionBack',
+    UP:    'SXActionBack',
+    DOWN:  'SXActionFront',
     CATCH: 'SXActionFetch'
 };
 
@@ -44,36 +44,21 @@ HuizhiProfile = function (mode) {
     this.dyn_key = '';
     this.binstr  = vault.binstr;
     this.password = vault.password;
+    this.protocol = vault.protocol;
 
     this.onInit = function(machine, done){
         dbg("onInit.");
         profile.machine = machine;
-
-        var dst_url = profile.http_url + OPERATION.CONNECT;
-        request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password}}, function (err, response, body) {
-            var msg = JSON.parse(body);
-            if (msg) {
-                if (msg.code >= 0) {
-                    profile.dyn_key = msg.data;
-                    dbg("Response: dynKey=" + profile.dyn_key);
-
-                    done();
-                }
-                else {
-                    dbg("Response ERROR:" + msg.mess);
-                }
-            }
-        });
+        done();
     }
 
-    this.onDisconnect = function () {
-        dbg("onDisconnect.");
-
+    this.disconnect = function () {
+        dbg("disconnect.");
         var dst_url = profile.http_url + OPERATION.DISCONN;
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password}}, function (err, response, body) {
             var msg = JSON.parse(body);
             if (msg) {
-                if (msg.code >= 0) {
+                if (msg.code > 0) {
                     dbg("Response: " + msg.mess);
                 }
                 else {
@@ -84,12 +69,23 @@ HuizhiProfile = function (mode) {
     }
 
     this.onPlay = function(account){
-
+        var dst_url = profile.http_url + OPERATION.CONNECT;
+        request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password}}, function (err, response, body) {
+            var msg = JSON.parse(body);
+            if (msg) {
+                if (msg.code > 0) {
+                    profile.dyn_key = msg.data;
+                    dbg("Response: dynKey=" + profile.dyn_key);
+                }
+                else {
+                    dbg("Response ERROR:" + msg.mess);
+                }
+            }
+        });
     }
 
     this.onControl = function(data){
-        dbg("onControl: " + data);
-
+        dbg("onControl: " + data.data);
         var action = '';
         switch (data.data) {
             case 'left':  action = ACTION.LEFT;  break;
@@ -102,7 +98,7 @@ HuizhiProfile = function (mode) {
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password, dynKey:profile.dyn_key, action:action}}, function (err, response, body) {
             var msg = JSON.parse(body);
             if (msg) {
-                if (msg.code >= 0) {
+                if (msg.code > 0) {
                     dbg("Response: " + msg.mess);
                 }
                 else {
@@ -114,24 +110,43 @@ HuizhiProfile = function (mode) {
 
     this.onCatch = function(){
         dbg("onCatch.");
-
         var action = ACTION.CATCH;
         var dst_url = profile.http_url + OPERATION.SENDACTION;
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password, dynKey:profile.dyn_key, action:action}}, function (err, response, body) {
             var msg = JSON.parse(body);
             if (msg) {
-                if (msg.code >= 0) {
+                if (msg.code > 0) {
                     dbg("Response: " + msg.mess);
+
+                    setTimeout(profile.check, 15000);
                 }
                 else {
                     dbg("Response ERROR: " + msg.mess);
                 }
             }
-            // Reset Connection
-            profile.onDisconnect();
-            setTimeout(profile.onInit, 5000);
         });
     }
+
+    this.check = function () {
+        dbg("check.");
+        var dst_url = profile.http_url + OPERATION.CHECKHAND;
+        request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password, dynKey:profile.dyn_key}}, function (err, response, body) {
+            dbg(body);
+            var msg = JSON.parse(body);
+            if (msg) {
+                if (msg.code > 0) {
+                    dbg("[Huizhi] Response: " + msg.mess + " code:" + msg.code );
+                    profile.onResult && profile.onResult(true);
+                }
+                else {
+                    dbg("[Huizhi] Response ERROR: " + msg.mess);
+                    profile.onResult && profile.onResult(false);
+                }
+            }
+
+            profile.disconnect();
+        });
+    }  
 
 }
 
