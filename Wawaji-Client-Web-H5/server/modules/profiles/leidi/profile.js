@@ -63,7 +63,11 @@ LeiDiProfile = function(mode){
             } else {
                 if(json.type === "message"){
                     if(json.data.result !== undefined){
-                        profile.onResult && profile.onResult(json.data.result);
+                        if(json.data.result === 1) {
+                            profile.onResult && profile.onResult(true);
+                        } else {
+                            profile.onResult && profile.onResult(false);
+                        }
                     }
                 }
             }

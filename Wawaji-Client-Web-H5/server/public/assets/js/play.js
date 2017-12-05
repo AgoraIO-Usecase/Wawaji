@@ -199,7 +199,8 @@ $(function () {
                 player.player2 = null;
                 player.slow_switch = parseInt(getParameterByName("slow_switch")) === 1;
 
-                player.isUsingFrontCamera = function () {
+
+                player.isUsingFrontCamera = function(){
                     return player.cameras && player.camera === player.cameras.front;
                 }
 
@@ -338,8 +339,6 @@ $(function () {
                         setTimeout(player.play, 1000 / player.frame_rate);
                     }
                 }
-
-
             }
             game.player = new Lobby.VideoPlayer("player", game.machine.stream_method);
         }
