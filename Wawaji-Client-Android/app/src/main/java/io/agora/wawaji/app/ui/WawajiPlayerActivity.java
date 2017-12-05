@@ -108,6 +108,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             String appid = null;
             String appcertifer = null;
 
+            appid = getString(R.string.agora_app_id_leyaoyao);//set default value
+
             if (roomName.equals(leidiroomname)) {
                 appid = getString(R.string.agora_app_id_leidi);
                 appcertifer = getString(R.string.agora_app_certificate_leidi);
@@ -121,6 +123,9 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             } else if (roomName.contains(zhuazhuaroomname)) {
                 appid = getString(R.string.agora_app_id_zhuazhua);
 
+            } else if (roomName.equals(kediroomname)) {
+                appid = getString(R.string.agora_app_id_kedie);
+                appcertifer = getString(R.string.agora_app_certificate_kedie);
             }
             doConfigEngine(cRole, appid);
             worker().joinChannel(appid, appcertifer, roomName, config().mUid);
@@ -393,18 +398,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                                 mRlCatchResult.setVisibility(View.VISIBLE);
                                 isPlaying = false;
                                 isOrder = false;
-                                boolean catchResult = false;
-
-                                if (account.contains("leyaoyao") || account.contains("zhuazhua") || account.contains("huizhi")) {
-                                    catchResult = jData.getAsBoolean();
-                                } else if (account.contains("leidi")) {
-                                    int result = jData.getAsInt();
-                                    if (result == 0) {
-                                        catchResult = false;
-                                    } else {
-                                        catchResult = true;
-                                    }
-                                }
+                                boolean catchResult = jData.getAsBoolean();
 
                                 if (catchResult) {
                                     mTextCatchResult.setText(getString(R.string.label_catch_success));

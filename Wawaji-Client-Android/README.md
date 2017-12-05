@@ -23,6 +23,8 @@
 <string name="agora_app_id_leyaoyao"><#LEYAOYAO APP ID#></string>
 <string name="agora_app_id_zhuazhua"><#ZHUAZHUA APP ID#></string>
 <string name="agora_app_id_huizhi"><#HUIZHI APP ID#></string>
+<string name="agora_app_id_kedie"><#KEDIE APP ID#></string>
+<string name="agora_app_certificate_kedie"><#KEDIE  APP CERTIFICATE#></string>
 
 <string name="agora_app_id_signal"><#SIGNAL APP ID#></string>
 <string name="agora_app_certificate_signal"<#SIGNAL APP CERTIFICATE#></string>
