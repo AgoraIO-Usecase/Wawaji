@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FileIO.h"
 #include <assert.h>
+#include "commonFun.h"
 
 CFileIO::CFileIO() :
 fileHandle_(nullptr)
@@ -180,3 +181,143 @@ bool CFileIO::generatorFile(const std::string &path)
 	}
 	return true;
 }
+
+CFileIni::CFileIni() :isValid_(false)
+{
+
+}
+
+CFileIni::CFileIni(const std::string &filePath)
+{
+	iniFile_ = filePath;
+	CFileIO::generatorFile(filePath);
+}
+
+CFileIni::~CFileIni()
+{
+	isValid_ = false;
+}
+
+bool CFileIni::openFile(const std::string &IniFile)
+{
+	iniFile_ = IniFile;
+	return isValid_ = CFileIO::generatorFile(IniFile);
+}
+
+bool CFileIni::write(const std::string &section, const std::string &key, const std::string &Value)
+{
+	assert(isValid_);
+	return (bool)(WritePrivateProfileString(s2cs(section), s2cs(key), s2cs(Value), s2cs(iniFile_)));
+}
+
+std::string CFileIni::read(const std::string &section, const std::string &key)
+{
+	assert(isValid_);
+	std::string Value;
+	TCHAR returnStr[MAXPATHLEN] = { 0 };
+	GetPrivateProfileString(s2cs(section), s2cs(key), _T(""), returnStr, MAXPATHLEN, s2cs(iniFile_));
+	Value = cs2s(returnStr);
+	return Value;
+}
+
+bool CFileIni::getSectionName(std::vector<std::string> &vecSection)
+{
+	assert(isValid_);
+	TCHAR returnStr[MAXPATHLEN] = { 0 }; std::string sectionItem;
+	DWORD retNum = GetPrivateProfileSectionNames(returnStr, MAXPATHLEN, s2cs(iniFile_));
+	if (0 < retNum)
+	{
+		int strLen = retNum;
+		int nIndex = 0; TCHAR tchTemp = '\0';
+		while (nIndex < strLen)
+		{
+			if ('\0' != (tchTemp = returnStr[nIndex]))
+			{
+				sectionItem += (tchTemp);
+			}
+			else
+			{
+				vecSection.push_back(sectionItem);
+				sectionItem.clear();
+			}
+			nIndex++;
+		}
+	}
+	return retNum > 0;
+}
+
+bool CFileIni::getSection(const std::string &section, std::map<std::string, std::string> &mapKeyValue)
+{
+	assert(isValid_);
+	TCHAR returnStr[MAXPATHLEN] = { 0 }; std::string key; std::string value; bool isKey = true;
+	DWORD retNum = GetPrivateProfileSection(s2cs(section), returnStr, MAXPATHLEN, s2cs(iniFile_));
+	if (0 < retNum)
+	{
+		int strLen = retNum;
+		int nIndex = 0; TCHAR tchTemp = '\0';
+		while (nIndex < strLen)
+		{
+			if ('\0' != (tchTemp = returnStr[nIndex]))
+			{
+				if (L'=' == tchTemp)
+				{
+					isKey = false;
+					nIndex++;
+					continue;
+				}
+				if (isKey)
+				{
+					key += (tchTemp);
+				}
+				else
+				{
+					value += (tchTemp);
+				}
+			}
+			else
+			{
+				mapKeyValue.insert(make_pair(key, value));
+				key.clear(); value.clear();
+				isKey = true;
+			}
+			nIndex++;
+		}
+	}
+	return retNum > 0;
+}
+
+CIniBase::CIniBase(const std::string &filePath) :pIniInstance_(nullptr)
+{
+	pIniInstance_ = new CFileIni(filePath);
+	assert(pIniInstance_);
+}
+
+CIniBase::~CIniBase()
+{
+	if (pIniInstance_)
+	{
+		delete pIniInstance_;
+		pIniInstance_ = nullptr;
+	}
+}
+
+CConfigWawaji::CConfigWawaji() :CIniBase("")
+{
+	std::string path = getAbsoluteDir() + "wawaji.ini";
+	pIniInstance_->openFile(path);
+}
+
+CConfigWawaji::~CConfigWawaji()
+{
+
+}
+
+CConfigWawaji::CConfigWawaji(const std::string &path) :
+CIniBase(path)
+{
+
+}
+
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, AppId,INI_LoginInfo,INI_APPID)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, ChannelName,INI_LoginInfo,INI_ChannelName)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, Uid, INI_LoginInfo,INI_UID)

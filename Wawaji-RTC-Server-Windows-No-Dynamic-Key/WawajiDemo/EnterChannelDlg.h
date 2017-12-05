@@ -5,6 +5,7 @@
 #include "DeviceDlg.h"
 #include "afxwin.h"
 #include "afxlistctrl.h"
+#include "FileIO.h"
 
 // CEnterChannelDlg ¶Ô»°¿ò
 
@@ -62,4 +63,6 @@ public:
 	CAGEdit m_edPublishFps;
 	CAGEdit m_edPublishBitrate;
 	CAGEdit m_edPublishRtmpUrl;
+
+	CConfigWawaji m_configwawaji;
 };

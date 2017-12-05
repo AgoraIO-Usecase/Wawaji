@@ -93,18 +93,25 @@ void CEnterChannelDlg::InitCtrls()
 
 	GetClientRect(&ClientRect);
 
+
+	std::string appId = m_configwawaji.getAppId();
+	std::string channelName = m_configwawaji.getChannelName();
+	std::string uid = m_configwawaji.getUid();
+
 	m_ctrAppId.MoveWindow(160, 33, 240, 22, TRUE);
 	m_ctrAppId.SetFont(&m_ftDesc);
 	m_ctrAppId.SetCaretPos(CPoint(12, 148));
 	m_ctrAppId.ShowCaret();
-	m_ctrAppId.SetTip(_T("f4637604af81440596a54254d53ade20"));
+	m_ctrAppId.SetTip(s2cs(appId));
+	//m_ctrAppId.SetTip(_T("f4637604af81440596a54254d53ade20"));
 	m_ctrAppId.SetFocus();
 	
 	m_ctrChannel.MoveWindow(200, 82, 200, 22, TRUE);
     m_ctrChannel.SetFont(&m_ftDesc);
 	m_ctrChannel.SetCaretPos(CPoint(12, 148));
 	m_ctrChannel.ShowCaret();
-	m_ctrChannel.SetTip(_T("wawaji_demo")); 
+	m_ctrChannel.SetTip(s2cs(channelName));
+	//m_ctrChannel.SetTip(_T("wawaji_demo")); 
 	m_ctrChannel.SetFocus();
     
 //     m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
@@ -114,7 +121,8 @@ void CEnterChannelDlg::InitCtrls()
 
 	m_ctrUid.MoveWindow(120, 131, 90, 22, TRUE);
 	m_ctrUid.SetFont(&m_ftDesc);
-	m_ctrUid.SetTip(_T("1"));
+	//m_ctrUid.SetTip(_T("1"));
+	m_ctrUid.SetTip(s2cs(uid));
 	m_ctrUid.SetFocus();
 
 	m_edPublishWidth.SetFont(&m_ftDesc);
@@ -247,7 +255,7 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
     CString     strOperation;
     BOOL        bFound = FALSE;
     BOOL        bSuccess = FALSE;
-
+	
 	CString strAppId;
 	m_ctrAppId.GetWindowText(strAppId);
 	if (strAppId.IsEmpty() || strAppId == _T("APPID"))
@@ -255,6 +263,8 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 		MessageBox(_T("前先填写APPID."), _T("提示"), MB_ICONINFORMATION);
 		return;
 	}
+
+	m_configwawaji.setAppId(cs2s(strAppId));
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
 	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
 	
@@ -269,6 +279,10 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CString param;
 	m_ctrUid.GetWindowText(param);
 	m_lpAgoraObject->SetSelfUID(str2int(cs2s(param)));
+	m_configwawaji.setUid(cs2s(param));
+
+	m_ctrChannel.GetWindowText(param);
+	m_configwawaji.setChannelName(cs2s(param));
 
 	AGE_PUBLISH_PARAM publishParam;
 	m_edPublishWidth.GetWindowText(param);
