@@ -3,12 +3,11 @@ package io.agora.wawaji.app.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -27,7 +26,6 @@ import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
 
-import org.json.JSONStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +40,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     private int leyaoyaoRoomid = leyaoyao room id;//you can get it from leyaoyao room list
 
     private boolean startBtnCanbeClick = true;
+
+    private boolean startBtnControlWawaji = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +112,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     private void doLeaveChannel() {
         worker().leaveChannel(config().mChannel);
         worker().closeWebsocket();
-        if (isBroadcaster()) {
-        }
+
     }
 
     public void onLeaveGameClicked(View view) {
@@ -133,22 +132,25 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     return;
                 }
 
-                if (mUidList.size() >= 1) {
+                if (uid != Constant.Wawaji_CAM_MAIN && uid != Constant.Wawaji_CAM_SECONDARY) {
                     return;
                 }
 
-                mUidList.put(uid, true);
+                boolean isMain = uid == Constant.Wawaji_CAM_MAIN;
+                if (isMain) { // always be the main cam
+                    doSetupVideoStreamView(uid);
+                }
 
-                doSetupView(uid);
+                mUidList.put(uid, isMain);
             }
         });
     }
 
-    private void doSetupView(int uid) {
+    private void doSetupVideoStreamView(int uid) {
         SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
-        if (config().mUid == uid) {
+        if (config().mWawajiUid == uid) {
             return;
         } else {
             rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
@@ -158,6 +160,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (container.getChildCount() >= 2) {
             return;
         }
+        container.removeAllViews();
         container.addView(surfaceV);
 
         config().mWawajiUid = uid;
@@ -212,6 +215,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             case Constant.Wawaji_Msg_TIMEOUT:
                 intv = (Integer) data[0];
                 startBtnCanbeClick = true;
+                startBtnControlWawaji = false;
                 break;
             case Constant.Wawaji_Msg_RESULT:
                 boolv = (Boolean) data[0];
@@ -222,33 +226,21 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                 }
                 worker().closeWebsocket();
                 startBtnCanbeClick = true;
+                startBtnControlWawaji = false;
                 break;
             case Constant.Wawaji_Msg_FORCED_LOGOUT:
                 showShortToast("Forced logout by others " + data[0]);
                 startBtnCanbeClick = true;
+                startBtnControlWawaji = false;
                 break;
             case Constant.Wawaji_Msg_STARTCATCH:
                 showShortToast("Start catch wawa");
+                startBtnControlWawaji = true;
                 break;
         }
     }
 
-    private void requestRemoteStreamType(int uid) {
-        log.debug("requestRemoteStreamType " + (uid & 0xFFFFFFFFL));
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }, 500);
-    }
-
-
     public void onStartBtnClicked(View view) {
-        if (!isBroadcaster()) {
-            showShortToast(getString(R.string.label_not_a_player));
-            return;
-        }
         if (startBtnCanbeClick) {
             getWebSocket();
         }
@@ -256,7 +248,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     public void onCatcherBtnClicked(View view) {
-        if (!isBroadcaster()) {
+        if (!startBtnControlWawaji) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
@@ -265,47 +257,124 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     public void onRightBtnClicked(View view) {
-        if (!isBroadcaster()) {
+        if (!startBtnControlWawaji) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT_S);
+                        break;
+                    default:
+                        break;
+                }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT);
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_RIGHT_S);
+                return false;
+            }
+        });
     }
 
     public void onDownBtnClicked(View view) {
-        if (!isBroadcaster()) {
+        if (!startBtnControlWawaji) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN_S);
+                        break;
+                    default:
+                        break;
+                }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN);
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_DOWN_S);
+                return false;
+            }
+        });
     }
 
     public void onUpBtnClicked(View view) {
-        if (!isBroadcaster()) {
+        if (!startBtnControlWawaji) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP_S);
+                        break;
+                    default:
+                        break;
+                }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP);
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_UP_S);
+                return false;
+            }
+        });
     }
 
     public void onLeftBtnClicked(View view) {
-        if (!isBroadcaster()) {
+        if (!startBtnControlWawaji) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
         }
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT_S);
+                        break;
+                    default:
+                        break;
+                }
 
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT);
-        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEFT_S);
+                return false;
+            }
+        });
     }
 
     public void onSwitchCameraClicked(View view) {
+        if (mUidList.size() > 1) {
+            int targetUid = 0;
+            for (int i = 0, size = mUidList.size(); i < size; i++) {
+                int uid = mUidList.keyAt(i);
+                boolean current = mUidList.get(uid);
 
+                if (current) {
+                    mUidList.put(uid, false);
+                    if (i < size - 1) {
+                        targetUid = mUidList.keyAt(i + 1);
+                    } else {
+                        targetUid = mUidList.keyAt(0);
+                    }
+                    break;
+                }
+            }
+            mUidList.put(targetUid, true);
+            // targetUid should not be 0
+            doSetupVideoStreamView(targetUid);
+        } else {
+            showShortToast(getString(R.string.label_can_not_switch_cam));
+        }
     }
 
     private void getWebSocket() {
@@ -349,6 +418,12 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             }.start();
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        doLeaveChannel();
     }
 
 }
