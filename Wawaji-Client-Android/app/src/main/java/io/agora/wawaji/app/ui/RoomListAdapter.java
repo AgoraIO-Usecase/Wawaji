@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import io.agora.common.Wawaji;
 import io.agora.wawaji.app.R;
 
@@ -31,7 +32,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        switch (position % 4){
+        switch (position % 4) {
             case 0:
                 holder.imageView.setBackgroundResource(R.drawable.img_one);
                 break;
@@ -45,9 +46,9 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
                 holder.imageView.setBackgroundResource(R.drawable.img_four);
                 break;
         }
-        if (position % 2 == 0){
+        if (position % 2 == 0) {
             holder.imageStatus.setBackgroundResource(R.drawable.available);
-        }else {
+        } else {
             holder.imageStatus.setBackgroundResource(R.drawable.busy);
         }
 
