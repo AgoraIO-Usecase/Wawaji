@@ -10,7 +10,7 @@
 - 1.不需要获取 Channel key 加入房间
 - 2.用户自定义配置 App Id，Channel name，UID 以及推流地址
 - 3.自定义摄像头采集参数
-- 4.加入配置文件 wawaji.ini，用户只需要配置 AppId，ChannelName, LoginUid，LoginUid; 前提只有两个有效摄像头，只能启用两个进程
+- 4.加入配置文件 wawaji.ini，用户只需要配置 AppId，ChannelName，LoginUid，LoginUid; 前提只有两个有效摄像头，只能启用两个进程
 - 5.用户配置好参数后，进程自动分配摄像头，自动进入房间,当出现摄像头信息冲突的时候，会自动调整，但是如果用户强制选择相同摄像头，
 那么出现不出图的情形
 
