@@ -22,7 +22,8 @@ public:
 	enum { IDD = IDD_DEVICE_DIALOG };
 
 	void EnableDeviceTest(BOOL bEnable);
-
+	bool DeviceInfoCheck();
+	
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 	virtual BOOL OnInitDialog();
@@ -75,5 +76,4 @@ private:
 	CAgoraPlayoutManager	m_agPlayout;
 	CAgoraAudInputManager	m_agAudioin;
 	CAgoraCameraManager		m_agCamera;
-	
 };

@@ -5,7 +5,6 @@
 #include "DeviceDlg.h"
 #include "afxwin.h"
 #include "afxlistctrl.h"
-#include "FileIO.h"
 
 // CEnterChannelDlg ¶Ô»°¿ò
 
@@ -29,10 +28,13 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	afx_msg void OnPaint();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedBtntestChannel();
 	afx_msg void OnBnClickedBtnjoinChannel();
 	afx_msg void OnBnClickedBtnsetChannel();
 	afx_msg void OnCbnSelchangeCmbRole();
+		afx_msg void OnBnClickedCheckFront();
+		afx_msg void OnBnClickedCheckBack();
 	DECLARE_MESSAGE_MAP()
 
 protected:
@@ -63,6 +65,4 @@ public:
 	CAGEdit m_edPublishFps;
 	CAGEdit m_edPublishBitrate;
 	CAGEdit m_edPublishRtmpUrl;
-
-	CConfigWawaji m_configwawaji;
 };

@@ -6,7 +6,7 @@
 #include "VideoDlg.h"
 #include "afxdialogex.h"
 #include "AGEventDef.h"
-
+#include "InfoManager.h"
 #include "commonFun.h"
 
 // CVideoDlg ¶Ô»°¿ò
@@ -53,6 +53,7 @@ BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	ON_MESSAGE(WM_SHOWBIG, &CVideoDlg::OnShowBig)
 
 	ON_MESSAGE(WM_MSGID(EID_JOINCHANNEL_SUCCESS), &CVideoDlg::OnEIDJoinChannelSuccess)
+	ON_MESSAGE(WM_MSGID(EID_LEAVE_CHANNEL),&CVideoDlg::OnEIDLeaveChannel)
 	ON_MESSAGE(WM_MSGID(EID_REJOINCHANNEL_SUCCESS), &CVideoDlg::OnEIDReJoinChannelSuccess)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_LOCAL_VIDEO_FRAME), &CVideoDlg::OnEIDFirstLocalFrame)
 
@@ -696,13 +697,26 @@ LRESULT CVideoDlg::OnEIDJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	CString titleVideo;
 	GetWindowText(titleVideo);
 	CString newTitle;
-	newTitle.Format(_T("[uid: %ld] %s"), lpData->uid, titleVideo);
+	newTitle.Format(_T("[%s] [uid: %ld] %s"), s2cs(getCurSection()),lpData->uid, titleVideo);
 	SetWindowText(newTitle);
 	Invalidate();
+	getInfoManager()->getConfig()->setDeviceState(getCurSection(), "1");
 
 	delete lpData;
 
 	return 0;
+}
+
+LRESULT CVideoDlg::OnEIDLeaveChannel(WPARAM wParam, LPARAM lParam)
+{
+	LPAGE_LEAVE_CHANNEL lpData = (LPAGE_LEAVE_CHANNEL)wParam;
+
+	getInfoManager()->getConfig()->setDeviceState(getCurSection(), "0");
+
+	delete lpData;
+	lpData = nullptr;
+
+	return TRUE;
 }
 
 LRESULT CVideoDlg::OnEIDReJoinChannelSuccess(WPARAM wParam, LPARAM lParam)

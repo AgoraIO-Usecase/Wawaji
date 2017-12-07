@@ -1,5 +1,5 @@
 
-// AgoraVideoCall.h : main header file for the PROJECT_NAME application
+// AgoraWawajiDemo.h : main header file for the PROJECT_NAME application
 //
 
 #pragma once
@@ -11,8 +11,8 @@
 #include "resource.h"		// main symbols
 
 
-// CAgoraVideoCallApp:
-// See AgoraVideoCall.cpp for the implementation of this class
+// CAgoraWawajiDemoApp:
+// See AgoraWawajiDemo.cpp for the implementation of this class
 //
 
 class CAgoraWawajiDemoApp : public CWinApp

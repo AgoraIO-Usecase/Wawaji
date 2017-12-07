@@ -1,11 +1,13 @@
 
-// AgoraVideoCallDlg.cpp : implementation file
+// AgoraWawajiDemoDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "AgoraWawajiDemo.h"
 #include "AgoraWawajiDemoDlg.h"
 #include "afxdialogex.h"
+#include "InfoManager.h"
+#include "commonFun.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -43,7 +45,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CAgoraVideoCallDlg dialog
+// CAgoraWawajiDemoDlg dialog
 
 
 
@@ -87,7 +89,7 @@ BEGIN_MESSAGE_MAP(CAgoraWawajiDemoDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CAgoraVideoCallDlg message handlers
+// CAgoraWawajiDemoDlg message handlers
 BOOL CAgoraWawajiDemoDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN){
@@ -166,6 +168,8 @@ void CAgoraWawajiDemoDlg::InitCtrls()
 	m_linkAgora.SetURL(_T("http://www.agora.io"));
 	m_linkAgora.SetWindowText(LANG_STR("IDS_LOGO_AGORAWEB"));
 	CMFCButton::EnableWindowsTheming(FALSE);
+
+	registerRun();
 }
 
 void CAgoraWawajiDemoDlg::InitChildDialog()
@@ -284,6 +288,9 @@ void CAgoraWawajiDemoDlg::OnBnClickedBtnmin()
 void CAgoraWawajiDemoDlg::OnBnClickedBtnclose()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	getInfoManager()->getConfig()->setDeviceState(getCurSection(), "0");
+	getInfoManager()->getConfig()->setDeviceChoose(getCurSection(), "0");
+
 	CDialogEx::OnCancel();
 }
 

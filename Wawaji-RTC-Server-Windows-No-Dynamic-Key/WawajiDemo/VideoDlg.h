@@ -69,6 +69,7 @@ protected:
 
 	// 用于处理引擎的回调消息
 	afx_msg LRESULT OnEIDJoinChannelSuccess(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnEIDLeaveChannel(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDReJoinChannelSuccess(WPARAM wParam, LPARAM lParam);
 	
 	afx_msg LRESULT OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam);

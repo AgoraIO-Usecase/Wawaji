@@ -1,5 +1,5 @@
 
-// AgoraVideoCallDlg.h : header file
+// AgoraWawajiDemoDlg.h : header file
 //
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "SetupDlg.h"
 #include "VideoDlg.h"
 
-// CAgoraVideoCallDlg dialog
+// CAgoraWawajiDemoDlg dialog
 class CAgoraWawajiDemoDlg : public CDialogEx
 {
 // Construction

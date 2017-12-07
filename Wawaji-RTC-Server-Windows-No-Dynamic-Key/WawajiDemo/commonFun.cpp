@@ -1,5 +1,11 @@
 #include "stdafx.h"
+
+#include <tlhelp32.h>
+#include <WinSock2.h>
+#pragma comment(lib,"Ws2_32.lib")
+#include <vector>
 #include "commonFun.h"
+#include "InfoManager.h"
 
 void add_json_member_string(Value& root, const char* member_name, const std::string& value, Document::AllocatorType& allocator)
 {
@@ -183,4 +189,162 @@ std::string gbk2utf8(const std::string &gbk)
 std::string utf82gbk(const std::string &utf8)
 {
 	return utf82gbk(utf8.c_str());
+}
+
+DWORD getProcessID(const std::string &processName)
+{
+	HANDLE hProcessSnap = INVALID_HANDLE_VALUE;
+	PROCESSENTRY32 pe32;
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (INVALID_HANDLE_VALUE == hProcessSnap)
+	{
+		CloseHandle(hProcessSnap);
+		return -1;
+	}
+
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		CloseHandle(hProcessSnap);
+		return -1;
+	}
+	do
+	{
+		std::string processNameEnum = CStringA(pe32.szExeFile).GetBuffer();
+		if (processNameEnum == processName)
+		{
+			CloseHandle(hProcessSnap);
+			hProcessSnap = INVALID_HANDLE_VALUE;
+			return pe32.th32ProcessID;
+		}
+	} while (Process32Next(hProcessSnap, &pe32));
+
+	CloseHandle(hProcessSnap);
+	return -1;
+}
+
+void closeProcess(const std::string &processName)
+{
+	DWORD processId = getProcessID(processName);
+	HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, false, processId);
+	if (INVALID_HANDLE_VALUE != processHandle)
+	{
+		if (TerminateProcess(processHandle, 0))
+		{
+			CloseHandle(processHandle);
+			return;
+		}
+		else
+		{
+			WaitForSingleObject(processHandle, 2000);
+		}
+	}
+
+	CloseHandle(processHandle);
+	return;
+}
+
+void closeCurrentProcess()
+{
+	DWORD processId = GetCurrentProcessId();
+	HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, false, processId);
+	if (INVALID_HANDLE_VALUE != processHandle)
+	{
+		if (TerminateProcess(processHandle, 0))
+		{
+			CloseHandle(processHandle);
+			return;
+		}
+		else
+		{
+			WaitForSingleObject(processHandle, 2000);
+		}
+	}
+
+	CloseHandle(processHandle);
+	return;
+}
+
+int getProcessIdMutil(const std::string &processName)
+{
+	std::vector<DWORD> vecProcessid;
+	HANDLE hProcessSnap = INVALID_HANDLE_VALUE;
+	PROCESSENTRY32 pe32;
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (INVALID_HANDLE_VALUE == hProcessSnap)
+	{
+		return vecProcessid.size();
+	}
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		CloseHandle(hProcessSnap);     // Must clean up the snapshot object!
+		return vecProcessid.size();
+	}
+
+	do
+	{
+		if (processName == cs2s(pe32.szExeFile)){
+
+			vecProcessid.push_back(pe32.th32ProcessID);
+			printf("processName: %s, processId: %d\n", CStringA(pe32.szExeFile).GetBuffer(), pe32.th32ProcessID);
+		}
+
+	} while (Process32Next(hProcessSnap, &pe32));
+
+	CloseHandle(hProcessSnap);
+	return vecProcessid.size();
+}
+
+std::string getCurSection()
+{
+	std::string section;
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	switch (cameraType)
+	{
+	case Type_Front:section = INI_DeviceInfoFront; break;
+	case Type_Back:section = INI_DeviceInfoBack; break;
+	default:break;
+	}
+
+	return section;
+}
+
+std::string getOtherSection()
+{
+	std::string section;
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	switch (cameraType)
+	{
+	case Type_Front:section = INI_DeviceInfoBack; break;
+	case Type_Back:section = INI_DeviceInfoFront; break;
+	default:break;
+	}
+
+	return section;
+}
+
+bool registerRun()
+{
+	//写入注册表，开机自启动  
+	HKEY hKey;
+
+	//找到系统的启动项  
+
+	DWORD dwDisposition;
+
+	//打开启动项Key  
+	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE, &hKey);
+
+	if (lRet == ERROR_SUCCESS)
+	{
+		CString currRunPath = s2cs(getPirorDir(getFilePath()) + "start.bat");
+		//添加一个子key，并设置值  
+		lRet = RegSetValueEx(hKey, _T("AgoraWawajiDemo"), 0, REG_SZ, (const unsigned char*)currRunPath.GetBuffer(), (DWORD)(currRunPath.GetLength() * 2));
+		currRunPath.ReleaseBuffer();
+
+		//关闭注册表  
+		RegCloseKey(hKey);
+		return TRUE;
+	}
 }

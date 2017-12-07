@@ -5,7 +5,8 @@
 #include "AgoraWawajiDemo.h"
 #include "DeviceDlg.h"
 #include "afxdialogex.h"
-
+#include "commonFun.h"
+#include "InfoManager.h"
 
 // CDeviceDlg 对话框
 
@@ -55,6 +56,7 @@ BEGIN_MESSAGE_MAP(CDeviceDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_AUDIO_VOLUME_INDICATION), &CDeviceDlg::OnEIDAudioVolumeIndication)
 
 	ON_BN_CLICKED(IDC_BTNAPPLY_DEVICE, &CDeviceDlg::OnBnClickedBtnapplyDevice)
+
 END_MESSAGE_MAP()
 
 
@@ -97,6 +99,54 @@ void CDeviceDlg::EnableDeviceTest(BOOL bEnable)
 	m_slkAudInTest.EnableWindow(bEnable);
 	m_slkAudOutTest.EnableWindow(bEnable);
 	m_slkCamTest.EnableWindow(bEnable);
+}
+
+bool CDeviceDlg::DeviceInfoCheck()
+{
+	m_agCamera.Create(m_lpRtcEngine);
+	std::string otherCameraId = getInfoManager()->getConfig()->getCameraComID(getOtherSection());
+	CString CameraDeviceId, CameraDeviceName, CurrDeviceName;
+	std::string configDeviceID = getInfoManager()->getConfig()->getCameraComID(getCurSection());
+	if ("" == configDeviceID){
+		CurrDeviceName = m_agCamera.GetCurDeviceID();
+	}
+	else{
+		CurrDeviceName = s2cs(configDeviceID);
+	}
+
+	bool otherstatus = str2int(getInfoManager()->getConfig()->getDeviceState(getOtherSection()));
+	int nIndex = 0;
+	
+	if (otherstatus && CurrDeviceName == s2cs(otherCameraId)){
+		for (; nIndex < m_agCamera.GetDeviceCount(); nIndex++){
+			m_agCamera.GetDevice(nIndex, CameraDeviceName, CameraDeviceId);
+			if ((CurrDeviceName) != CameraDeviceId){
+				m_cbxCam.SetCurSel(nIndex);
+				m_agCamera.SetCurDevice(CameraDeviceId);
+				break;
+			}
+		}
+	}
+	else{
+		int nIndex = 0;
+		for (; nIndex < m_agCamera.GetDeviceCount(); nIndex++){
+			m_agCamera.GetDevice(nIndex, CameraDeviceName, CameraDeviceId);
+			if ((CurrDeviceName) == CameraDeviceId){
+				m_cbxCam.SetCurSel(nIndex);
+				m_agCamera.SetCurDevice(CameraDeviceId);
+				break;
+			}
+		}
+		if (nIndex == m_agCamera.GetDeviceCount()){
+			AfxMessageBox(_T("没有找到合适的空闲摄像头"));
+			m_agCamera.Close();
+			return false;
+		}
+	}
+
+	m_agCamera.Close();
+	getInfoManager()->getConfig()->setCameraComID(getCurSection(), cs2s(CameraDeviceId));
+	return true;
 }
 
 void CDeviceDlg::InitCtrls()
@@ -264,15 +314,49 @@ void CDeviceDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			m_cbxAIn.SetCurSel(nIndex);
 	}
 
-	m_cbxCam.ResetContent();
-	strCurID = m_agCamera.GetCurDeviceID();
-	for (UINT nIndex = 0; nIndex < m_agCamera.GetDeviceCount(); nIndex++){
-		m_agCamera.GetDevice(nIndex, strDeviceName, strDeviceID);
-		m_cbxCam.InsertString(nIndex, strDeviceName);
-
-		if (strCurID == strDeviceID)
-			m_cbxCam.SetCurSel(nIndex);
+	m_cbxCam.ResetContent(); 
+	std::string otherCameraId = getInfoManager()->getConfig()->getCameraComID(getOtherSection());
+	CString CameraDeviceId, CameraDeviceName, CurrDeviceName;
+	std::string configDeviceID = getInfoManager()->getConfig()->getCameraComID(getCurSection());
+	if ("" == configDeviceID){
+		CurrDeviceName = m_agCamera.GetCurDeviceID();
 	}
+	else{
+		CurrDeviceName = s2cs(configDeviceID);
+	}
+
+	bool otherstatus = str2int(getInfoManager()->getConfig()->getDeviceState(getOtherSection()));
+	int nCameraIndex = 0;
+	if (otherstatus && CurrDeviceName == s2cs(otherCameraId)){
+		for (; nCameraIndex < m_agCamera.GetDeviceCount(); nCameraIndex++){
+			m_agCamera.GetDevice(nCameraIndex, CameraDeviceName, CameraDeviceId);
+			m_cbxCam.AddString(CameraDeviceName);
+			if ((CurrDeviceName) != CameraDeviceId){
+				m_cbxCam.SetCurSel(nCameraIndex);
+				m_agCamera.SetCurDevice(CameraDeviceId);
+				//break;
+			}
+		}
+	}
+	else{
+		nCameraIndex = 0;
+		for (; nCameraIndex < m_agCamera.GetDeviceCount(); nCameraIndex++){
+			m_agCamera.GetDevice(nCameraIndex, CameraDeviceName, CameraDeviceId);
+			m_cbxCam.AddString(CameraDeviceName);
+			if ((CurrDeviceName) == CameraDeviceId){
+				m_cbxCam.SetCurSel(nCameraIndex);
+				m_agCamera.SetCurDevice(CameraDeviceId);
+				//break;
+			}
+		}
+		if (nCameraIndex == m_agCamera.GetDeviceCount() && m_cbxCam.GetCurSel() == CB_ERR){
+			AfxMessageBox(_T("没有找到合适的空闲摄像头"));
+			m_agCamera.Close();
+			return;
+		}
+	}
+
+	getInfoManager()->getConfig()->setCameraComID(getCurSection(), cs2s(CameraDeviceId));
 }
 
 
@@ -384,8 +468,19 @@ void CDeviceDlg::OnBnClickedBtnconfirmDevice()
 	nCurSel = m_cbxCam.GetCurSel();
 	if (nCurSel != -1) {
 		m_agCamera.GetDevice(nCurSel, strDeviceName, strDeviceID);
-		m_agCamera.SetCurDevice(strDeviceID);
+		std::string otherDeviceId = getInfoManager()->getConfig()->getCameraComID(getOtherSection());
+		bool otherStatus = str2int(getInfoManager()->getConfig()->getDeviceState(getOtherSection()));
+		if (strDeviceID == s2cs(otherDeviceId) && otherStatus){
+			AfxMessageBox(_T("Selected Camera occupid by other process,please change camera."));
+			return;
+		}
+		else{
+			m_agCamera.SetCurDevice(strDeviceID);
+		}
 	}
+	
+	getInfoManager()->getConfig()->setCameraName(getCurSection(), cs2s(strDeviceName));
+	getInfoManager()->getConfig()->setCameraComID(getCurSection(), cs2s(strDeviceID));
 
 	CDialogEx::OnOK();
 }
@@ -414,9 +509,20 @@ void CDeviceDlg::OnBnClickedBtnapplyDevice()
 
 	nCurSel = m_cbxCam.GetCurSel();
 	if (nCurSel != -1) {
-		m_agCamera.GetDevice(nCurSel, strDeviceName, strDeviceID);
-		m_agCamera.SetCurDevice(strDeviceID);
+		m_agCamera.GetDevice(nCurSel, strDeviceName, strDeviceID);		
+		std::string otherDeviceId = getInfoManager()->getConfig()->getCameraComID(getOtherSection());
+		bool otherStatus = str2int(getInfoManager()->getConfig()->getDeviceState(getOtherSection()));
+		if (strDeviceID == s2cs(otherDeviceId) && otherStatus){
+			AfxMessageBox(_T("Selected Camera occupid by other process,please change camera."));
+			return;
+		}
+		else{
+			m_agCamera.SetCurDevice(strDeviceID);
+		}
 	}
+
+	getInfoManager()->getConfig()->setCameraName(getCurSection(), cs2s(strDeviceName));
+	getInfoManager()->getConfig()->setCameraComID(getCurSection(), cs2s(strDeviceID));
 }
 
 

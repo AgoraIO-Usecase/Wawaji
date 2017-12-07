@@ -6,6 +6,7 @@
 #include "EnterChannelDlg.h"
 #include "afxdialogex.h"
 #include "commonFun.h"
+#include "InfoManager.h"
 
 // CEnterChannelDlg 对话框
 
@@ -42,9 +43,12 @@ void CEnterChannelDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CEnterChannelDlg, CDialogEx)
 	ON_WM_NCHITTEST()
 	ON_WM_PAINT()
+	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTNTEST_CHANNEL, &CEnterChannelDlg::OnBnClickedBtntestChannel)
 	ON_BN_CLICKED(IDC_BTNJOIN_CHANNEL, &CEnterChannelDlg::OnBnClickedBtnjoinChannel)
 	ON_BN_CLICKED(IDC_BTNSET_CHANNEL, &CEnterChannelDlg::OnBnClickedBtnsetChannel)
+	ON_BN_CLICKED(IDC_CHECK_FRONT, &CEnterChannelDlg::OnBnClickedCheckFront)
+	ON_BN_CLICKED(IDC_CHECK_BACK, &CEnterChannelDlg::OnBnClickedCheckBack)
 	ON_CBN_SELCHANGE(IDC_CMBROLE_CHANNEL, &CEnterChannelDlg::OnCbnSelchangeCmbRole)
 
 END_MESSAGE_MAP()
@@ -82,6 +86,7 @@ BOOL CEnterChannelDlg::OnInitDialog()
 
 	SetBackgroundColor(RGB(0xFF, 0xFF, 0xFF));
 	InitCtrls();
+	SetTimer(1, 1000, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -94,9 +99,22 @@ void CEnterChannelDlg::InitCtrls()
 	GetClientRect(&ClientRect);
 
 
-	std::string appId = m_configwawaji.getAppId();
-	std::string channelName = m_configwawaji.getChannelName();
-	std::string uid = m_configwawaji.getUid();
+	std::string appId = getInfoManager()->getConfig()->getAppId();
+	std::string channelName = getInfoManager()->getConfig()->getChannelName();
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	std::string uid;
+	if (Type_Front == cameraType){
+
+		((CButton*)GetDlgItem(IDC_CHECK_FRONT))->SetCheck(TRUE);
+		((CButton*)GetDlgItem(IDC_CHECK_BACK))->SetCheck(FALSE);
+		 uid = getInfoManager()->getConfig()->getLoginUid(INI_DeviceInfoFront);
+	}
+	else if (Type_Back == cameraType){
+
+		((CButton*)GetDlgItem(IDC_CHECK_FRONT))->SetCheck(FALSE);
+		((CButton*)GetDlgItem(IDC_CHECK_BACK))->SetCheck(TRUE);
+		uid = getInfoManager()->getConfig()->getLoginUid(INI_DeviceInfoBack);
+	}
 
 	m_ctrAppId.MoveWindow(160, 33, 240, 22, TRUE);
 	m_ctrAppId.SetFont(&m_ftDesc);
@@ -114,7 +132,7 @@ void CEnterChannelDlg::InitCtrls()
 	//m_ctrChannel.SetTip(_T("wawaji_demo")); 
 	m_ctrChannel.SetFocus();
     
-//     m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
+//  m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
 // 	m_ctrPassword.SetFont(&m_ftDesc);
 // 	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
 // 	m_ctrPassword.SetFocus();
@@ -144,6 +162,9 @@ void CEnterChannelDlg::InitCtrls()
 	m_edPublishRtmpUrl.SetFont(&m_ftDesc);
 	m_edPublishRtmpUrl.SetTip(_T("RtmpUrl"));
 	m_edPublishRtmpUrl.SetFocus();
+
+	GetDlgItem(IDC_CHECK_FRONT)->MoveWindow(160, 280, 80, 22, TRUE);
+	GetDlgItem(IDC_CHECK_BACK)->MoveWindow(250, 280, 80, 22, TRUE);
 
 	m_ctrRole.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE, CRect(ClientRect.Width() / 2 + 1, 168, 180, 32), this, IDC_CMBROLE_CHANNEL);
 	m_ctrRole.MoveWindow(280, 127, 130, 22, TRUE);
@@ -187,6 +208,13 @@ void CEnterChannelDlg::OnPaint()
 	DrawClient(&dc);
 }
 
+void CEnterChannelDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (1 == nIDEvent){
+		KillTimer(nIDEvent);
+		OnBnClickedBtnjoinChannel();
+	}
+}
 
 void CEnterChannelDlg::DrawClient(CDC *lpDC)
 {
@@ -264,13 +292,13 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 		return;
 	}
 
-	m_configwawaji.setAppId(cs2s(strAppId));
+	getInfoManager()->getConfig()->setAppId(cs2s(strAppId));
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
 	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
 	
 	RtcEngineParameters rep(pRtcEngine);
 	rep.enableWebSdkInteroperability(true);
-	m_lpAgoraObject->SetLogFilePath(NULL);
+ 	m_lpAgoraObject->SetLogFilePath(s2cs(getInfoManager()->getSdkLogPath()));
 	m_lpAgoraObject->SetMsgHandlerWnd(GetSafeHwnd());
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
 	m_lpAgoraObject->EnableVideo(TRUE);
@@ -279,10 +307,24 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CString param;
 	m_ctrUid.GetWindowText(param);
 	m_lpAgoraObject->SetSelfUID(str2int(cs2s(param)));
-	m_configwawaji.setUid(cs2s(param));
+	getInfoManager()->getConfig()->setLoginUid(getCurSection(),cs2s(param));
 
 	m_ctrChannel.GetWindowText(param);
-	m_configwawaji.setChannelName(cs2s(param));
+	getInfoManager()->getConfig()->setChannelName(cs2s(param));
+	
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
+	if (res){
+		getInfoManager()->setCameraType(Type_Front);
+	}
+	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
+	if (res){
+		getInfoManager()->setCameraType(Type_Back);
+	}
+
+	if (!m_dlgDevice.DeviceInfoCheck()){
+		OnBnClickedBtntestChannel();
+		return;
+	}
 
 	AGE_PUBLISH_PARAM publishParam;
 	m_edPublishWidth.GetWindowText(param);
@@ -352,4 +394,56 @@ CString CEnterChannelDlg::GetChannelName()
 void CEnterChannelDlg::SetVideoString(LPCTSTR lpVideoString)
 {
 	m_btnSetup.SetWindowText(lpVideoString);
+}
+
+void CEnterChannelDlg::OnBnClickedCheckFront()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
+	((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(!res);
+	
+	if (res){
+		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoFront)){
+			AfxMessageBox(_T("前置摄像头对应进程已经启动..."));
+			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(FALSE);
+			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(TRUE);
+		}
+	}
+	else{
+		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+			AfxMessageBox(_T("后置摄像头对应进程已经启动.."));
+			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
+			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+		}
+	}	
+
+	res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
+	std::string loginUid = getInfoManager()->getConfig()->getLoginUid((res?INI_DeviceInfoFront:INI_DeviceInfoBack));
+	m_ctrUid.SetWindowTextW(s2cs(loginUid));
+}
+
+void CEnterChannelDlg::OnBnClickedCheckBack()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
+	((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(!res);
+	
+	if (res){
+		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+			AfxMessageBox(_T("后置摄像头对应进程已经启动..."));
+			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
+		}
+	}
+	else{
+		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+			AfxMessageBox(_T("前置摄像头对应进程已经启动.."));
+			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
+			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+		}
+	}
+
+	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
+	std::string loginUid = getInfoManager()->getConfig()->getLoginUid((res?INI_DeviceInfoBack:INI_DeviceInfoFront));
+	m_ctrUid.SetWindowTextW(s2cs(loginUid));
 }

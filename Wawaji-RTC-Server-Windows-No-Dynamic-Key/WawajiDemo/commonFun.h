@@ -35,5 +35,12 @@ float str2float(const std::string &str);
 CString s2cs(const std::string &str);
 std::string cs2s(const CString &str);
 
+DWORD getProcessID(const std::string &processName);
+void closeProcess(const std::string &processName);
+int getProcessIdMutil(const std::string &processName);
+void closeCurrentProcess();
+std::string getCurSection();
+std::string getOtherSection();
+bool registerRun();
 
 #endif

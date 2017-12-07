@@ -77,16 +77,19 @@
       <Filter>UI\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="commonFun.cpp">
-      <Filter>Single</Filter>
+      <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="FileIO.cpp">
-      <Filter>Single</Filter>
+      <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="AgoraWawajiDemoDlg.cpp">
       <Filter>UI\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="AgoraWawajiDemo.cpp">
       <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="InfoManager.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,16 +181,19 @@
       <Filter>UI\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="commonFun.h">
-      <Filter>Single</Filter>
+      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="FileIO.h">
-      <Filter>Single</Filter>
+      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="AgoraWawajiDemoDlg.h">
       <Filter>UI\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="AgoraWawajiDemo.h">
       <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="InfoManager.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -410,7 +416,7 @@
     <Filter Include="AgoraObject\MsgID">
       <UniqueIdentifier>{b5ee8826-ef61-405b-be39-ea16fbd13560}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Single">
+    <Filter Include="common">
       <UniqueIdentifier>{1016eb37-6840-4313-878f-9a64d632b2d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -423,6 +429,7 @@
     <None Include="res\AgoraWawajiDemo.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="..\Debug\wawaji.ini" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AgoraWawajiDemo.rc">

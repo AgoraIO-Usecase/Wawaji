@@ -1,5 +1,5 @@
 
-// AgoraVideoCall.cpp : Defines the class behaviors for the application.
+// AgoraWawajiDemo.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
@@ -7,20 +7,21 @@
 #include "LogoDlg.h"
 #include "AgoraWawajiDemoDlg.h"
 #include "EnterChannelDlg.h"
+#include "InfoManager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CAgoraVideoCallApp
+// CAgoraWawajiDemoApp
 
 BEGIN_MESSAGE_MAP(CAgoraWawajiDemoApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CAgoraVideoCallApp construction
+// CAgoraWawajiDemoApp construction
 
 CAgoraWawajiDemoApp::CAgoraWawajiDemoApp()
 {
@@ -32,12 +33,12 @@ CAgoraWawajiDemoApp::CAgoraWawajiDemoApp()
 }
 
 
-// The one and only CAgoraVideoCallApp object
+// The one and only CAgoraWawajiDemoApp object
 
 CAgoraWawajiDemoApp theApp;
 
 
-// CAgoraVideoCallApp initialization
+// CAgoraWawajiDemoApp initialization
 
 BOOL CAgoraWawajiDemoApp::InitInstance()
 {
@@ -70,13 +71,18 @@ BOOL CAgoraWawajiDemoApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("AgoraLiveVideo"));
-
+	//SetRegistryKey(_T("AgoraWawaji"));
+	//_CrtSetBreakAlloc(1718);
+	
 	INT_PTR nResponse = 0;
 	CLogoDlg Logo;
 
 	nResponse = Logo.DoModal();
 	CAgoraWawajiDemoDlg	avcDlg;
+
+// 	extern CInfoManager infoManager;
+// 	CInfoManager* pInfomanager = getInfoManager();
+// 	pInfomanager = &infoManager;
 
 	m_pMainWnd = &avcDlg;
 	nResponse = avcDlg.DoModal();

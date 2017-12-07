@@ -237,12 +237,19 @@ BOOL CAgoraObject::SetLogFilePath(LPCTSTR lpLogPath)
 		::MultiByteToWideChar(CP_UTF8, 0, lpLogPath, -1, (WCHAR *)szLogPathA, MAX_PATH, NULL, NULL);
 #endif
 	}
+	
+	if (_T("") == lpLogPath){
 
-	CAGResourceVisitor::TransWinPathA(szLogPathA, szLogPathTrans, MAX_PATH);
+		CAGResourceVisitor::TransWinPathA(szLogPathA, szLogPathTrans, MAX_PATH);
 
-	ret = rep.setLogFile(szLogPathTrans);
+		ret = rep.setLogFile(szLogPathTrans);
 
-	return ret == 0 ? TRUE : FALSE;
+		return ret == 0 ? TRUE : FALSE;
+	}
+	else{
+		ret = rep.setLogFile(CStringA(lpLogPath).GetBuffer());
+		return ret == 0 ? TRUE : FALSE;
+	}
 }
 
 BOOL CAgoraObject::SetVideoProfileEx(int nWidth, int nHeight, int nFrameRate, int nBitRate)
@@ -1011,6 +1018,7 @@ bool CAgoraObject::enablePublish(bool enable /*= true*/)
 		publishparam.framerate = m_publishParam.fps;
 		publishparam.bitrate = m_publishParam.bitrate;
 		publishparam.rawStreamUrl = m_publishParam.rtmpUrl.data();
+		publishparam.extraInfo = "{\"lowDelay\":true}";
 
 		m_lpAgoraEngine->configPublisher(publishparam);
 	}

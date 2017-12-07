@@ -78,10 +78,21 @@ protected:
 	CFileIni *pIniInstance_;
 };
 
-#define INI_LoginInfo "LoginInfo"
-#define INI_APPID "AppId"
-#define INI_ChannelName "ChannelName"
-#define INI_UID "Uid"
+#define INI_LoginInfo									"LoginInfo"
+#define INI_LoginInfo_APPID					"AppId"
+#define INI_LoginInfo_ChannelName	"ChannelName"
+
+#define INI_DeviceInfoFront						"DeviceInfoFront"
+#define INI_DeviceInfoBack						"DeviceInfoBack"
+#define INI_LoginInfo_UID						"LoginUid"
+#define INI_DeviceInfo_AudioInName	"AudioInName"
+#define INI_DeviceInfo_AudioInCOMID	"AudioInComID"
+#define INI_DeviceInfo_PlayOutName	"PlayOutName"
+#define INI_DeviceInfo_PlayOutCOMID	"PlayOutComID"
+#define INI_DeviceInfo_CameraName	"CameraName"
+#define INI_DeviceInfo_CameraCOMID	"CameraComID"
+#define INI_DeviceInfo_State					"DeviceState"
+#define INI_DeviceInfo_Choose				"DeviceChoose"
 
 class CConfigWawaji:public CIniBase
 {
@@ -93,7 +104,16 @@ public:
 public:
 	__DECLARE_INICONFIG_FUN(AppId)
 	__DECLARE_INICONFIG_FUN(ChannelName)
-	__DECLARE_INICONFIG_FUN(Uid)
+
+	__DECLARE_INICONFIG_SIMILAR_FUN(LoginUid)
+	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInName)
+	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInComID)
+	__DECLARE_INICONFIG_SIMILAR_FUN(PlayOutName)
+	__DECLARE_INICONFIG_SIMILAR_FUN(PlayOutComID)
+	__DECLARE_INICONFIG_SIMILAR_FUN(CameraName)
+	__DECLARE_INICONFIG_SIMILAR_FUN(CameraComID)
+	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceState)
+	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceChoose)
 
 private:
 

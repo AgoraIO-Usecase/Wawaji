@@ -318,6 +318,15 @@ CIniBase(path)
 
 }
 
-__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, AppId,INI_LoginInfo,INI_APPID)
-__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, ChannelName,INI_LoginInfo,INI_ChannelName)
-__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, Uid, INI_LoginInfo,INI_UID)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, AppId, INI_LoginInfo, INI_LoginInfo_APPID)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, ChannelName, INI_LoginInfo, INI_LoginInfo_ChannelName)
+
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, LoginUid, INI_LoginInfo_UID)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, AudioInName, INI_DeviceInfo_AudioInName)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, AudioInComID, INI_DeviceInfo_AudioInCOMID)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, PlayOutName, INI_DeviceInfo_PlayOutName)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, PlayOutComID, INI_DeviceInfo_PlayOutCOMID)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, CameraName, INI_DeviceInfo_CameraName)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, CameraComID, INI_DeviceInfo_CameraCOMID)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, DeviceState, INI_DeviceInfo_State)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, DeviceChoose, INI_DeviceInfo_Choose)
