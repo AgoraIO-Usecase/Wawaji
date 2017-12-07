@@ -1,5 +1,5 @@
 #!/bin/sh
-deployDir=/home/devops/web_demo/project/wawaji_demo
+deployDir=/home/devops/web_test/project/wawaji_demo
 ServerName=${@:$OPTIND:1}
 
 # Rev="$(git rev-parse HEAD)"

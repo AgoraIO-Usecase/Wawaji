@@ -1,18 +1,8 @@
-$(function () {
-    window.oncontextmenu = function(event) {
+$(document).ready(function () {
+    window.oncontextmenu = function (event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
-   };
-    var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = Vault.cc_server;
-    var debug = true;
-    var dbg = function () {
-        if (debug) {
-            var x = [];
-            for (var i in arguments) x.push(arguments[i]);
-            console.log.apply(null, ['Agora sig client dbg :'].concat(x));
-        }
     };
     var getParameterByName = (name, url) => {
         if (!url) url = window.location.href;
@@ -23,6 +13,17 @@ $(function () {
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
+    var namespace = getParameterByName("namespace") || "";
+    var appid = Vault.appid, appcert = Vault.appcert;
+    var wawaji_control_center = namespace + Vault.cc_server;
+    var debug = true;
+    var dbg = function () {
+        if (debug) {
+            var x = [];
+            for (var i in arguments) x.push(arguments[i]);
+            console.log.apply(null, ['Agora sig client dbg :'].concat(x));
+        }
+    };
     var randName = function (length) {
         var text = "";
         var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -34,8 +35,66 @@ $(function () {
     var machine_name = getParameterByName("machine");
     var machine_list = JSON.parse(localStorage.getItem("machines"));
 
-    if(!machine_name || !machine_list){
+    if (!machine_name || !machine_list) {
         location.href = "index.html";
+    }
+
+
+
+    var getKey = function (machine, cb) {
+        if (!machine.dynamicKeyEnabled) {
+            cb && cb(null);
+        } else {
+            $.ajax({
+                url: "http://123.155.153.85:4000/v1/key",
+                // url: "/v1/key",
+                type: "GET", //send it through get method
+                data: {
+                    appid: machine.appid,
+                    channel: machine.channel
+                }
+            }).done(function (key) {
+                cb && cb(key.key);
+            });
+        }
+    }
+
+    var prepare_meta = function (machine, cb) {
+        getKey(machine, function (key) {
+            $.ajax({
+                url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
+                type: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=utf-8"
+                },
+                data: JSON.stringify({
+                    key: machine.appid,
+                    cname: machine.channel
+                })
+            }).done(function (domains) {
+                var gateways = domains.gateway_addr || [];
+
+                if (gateways.length === 0) {
+                    alert("gateway not found");
+                } else {
+                    $.ajax({
+                        url: "https://" + domains.gateway_addr[0] + "/v1/machine",
+                        // url: "http://wawa1.agoraio.cn:4000/v1/machine",
+                        // url: "http://127.0.0.1:4000/v1/machine",
+                        type: "POST",
+                        data: {
+                            appid: machine.appid,
+                            channel: machine.channel,
+                            key: key
+                        }
+                    }).done(function (video_info) {
+                        cb(video_info);
+                    }).fail(function (e) {
+                        alert("err");
+                    });
+                }
+            });
+        })
     }
 
 
@@ -78,16 +137,17 @@ $(function () {
             }
         }
 
-        Lobby.Game = function (machine, account) {
+        Lobby.Game = function (machine, account, info) {
             var game = this;
 
             this.machine = machine;
             this.account = account;
+            this.video_info = info;
             this.users = 0;
             game.queue = [];
             game.playing = null;
 
-            this.channel = lobby.session.channelJoin("room_" + this.machine.name);
+            this.channel = lobby.session.channelJoin(namespace + this.machine.room_name);
             this.channel.onChannelJoined = function () {
                 dbg("connected to " + game.machine.name + "  successfully");
             };
@@ -107,13 +167,6 @@ $(function () {
                 }
                 game.queue = attrs.queue || [];
                 game.playing = attrs.playing;
-
-                if(game.player.method === 1 && !game.player.cameras){
-                    //camera update for jsmpeg player
-                    game.player.cameras = attrs.cameras || {};
-                    game.player.camera = game.player.camera || game.player.cameras.front;
-                    game.player.renderCanvas();
-                }
                 updateViews();
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
             };
@@ -154,25 +207,25 @@ $(function () {
             };
 
             this.play = function () {
-                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name}));
+                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name }));
             }
             this.control = function (data, pressed) {
                 var action = data;
-                if(!game.player.isUsingFrontCamera()){
+                if (!game.player.isUsingFrontCamera()) {
                     //if is using side camera, update control
-                    switch(data){
+                    switch (data) {
                         case 'left':
-                        action = 'down';
-                        break;
+                            action = 'down';
+                            break;
                         case 'right':
-                        action = 'up';
-                        break;
+                            action = 'up';
+                            break;
                         case 'up':
-                        action = 'left';
-                        break;
+                            action = 'left';
+                            break;
                         case 'down':
-                        action = 'right';
-                        break;
+                            action = 'right';
+                            break;
                     }
                 }
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
@@ -182,175 +235,67 @@ $(function () {
             }
 
 
-            Lobby.VideoPlayer = function (eleId, method) {
+            Lobby.VideoPlayer = function (info) {
                 var player = this;
-
-                if (game.machine.video_rotation === 90) {
-                    $("#" + eleId).addClass("rotation-90");
-                }
-
-                player.images = [];
-                player.domId = eleId;
-                player.frame_rate = 50;
-                player.cameras = null;
-                player.camera = null;
-                player.method = method;
-                player.player = null;
+                player.cameras = info.cameras || {};
+                player.camera = info.cameras.main;
+                player.player1 = null;
                 player.player2 = null;
                 player.slow_switch = parseInt(getParameterByName("slow_switch")) === 1;
 
-
-                player.isUsingFrontCamera = function(){
-                    return player.cameras && player.camera === player.cameras.front;
+                if (game.machine.video_rotation === 90) {
+                    $("#jsmpeg-player").addClass("rotation-90");
+                    $("#jsmpeg-player2").addClass("rotation-90");
                 }
 
-                if (player.method === 1) {
-                    if (game.machine.video_rotation === 90) {
-                        $("#jsmpeg-player").addClass("rotation-90");
-                        $("#jsmpeg-player2").addClass("rotation-90");
-                    }
-                    player.renderCanvas = function (force) {
-                        if (player.method !== 1) {
-                            //only allowed for jsmpeg
-                            return;
-                        }
 
-                        if(player.slow_switch){
-                            var canvas = document.getElementById('jsmpeg-player');
-                            var url = player.camera;
-    
-                            if (!player.player) {
-                                player.player = new JSMpeg.Player(url, { canvas: canvas });
-                            } else if (force) {
-                                player.player.destroy();
-                                player.player = null;
-                                player.player = new JSMpeg.Player(url, { canvas: canvas });
-                            }
-                        } else {
-                            var canvas1 = document.getElementById('jsmpeg-player');
-                            var canvas2 = document.getElementById('jsmpeg-player2');
-                            var url1 = player.cameras.front;
-                            var url2 = player.cameras.back;
-    
-                            if (!player.player) {
-                                player.player = new JSMpeg.Player(url1, { canvas: canvas1 });
-                                player.player2 = new JSMpeg.Player(url2, { canvas: canvas2 });
-                            } else if (force) {
-                                if(player.camera === player.cameras.front){
-                                    $("#jsmpeg-player").show();
-                                    $("#jsmpeg-player2").hide();
-                                } else {
-                                    $("#jsmpeg-player2").show();
-                                    $("#jsmpeg-player").hide();
-                                }
-                            }
-                        }
+                player.isUsingFrontCamera = function () {
+                    return player.cameras && player.camera === player.cameras.main;
+                }
 
-                    }
-                    player.switchCamera = function () {
-                        if (player.cameras && player.camera) {
-                            if (player.cameras.front === player.camera) {
-                                player.camera = player.cameras.back;
-                            } else {
-                                player.camera = player.cameras.front;
-                            }
-                            console.log("switching to " + player.camera);
-
-                        }
-                        player.renderCanvas(true);
-                    }
-                } else {
-
-                    player.socket = io(game.machine.video_host, {
-                        query: {
-                            channel: game.machine.video_channel,
-                            appid: game.machine.video_appid
-                        }
-                    });
-
-                    player.socket.on('connect', function () {
-                        //getting cameras
-                        player.socket.emit("cameras", { channel: game.machine.video_appid + game.machine.video_channel, socketid: player.socket.id }, function (result) {
-                            if (!result || !result.cameras || !result.using) {
-                                if (!result.using) {
-                                    alert("failed to get using camera");
-                                } else {
-                                    alert("failed to get camera");
-                                }
-                                return;
-                            }
-
-                            player.cameras = result.cameras;
-                            player.camera = result.using;
-
-
-
-                            player.socket.on('message', function (data) {
-                                console.log("message received");
-                                let arrayBufferView = new Uint8Array(data);
-                                let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-                                let urlCreator = window.URL || window.webkitURL;
-                                let imageUrl = urlCreator.createObjectURL(blob);
-                                player.images.push(imageUrl);
-                            });
-
-                            player.socket.on('disconnect', function (data) {
-                                alert("socket disconnected!");
-                            });
-
-                            $("#player").height($("#video").width());
-
-                            //when done start play
-                            player.play();
-                        })
-
-                    });
-
-
-                    player.switchCamera = function () {
-                        if (player.cameras && player.camera) {
-                            if (player.cameras.front === player.camera) {
-                                player.camera = player.cameras.back;
-                            } else {
-                                player.camera = player.cameras.front;
-                            }
-                            console.log("switching to " + player.camera);
-
-                        }
-                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: game.machine.video_appid + game.machine.video_channel });
-                    }
-
-                    player.play = function () {
-                        if (player.images.length > 0) {
-                            var img = document.querySelector("#" + player.domId);
-                            var imageUrl = null;
-
-                            if (player.images.length > 100) {
-                                imageUrl = player.images.pop();
-                                player.images = [];
-                            } else {
-                                imageUrl = player.images.shift();
-                            }
-
-                            if (imageUrl) {
-                                img.src = imageUrl;
-                            }
-                        }
-                        setTimeout(player.play, 1000 / player.frame_rate);
+                player.play = function (url, position) {
+                    var canvas = document.getElementById('jsmpeg-player');
+                    var canvas2 = document.getElementById('jsmpeg-player2');
+                    if (position === 0) {
+                        //front
+                        $(canvas2).hide();
+                        $(canvas).show();
+                    } else {
+                        //side
+                        $(canvas).hide();
+                        $(canvas2).show();
                     }
                 }
+                player.switchCamera = function () {
+                    if (player.camera === player.cameras.main) {
+                        player.camera = player.cameras.sub;
+                        player.play(player.camera, 1);
+                    } else {
+                        player.camera = player.cameras.main;
+                        player.play(player.camera, 0);
+                    }
+                }
+
+                var canvas = document.getElementById('jsmpeg-player');
+                var canvas2 = document.getElementById('jsmpeg-player2');
+                player.player1 = new JSMpeg.Player(player.cameras.main, { canvas: canvas });
+                player.player2 = new JSMpeg.Player(player.cameras.sub, { canvas: canvas2 });
+                player.play(player.camera, 0);
             }
-            game.player = new Lobby.VideoPlayer("player", game.machine.stream_method);
+
+            game.player = new Lobby.VideoPlayer(game.video_info);
         }
 
     };
 
-    var account = getParameterByName("account") /*|| localStorage.getItem("account")*/ || randName(10);
+    var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
     // localStorage.setItem("account", account);
-    var lobby = new Lobby(account, function(){
-        for(var i = 0; i < machine_list.length; i++){
-            if(machine_list[i].name === machine_name){
-                lobby.game = new Lobby.Game(machine_list[i], lobby.account);
+    var lobby = new Lobby(account, function () {
+        for (var i = 0; i < machine_list.length; i++) {
+            if (machine_list[i].name === machine_name) {
+                prepare_meta(machine_list[i], function (video_info) {
+                    lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
+                });
                 break;
             }
         }

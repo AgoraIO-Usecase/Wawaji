@@ -26,53 +26,81 @@ $(function () {
         return text;
     };
 
-
-    var Lobby = function (account, cb) {
+    var Lobby = function (account) {
         var lobby = this;
         this.account = account;
-        this.signal = Signal(appid);
         this.uid = null;
         this.machines = [];
         this.game = null;
-        this.session = this.signal.login(account, SignalingToken.get(appid, appcert, account, 1));
-        this.session.onLoginSuccess = function (uid) {
-            dbg("login successful account:" + lobby.account + " uid: " + uid);
-            lobby.uid = uid;
-
-            cb && cb();
-        };
-
-        //if fail
-        this.session.onLoginFailed = function () {
-            dbg("login failed ");
-        };
-
-        this.session.onMessageInstantReceive = function (account, uid, msg) {
-            console.log("message received: " + msg);
-            var data = JSON.parse(msg);
-            if (data.type !== undefined) {
-                switch (data.type) {
-                    case "LIST":
-                        lobby.setMachines(data.machines || [])
-                        break;
-                    case "INFO":
-                        console.log(msg);
-                        break;
-                }
-            }
-        }
 
         this.list = function () {
-            lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "LIST" }));
+            var machines = [{
+                name: "wawaji_machine_leyaoyao",
+                appid: "274acaf097b54d86acd6b21d0a753205",
+                channel: "10001",
+                dynamicKeyEnabled: false,
+                video_rotation: 90,
+                image: "IMG_5467.png",
+                available: true
+            }, {
+                name: "wawaji_machine_leidi",
+                appid: "324f0da1e2284832a44fee5fcbec44c1",
+                channel: "leidi01",
+                dynamicKeyEnabled: true,
+                image: "IMG_5468.png",
+                available: true
+            }, {
+                name: "wawaji_machine_zhuazhua2",
+                appid: "8b0faaf944034061a5ffd263d3f3f7a4",
+                channel: "wawajiDemo",
+                dynamicKeyEnabled: false,
+                video_rotation: 90,
+                image: "IMG_5469.png",
+                available: true
+            }, {
+                name: "wawaji_machine_kedie",
+                appid: "9aa74fadb6594733a673f40fab8d933d",
+                channel: "03A3",
+                dynamicKeyEnabled: true,
+                image: "IMG_5470.png",
+                available: true
+            }, {
+                name: "wawaji_machine_huizhi",
+                appid: "f451ae655cfe491b907d67728f9dee8b",
+                channel: "555",
+                dynamicKeyEnabled: false,
+                image: "IMG_5467.png",
+                available: true
+            }];
+            for(var i = 0; i < machines.length; i++){
+                machines[i].room_name = "room_" + machines[i].name;
+            }
+            lobby.setMachines(machines);
         }
 
         this.setMachines = function (macs) {
             dbg("found " + macs.length + " machines");
             lobby.machines = macs;
-            for (var i = 0; i < macs.length; i++) {
-                $('<li name=' + macs[i].name + ' class="roomBtn list-group-item list-group-item-action d-flex justify-content-between align-items-center">' + macs[i].name + '<span class="badge badge-primary badge-pill">' + macs[i].players.length + '</span></li>')
-                    .appendTo($(".machine-list"));
+            // for (var i = 0; i < macs.length; i++) {
+            //     $('<li name=' + macs[i].name + ' class="roomBtn list-group-item list-group-item-action d-flex justify-content-between align-items-center">' + macs[i].name + '<span class="badge badge-primary badge-pill">' + macs[i].players.length + '</span></li>')
+            //         .appendTo($(".machine-list"));
+            // }
+            $(".game-list").html("");
+            for (var i = 0; i < macs.length; i++){
+                var html = "";
+                html += '<div class="game-room" name="' + macs[i].name + '">';
+                html += '<div class="room-container">';
+                html += '<div class="room-img" style="background-image: url(\'/assets/images/' + macs[i].image + '\')">';
+                html += '<div class="room-label">';
+                html += '<div class="name">Agora公仔</div>';
+                html += '<div class="price" style="float: left">24/次</div>';
+                html += '<img class="status" src="./assets/images/available.png" />';
+                html += '</div></div></div>';
+                html += '<img src="./assets/images/game_frame.png" style="width: 100%" />';
+                html += '</div>';
+                $(html).appendTo(".game-list");
             }
+
             localStorage.setItem("machines", JSON.stringify(macs));
 
             $(".game-room").off("click").on("click", function () {
@@ -91,9 +119,8 @@ $(function () {
         };
     };
 
-    var account = getParameterByName("account") /*|| localStorage.getItem("account")*/ || randName(10);
+    var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
     // localStorage.setItem("account", account);
-    var lobby = new Lobby(account, function () {
-        lobby.list();
-    });
+    var lobby = new Lobby(account);
+    lobby.list();
 });

@@ -59,6 +59,10 @@ Wawaji.Server = function (serverid, io) {
         client.onStartFailed && client.onStartFailed();
     };
 
+    this.session.onLogout = function(){
+        console.log("on log out");
+    }
+
     this.session.onMessageInstantReceive = function (account, uid, msg) {
         dbg("msg received from " + account + ": " + msg);
         var data = JSON.parse(msg);
