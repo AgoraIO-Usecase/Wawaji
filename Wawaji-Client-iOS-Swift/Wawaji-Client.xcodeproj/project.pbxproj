@@ -21,6 +21,7 @@
 		7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368D1FC55617005844ED /* VideoToolbox.framework */; };
 		707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7073368F1FC557BE005844ED /* AVFoundation.framework */; };
 		707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 707336911FC557D5005844ED /* CoreTelephony.framework */; };
+		70B9C32F1FD92EA300EB8333 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B9C32E1FD92EA300EB8333 /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		7073368D1FC55617005844ED /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		7073368F1FC557BE005844ED /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		707336911FC557D5005844ED /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		70B9C32E1FD92EA300EB8333 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70B9C32F1FD92EA300EB8333 /* SystemConfiguration.framework in Frameworks */,
 				707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */,
 				707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */,
 				7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */,
@@ -62,6 +65,7 @@
 		1DBEB85AF8E7A1056D5A8E2B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70B9C32E1FD92EA300EB8333 /* SystemConfiguration.framework */,
 				707336911FC557D5005844ED /* CoreTelephony.framework */,
 				7073368F1FC557BE005844ED /* AVFoundation.framework */,
 				7073368D1FC55617005844ED /* VideoToolbox.framework */,
