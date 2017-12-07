@@ -25,6 +25,7 @@
 		707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 707336911FC557D5005844ED /* CoreTelephony.framework */; };
 		709DC31D1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */; };
 		709DC33B1FD25B1500DFBE68 /* WawajiControllerCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */; };
+		70B9C32B1FD9197900EB8333 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B9C32A1FD9197900EB8333 /* SystemConfiguration.framework */; };
 		D0C714EA8AE62853FCEBA9BB /* Pods_Wawaji_Client.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		707336911FC557D5005844ED /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeyaoyaoWawajiController.swift; sourceTree = "<group>"; };
 		709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WawajiControllerCreator.swift; sourceTree = "<group>"; };
+		70B9C32A1FD9197900EB8333 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CEA1C40D486E0D18449BB377 /* Pods-Wawaji-Client.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.debug.xcconfig"; sourceTree = "<group>"; };
 		CF79DD76449A81061A76E118 /* Pods_Wawaji_Client.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wawaji_Client.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -59,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70B9C32B1FD9197900EB8333 /* SystemConfiguration.framework in Frameworks */,
 				707336921FC557DB005844ED /* CoreTelephony.framework in Frameworks */,
 				707336901FC557C6005844ED /* AVFoundation.framework in Frameworks */,
 				7073368E1FC5561F005844ED /* VideoToolbox.framework in Frameworks */,
@@ -75,6 +78,7 @@
 		1DBEB85AF8E7A1056D5A8E2B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70B9C32A1FD9197900EB8333 /* SystemConfiguration.framework */,
 				707336911FC557D5005844ED /* CoreTelephony.framework */,
 				7073368F1FC557BE005844ED /* AVFoundation.framework */,
 				7073368D1FC55617005844ED /* VideoToolbox.framework */,
