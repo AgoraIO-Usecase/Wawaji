@@ -19,6 +19,7 @@
 		7090165F1FBD416100D18745 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7090165D1FBD416100D18745 /* LaunchScreen.storyboard */; };
 		709016621FBD416100D18745 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016611FBD416100D18745 /* main.m */; };
 		7090166A1FBD41D500D18745 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016691FBD41D500D18745 /* PlayViewController.m */; };
+		70B9C3291FD9189C00EB8333 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B9C3281FD9189B00EB8333 /* SystemConfiguration.framework */; };
 		70F0607E1FBD51F7001BD148 /* KeyCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 70F0607C1FBD51F7001BD148 /* KeyCenter.m */; };
 		70F060831FBD63B1001BD148 /* AlertUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 70F060811FBD63B1001BD148 /* AlertUtil.m */; };
 		70F060851FBD67E9001BD148 /* AgoraRtcEngineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F060841FBD67E9001BD148 /* AgoraRtcEngineKit.framework */; };
@@ -51,6 +52,7 @@
 		709016611FBD416100D18745 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		709016681FBD41D500D18745 /* PlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		709016691FBD41D500D18745 /* PlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
+		70B9C3281FD9189B00EB8333 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		70F0607B1FBD51F7001BD148 /* KeyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCenter.h; sourceTree = "<group>"; };
 		70F0607C1FBD51F7001BD148 /* KeyCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyCenter.m; sourceTree = "<group>"; };
 		70F060811FBD63B1001BD148 /* AlertUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertUtil.m; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70B9C3291FD9189C00EB8333 /* SystemConfiguration.framework in Frameworks */,
 				70F0608F1FBD682A001BD148 /* CoreTelephony.framework in Frameworks */,
 				70F0608B1FBD6813001BD148 /* libc++.tbd in Frameworks */,
 				70F060891FBD6809001BD148 /* AVFoundation.framework in Frameworks */,
@@ -142,6 +145,7 @@
 		861771E1F064879BBED81CCD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70B9C3281FD9189B00EB8333 /* SystemConfiguration.framework */,
 				70F0608E1FBD6824001BD148 /* CoreTelephony.framework */,
 				70F0608C1FBD6819001BD148 /* libresolv.tbd */,
 				70F0608A1FBD6813001BD148 /* libc++.tbd */,

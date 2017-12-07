@@ -178,20 +178,20 @@ class PlayViewController: UIViewController {
 }
 
 extension PlayViewController : AgoraRtcEngineDelegate {
-    func rtcEngine(_ engine: AgoraRtcEngineKit!, didOccurError errorCode: AgoraRtcErrorCode) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraRtcErrorCode) {
         print("rtcEngine:didOccurError: \(errorCode)")
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit!, didJoinChannel channel: String!, withUid uid: UInt, elapsed: Int) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
         print("rtcEngine:didJoinChannel: \(channel)")
         UIApplication.shared.isIdleTimerDisabled = true
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit!, didJoinedOfUid uid: UInt, elapsed: Int) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         print("rtcEngine:didJoinedOfUid: \(uid)")
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit!, firstRemoteVideoDecodedOfUid uid: UInt, size: CGSize, elapsed: Int) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid: UInt, size: CGSize, elapsed: Int) {
         print("rtcEngine:firstRemoteVideoDecodedOfUid: \(uid)")
         if allStreamUids.contains(uid) {
             return
@@ -209,7 +209,7 @@ extension PlayViewController : AgoraRtcEngineDelegate {
         }
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit!, didOfflineOfUid uid: UInt, reason: AgoraRtcUserOfflineReason) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraRtcUserOfflineReason) {
         print("rtcEngine:didOfflineOfUid: \(uid)")
     }
 }
