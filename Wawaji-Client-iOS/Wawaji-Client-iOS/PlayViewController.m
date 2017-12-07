@@ -218,7 +218,7 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurWarning:(AgoraRtcWarningCode)warningCode {
-    NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
+    //NSLog(@"rtcEngine:didOccurWarning: %ld", (long)warningCode);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraRtcErrorCode)errorCode {
