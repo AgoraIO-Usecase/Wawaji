@@ -5,7 +5,7 @@
 #include "English.h"
 
 
-ENGLISH_API LPCTSTR IDS_TITLE = _T("Agora Live Video");
+ENGLISH_API LPCTSTR IDS_TITLE = _T("Agora Wawaji Demo");
 ENGLISH_API LPCTSTR IDS_LOGO_DESC = _T("Powering Real-Time Communications");
 ENGLISH_API LPCTSTR IDS_LOGO_AGORAWEB = _T("agora.io");
 
