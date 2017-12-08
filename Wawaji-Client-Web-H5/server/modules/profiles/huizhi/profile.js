@@ -46,7 +46,7 @@ HuizhiProfile = function (mode) {
     this.binstr  = vault.binstr;
     this.password = vault.password;
     this.protocol = vault.protocol;
-    this.log = (new logger('huizhi', 'logs/huizhi.log')).get();
+    this.log = (new logger('huizhi', 'huizhi.log')).get();
 
     this.onInit = function(machine, done){
         profile.log.info("onInit.");

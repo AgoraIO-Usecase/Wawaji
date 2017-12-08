@@ -25,7 +25,7 @@ LeyaoyaoProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
-    this.log = (new logger('leyaoyao', 'logs/leyaoyao.log')).get();
+    this.log = (new logger('leyaoyao', 'leyaoyao.log')).get();
 
     this.onResult = null;
     this.onError = null;

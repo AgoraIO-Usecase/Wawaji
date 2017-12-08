@@ -44,7 +44,7 @@ KedieProfile = function (mode) {
     this.mode = mode;
     this.actions = {};
     this.protocol = vault.protocol;
-    this.log = (new logger('kedie', 'logs/kedie.log')).get();
+    this.log = (new logger('kedie', 'kedie.log')).get();
 
     this.vendor_device = vault.vendor_device;
     this.vendor_sn = vault.vendor_sn;

@@ -22,7 +22,7 @@ ZhuaZhuaProfile = function(mode){
     this.game_timeout = null;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
-    this.log = (new logger('test', 'logs/test.log')).get();
+    this.log = (new logger('test', 'test.log')).get();
 
     this.onInit = function(machine){
         profile.log.info("onInit.");

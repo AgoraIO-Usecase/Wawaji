@@ -1,5 +1,4 @@
 const vault = require('../../vault.js').leidi
-const vault = require('./vault.js')
 const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
@@ -23,7 +22,7 @@ LeiDiProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
-    this.log = (new logger('leidi', 'logs/leidi.log')).get();
+    this.log = (new logger('leidi', 'leidi.log')).get();
 
     profile.log.info(`${this.appid}, ${vault.appid}, ${vault.appcert}`);
 

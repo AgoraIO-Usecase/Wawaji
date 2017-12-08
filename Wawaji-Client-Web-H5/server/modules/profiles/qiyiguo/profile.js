@@ -27,7 +27,7 @@ QiyiguoProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
-    this.log = (new logger('qiyiguo', 'logs/qiyiguo.log')).get();
+    this.log = (new logger('qiyiguo', 'qiyiguo.log')).get();
 
     this.onResult = null;
     this.onError = null;

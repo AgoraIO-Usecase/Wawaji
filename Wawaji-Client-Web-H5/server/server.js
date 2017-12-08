@@ -19,7 +19,7 @@ var KedieProfile = require('./modules/profiles/kedie/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
 var api  = require('./routes/api');
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // parse application/json
 app.use(bodyParser.json());

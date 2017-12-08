@@ -1,5 +1,4 @@
 const vault = require('../../vault.js').zhuazhua;
-const vault = require('./vault.js')
 const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
