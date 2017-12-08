@@ -3,6 +3,7 @@ const request = require('request');
 const md5 = require('md5');
 const sortKeys = require('sort-keys');
 const WawajiStatus = require('../../constants').WawajiStatus;
+const logger = require('../../logger');
 
 var debug = true;
 var dbg = function () {
@@ -26,6 +27,7 @@ QiyiguoProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
+    this.log = (new logger('qiyiguo', 'logs/qiyiguo.log')).get();
 
     this.onResult = null;
     this.onError = null;
@@ -33,19 +35,20 @@ QiyiguoProfile = function(mode){
     this.sendMessage = function(msgObj, type){
         var msg = {type:type, data:msgObj};
         profile.machine.socket.send(JSON.stringify(msg));
-        dbg(`sending action ${JSON.stringify(msg)}`);
+        profile.log.info(`sending action ${JSON.stringify(msg)}`);
     }
 
     this.onInit = function(machine, done){
+        profile.log.info("onInit.");
         profile.machine = machine;
 
         machine.socket.on('open', function open() {
-            dbg("WebSocket opened");
+            profile.log.info("WebSocket opened");
             done();
         });
 
         machine.socket.on('message', function incoming(data) {
-            dbg(machine.name + " WebSocket receive: " + data);
+            profile.log.info(machine.name + " WebSocket receive: " + data);
 
             var json = JSON.parse(data);
             if(json.type) {
@@ -77,7 +80,7 @@ QiyiguoProfile = function(mode){
 
     this.onRequestUrl = function(http_url) {
         request(http_url, function (err, response, body) {
-            dbg(body);
+            profile.log.info(body);
             var msg = JSON.parse(body);
             if (msg) {
                 if(msg.done === "true") {
@@ -88,7 +91,7 @@ QiyiguoProfile = function(mode){
                     });
                 }
                 else {
-                    dbg("Return: " + false);
+                    profile.log.info("Return: " + false);
                 }
             }
         });
@@ -132,7 +135,7 @@ QiyiguoProfile = function(mode){
         var partner_secret = vault.partner_secret;
         var sign_ret = md5( md5(sign_content) + partner_secret);
         http_url  += "&sign=" + sign_ret;
-        dbg(http_url);
+        profile.log.info(http_url);
 
         cb && cb(http_url);
     };

@@ -8,11 +8,11 @@ const JsmpegStream = require('./jsmpegStream');
 const ImageStream = require('./imageStream');
 const request = require('request');
 const Utils = require('./utils');
+const logger = require('./logger');
 
 var global_port = 8100;
 
 var debug = true;
-
 var dbg = function () {
     if (debug) {
         var x = [];
@@ -26,6 +26,7 @@ Wawaji = {};
 Wawaji.Server = function (serverid, io) {
     //utils
     var client = this;
+    var logx = (new logger('server', 'logs/server.log')).get();
 
     /*------------------------------------------------
     |   Session API : events
@@ -39,7 +40,7 @@ Wawaji.Server = function (serverid, io) {
     //begin creating singal
     var signal = Signal(vault.appid);
     var cc_name = "wawaji_cc_" + serverid;
-    dbg(`login as ${cc_name}`)
+    logx.info(`login as ${cc_name}`)
     this.session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
     this.uid = null;
     this.channel = null;
@@ -47,7 +48,7 @@ Wawaji.Server = function (serverid, io) {
 
 
     this.session.onLoginSuccess = function (uid) {
-        dbg("login successful " + uid);
+        logx.info("login successful " + uid);
         client.uid = uid;
         client.machines = new Wawaji.MachineSet();
         client.onStarted && client.onStarted();
@@ -55,16 +56,16 @@ Wawaji.Server = function (serverid, io) {
 
     //if fail
     this.session.onLoginFailed = function () {
-        dbg("login failed ");
+        logx.info("login failed ");
         client.onStartFailed && client.onStartFailed();
     };
 
     this.session.onLogout = function(){
-        console.log("on log out");
+        logx.info("on log out");
     }
 
     this.session.onMessageInstantReceive = function (account, uid, msg) {
-        dbg("msg received from " + account + ": " + msg);
+        logx.info("msg received from " + account + ": " + msg);
         var data = JSON.parse(msg);
         var machine = null;
         var response = null;
@@ -89,9 +90,9 @@ Wawaji.Server = function (serverid, io) {
     Wawaji.MachineSet = function () {
         var collection = this;
         this.__machines = [];
-        this.add = function (machine) {
-            collection.__machines.push(machine);
-            dbg("machine " + name + " added");
+        this.add = function (name, url) {
+            collection.__machines.push(new Wawaji.Machine(name, url));
+            logx.info("machine " + name + " added");
             return collection;
         }
 
@@ -112,7 +113,7 @@ Wawaji.Server = function (serverid, io) {
 
         this.toJSON = function () {
             var results = [];
-            dbg(`toJSON ${collection.__machines.length} machines`);
+            logx.info(`toJSON ${collection.__machines.length} machines`);
             for (var i = 0; i < collection.__machines.length; i++) {
                 var machine = collection.__machines[i];
                 if (machine.online) {
@@ -164,9 +165,9 @@ Wawaji.Server = function (serverid, io) {
         this.websocket_port2 = global_port++;
         this.online = false;
         // this.attributes = { queue: [], playing: null, cameras: { front: this.websocket_port1, back: this.websocket_port2 } };
+        this.log = profile.log;
 
-
-        dbg(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
+        machine.log.info(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
         if (this.stream_method === StreamMethod.JSMPEG) {
             var rand_uid = Math.floor(Math.random() * 100000);
             if (profile.appcert) {
@@ -185,7 +186,7 @@ Wawaji.Server = function (serverid, io) {
 
 
         this.setStatus = function (status, reason) {
-            dbg(`[DEBUG] ${machine.name} set to status ${status}: ${reason}`);
+            machine.log.debug(`[DEBUG] ${machine.name} set to status ${status}: ${reason}`);
             machine.status = status;
         }
 
@@ -199,7 +200,7 @@ Wawaji.Server = function (serverid, io) {
                     if (previous_status === WawajiStatus.INITIAL) {
                         machine.setStatus(WawajiStatus.READY);
                     } else {
-                        dbg(`restore status successful ${machine.status}`)
+                        machine.log.info(`restore status successful ${machine.status}`)
                         machine.setStatus(previous_status);
                     }
                     cb && cb();
@@ -213,7 +214,7 @@ Wawaji.Server = function (serverid, io) {
                     return;
                 }
                 if (machine.url) {
-                    dbg(machine.url);
+                    machine.log.info(machine.url);
                     var socket = new WebSocket(machine.url);
                     machine.socket = socket;
 
@@ -225,14 +226,14 @@ Wawaji.Server = function (serverid, io) {
                         if (previous_status === WawajiStatus.INITIAL) {
                             machine.setStatus(WawajiStatus.READY);
                         } else {
-                            dbg(`restore status successful ${machine.status}`)
+                            machine.log.info(`restore status successful ${machine.status}`)
                             machine.setStatus(previous_status);
                         }
                         cb && cb();
                     });
 
                     machine.socket.onclose = function (e) {
-                        dbg("WebSocket closed for " + machine.name);
+                        machine.log.info("WebSocket closed for " + machine.name);
                         machine.socket = null;
                     }
                 }
@@ -243,23 +244,23 @@ Wawaji.Server = function (serverid, io) {
 
 
         this.session.onLoginSuccess = function (uid) {
-            dbg("login successful " + uid);
+            machine.log.info("login successful " + uid);
             machine.uid = uid;
             machine.channel = machine.session.channelJoin("room_" + machine.name);
             machine.channel.onChannelJoined = function () {
-                dbg(`[DEBUG] ${machine.name} is now online`);
+                machine.log.debug(`[DEBUG] ${machine.name} is now online`);
                 machine.online = true;
                 machine.channel.channelClearAttr();
                 machine.updateAttrs();
             };
 
             machine.channel.onChannelJoinFailed = function (ecode) {
-                dbg("machine connect failed");
+                machine.log.info("machine connect failed");
             };
 
             machine.channel.onChannelUserJoined = function (account, uid) {
                 machine.users.push(new Wawaji.User(uid, account));
-                dbg(account + " joined, " + machine.users.length + " players in " + machine.name);
+                machine.log.info(account + " joined, " + machine.users.length + " players in " + machine.name);
             };
 
             machine.channel.onChannelUserLeaved = function (account, uid) {
@@ -268,7 +269,7 @@ Wawaji.Server = function (serverid, io) {
                     return item.uid !== uid;
                 });
                 machine.updateAttrs();
-                dbg(account + " leaved, " + machine.users.length + " players in " + machine.name);
+                machine.log.info(account + " leaved, " + machine.users.length + " players in " + machine.name);
             };
 
             machine.channel.onChannelUserList = function (users) {
@@ -280,19 +281,19 @@ Wawaji.Server = function (serverid, io) {
                     results.push(new Wawaji.User(users[i][1], users[i][0]));
                 }
                 machine.users = results;
-                dbg(machine.users.length + " players in " + machine.name);
+                machine.log.info(machine.users.length + " players in " + machine.name);
             };
 
             machine.channel.onMessageChannelReceive = function (account, uid, msg) {
-                dbg("msg received from " + account + ": " + msg);
+                machine.log.info("msg received from " + account + ": " + msg);
                 var data = JSON.parse(msg);
 
                 if (data.type === "PLAY") {
-                    dbg(`player ${account} trying to play`);
+                    machine.log.info(`player ${account} trying to play`);
                     machine.play(account);
                 } else {
                     if (account !== machine.playing) {
-                        dbg("channel msg received from not playing user " + account + ": " + msg);
+                        machine.log.info("channel msg received from not playing user " + account + ": " + msg);
                         return;
                     }
                     if (data && data.type) {
@@ -308,15 +309,15 @@ Wawaji.Server = function (serverid, io) {
 
         //if fail
         this.session.onLoginFailed = function () {
-            dbg("machine login failed");
+            machine.log.info("machine login failed");
         };
 
         this.session.onMessageInstantReceive = function (account, uid, msg) {
             if (account !== machine.playing) {
-                dbg("instant msg received from not playing user " + account + ": " + msg);
+                machine.log.info("instant msg received from not playing user " + account + ": " + msg);
                 return;
             }
-            dbg("msg received from " + account + ": " + msg);
+            machine.log.info("msg received from " + account + ": " + msg);
             var data = JSON.parse(msg);
 
             if (data && data.type) {
@@ -324,7 +325,7 @@ Wawaji.Server = function (serverid, io) {
                     //clear timer
                     clearTimeout(machine.prepare_timer);
                     machine.prepare_timer = null;
-                    dbg(`response received from ${account}, start play!`);
+                    machine.log.info(`response received from ${account}, start play!`);
                     machine.setStatus(WawajiStatus.READY);
                     machine.playgame(account);
                     machine.sendInfo(account, "START");
@@ -333,15 +334,15 @@ Wawaji.Server = function (serverid, io) {
         }
 
         this.play = function (account) {
-            dbg("machine status: " + machine.status);
+            machine.log.info("machine status: " + machine.status);
             if (machine.playing === account) {
-                dbg("you are already playing");
+                machine.log.info("you are already playing");
                 machine.sendInfo(account, "PLAYER_ALREADY_PLAYING");
                 return false;
             }
             if (machine.queue.indexOf(account) !== -1) {
                 machine.sendInfo(account, "PLAYER_ALREADY_IN_QUEUE");
-                dbg("you are already in queue");
+                machine.log.info("you are already in queue");
             }
             if (machine.canPlay()) {
                 machine.playgame(account);
@@ -357,10 +358,10 @@ Wawaji.Server = function (serverid, io) {
 
         this.playgame = function (account) {
             if (machine.status !== WawajiStatus.READY) {
-                dbg(`[ERROR] try to start a game whose machine is not ready, current status is ${machine.status}`);
+                machine.log.error(`[ERROR] try to start a game whose machine is not ready, current status is ${machine.status}`);
                 return;
             }
-            dbg("[DEBUG] about to start a game for " + account);
+            machine.log.debug("[DEBUG] about to start a game for " + account);
 
             machine.setStatus(WawajiStatus.PLAY);
             machine.setPlaying(account);
@@ -375,7 +376,7 @@ Wawaji.Server = function (serverid, io) {
 
         this.catch = function () {
             if (machine.status !== WawajiStatus.PLAY) {
-                dbg(`[ERROR] try to do catch while a machine is not in Play status, current status is ${machine.status}`);
+                machine.log.error(`[ERROR] try to do catch while a machine is not in Play status, current status is ${machine.status}`);
                 return;
             }
             machine.setStatus(WawajiStatus.BUSY);
@@ -390,7 +391,7 @@ Wawaji.Server = function (serverid, io) {
 
         this.control = function (data) {
             if (machine.status !== WawajiStatus.PLAY) {
-                dbg(`[ERROR] try to do catch while a machine is not in Play status, current status is ${machine.status}`);
+                machine.log.error(`[ERROR] try to do catch while a machine is not in Play status, current status is ${machine.status}`);
                 return;
             }
             initWS(function () { machine.profile.onControl(data) });
@@ -398,18 +399,18 @@ Wawaji.Server = function (serverid, io) {
 
         this.processQueue = function () {
             //can process
-            dbg(`[DEBUG] process when status is ${machine.status} and machine.playing is ${machine.playing}`)
+            machine.log.debug(`[DEBUG] process when status is ${machine.status} and machine.playing is ${machine.playing}`)
             if ((machine.status === WawajiStatus.READY && machine.playing === null) || machine.status === WawajiStatus.WAITING) {
                 var player = machine.nextPlayer();
                 machine.updateAttrs();
-                dbg("try to start next play: " + player);
+                machine.log.info("try to start next play: " + player);
                 if (player) {
                     machine.session.messageInstantSend(player, JSON.stringify({ type: "PREPARE" }));
                     machine.prepare_timer = setTimeout(function () {
                         //wait for 10 seconds and next player if no response
                         machine.prepare_timer = null;
                         machine.sendInfo(player, "KICKED_NO_RESPONSE");
-                        dbg("no response, next");
+                        machine.log.info("no response, next");
                         machine.status === WawajiStatus.WAITING
                         machine.processQueue();
                     }, 10 * 1000);
@@ -421,7 +422,7 @@ Wawaji.Server = function (serverid, io) {
 
         profile.onError = function () {
             machine.session.messageInstantSend(machine.playing, JSON.stringify({ type: "ERROR", data: "UNKNOWN_ERR" }))
-            dbg(`[ERROR] Error occured for ${machine.name}, try to restore...`);
+            machine.log.error(`[ERROR] Error occured for ${machine.name}, try to restore...`);
             machine.setStatus(WawajiStatus.WAITING);
             machine.processQueue();
         }
@@ -441,7 +442,7 @@ Wawaji.Server = function (serverid, io) {
         }
 
         this.sendInfo = function (account, m) {
-            dbg("sending info " + m);
+            machine.log.info("sending info " + m);
             machine.session.messageInstantSend(account, JSON.stringify({ type: "INFO", data: m }))
         }
 
@@ -450,26 +451,26 @@ Wawaji.Server = function (serverid, io) {
         };
 
         this.setPlaying = function (account) {
-            dbg("now playing set to " + account);
+            machine.log.info("now playing set to " + account);
             machine.playing = account;
         }
 
         this.emptyQueue = function () {
-            dbg("empty queue");
+            machine.log.info("empty queue");
             machine.queue = [];
         }
 
         this.queuePlayer = function (account) {
-            dbg("put " + account + " in queue");
+            machine.log.info("put " + account + " in queue");
             if (machine.queue.indexOf(account) !== -1) {
-                dbg(account + " already in queue");
+                machine.log.info(account + " already in queue");
                 return
             }
             machine.queue.push(account);
         }
 
         this.dequeuePlayer = function (account) {
-            dbg("remove " + account + " from queue");
+            machine.log.info("remove " + account + " from queue");
             machine.queue = machine.queue.filter(function (item) {
                 return item.account !== account;
             });
@@ -477,7 +478,7 @@ Wawaji.Server = function (serverid, io) {
 
         this.nextPlayer = function () {
             var player = machine.queue.shift();
-            player && dbg("queue next player " + player);
+            player && machine.log.info("queue next player " + player);
             machine.playing = player;
             return player;
         }
@@ -485,7 +486,7 @@ Wawaji.Server = function (serverid, io) {
         this.updateAttrs = function () {
             var attrs = { queue: machine.queue || [], playing: machine.playing || null, cameras: { front: `ws://${client.ipaddress}:${machine.websocket_port1}`, back: `ws://${client.ipaddress}:${machine.websocket_port2}` } };
 
-            dbg(`[DEBUG] update attributes ${JSON.stringify(attrs)}`);
+            machine.log.debug(`[DEBUG] update attributes ${JSON.stringify(attrs)}`);
             machine.channel && machine.channel.channelSetAttr("attrs", JSON.stringify(attrs));
         }
     }

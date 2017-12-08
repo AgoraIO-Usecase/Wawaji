@@ -2,6 +2,7 @@
 const vault = require('../../vault.js').huizhi
 const WawajiStatus = require('../../constants').WawajiStatus;
 const request = require('request');
+const logger = require('../../logger');
 
 const ACTION = {
     LEFT:  'SXActionLeft',
@@ -45,24 +46,25 @@ HuizhiProfile = function (mode) {
     this.binstr  = vault.binstr;
     this.password = vault.password;
     this.protocol = vault.protocol;
+    this.log = (new logger('huizhi', 'logs/huizhi.log')).get();
 
     this.onInit = function(machine, done){
-        dbg("onInit.");
+        profile.log.info("onInit.");
         profile.machine = machine;
         done();
     }
 
     this.disconnect = function () {
-        dbg("disconnect.");
+        profile.log.info("disconnect.");
         var dst_url = profile.http_url + OPERATION.DISCONN;
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password}}, function (err, response, body) {
             var msg = JSON.parse(body);
             if (msg) {
                 if (msg.code > 0) {
-                    dbg("Response: " + msg.mess);
+                    profile.log.info("Response: " + msg.mess);
                 }
                 else {
-                    dbg("Response ERROR:" + msg.mess);
+                    profile.log.info("Response ERROR:" + msg.mess);
                 }
             }
         });
@@ -75,17 +77,17 @@ HuizhiProfile = function (mode) {
             if (msg) {
                 if (msg.code > 0) {
                     profile.dyn_key = msg.data;
-                    dbg("Response: dynKey=" + profile.dyn_key);
+                    profile.log.info("Response: dynKey=" + profile.dyn_key);
                 }
                 else {
-                    dbg("Response ERROR:" + msg.mess);
+                    profile.log.info("Response ERROR:" + msg.mess);
                 }
             }
         });
     }
 
     this.onControl = function(data){
-        dbg("onControl: " + data.data);
+        profile.log.info("onControl: " + data.data);
         var action = '';
         switch (data.data) {
             case 'left':  action = ACTION.LEFT;  break;
@@ -99,47 +101,47 @@ HuizhiProfile = function (mode) {
             var msg = JSON.parse(body);
             if (msg) {
                 if (msg.code > 0) {
-                    dbg("Response: " + msg.mess);
+                    profile.log.info("Response: " + msg.mess);
                 }
                 else {
-                    dbg("Response ERROR: " + msg.mess);
+                    profile.log.info("Response ERROR: " + msg.mess);
                 }
             }
         });
     }
 
     this.onCatch = function(){
-        dbg("onCatch.");
+        profile.log.info("onCatch.");
         var action = ACTION.CATCH;
         var dst_url = profile.http_url + OPERATION.SENDACTION;
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password, dynKey:profile.dyn_key, action:action}}, function (err, response, body) {
             var msg = JSON.parse(body);
             if (msg) {
                 if (msg.code > 0) {
-                    dbg("Response: " + msg.mess);
+                    profile.log.info("Response: " + msg.mess);
 
                     setTimeout(profile.check, 15000);
                 }
                 else {
-                    dbg("Response ERROR: " + msg.mess);
+                    profile.log.info("Response ERROR: " + msg.mess);
                 }
             }
         });
     }
 
     this.check = function () {
-        dbg("check.");
+        profile.log.info("check.");
         var dst_url = profile.http_url + OPERATION.CHECKHAND;
         request.post({url:dst_url, form:{binStr:profile.binstr, pass:profile.password, dynKey:profile.dyn_key}}, function (err, response, body) {
-            dbg(body);
+            profile.log.info(body);
             var msg = JSON.parse(body);
             if (msg) {
                 if (msg.code > 0) {
-                    dbg("[Huizhi] Response: " + msg.mess + " code:" + msg.code );
+                    profile.log.info("[Huizhi] Response: " + msg.mess + " code:" + msg.code );
                     profile.onResult && profile.onResult(true);
                 }
                 else {
-                    dbg("[Huizhi] Response ERROR: " + msg.mess);
+                    profile.log.info("[Huizhi] Response ERROR: " + msg.mess);
                     profile.onResult && profile.onResult(false);
                 }
             }

@@ -1,4 +1,5 @@
 const vault = require('./vault.js')
+const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
 var dbg = function () {
@@ -21,27 +22,29 @@ ZhuaZhuaProfile = function(mode){
     this.game_timeout = null;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
+    this.log = (new logger('test', 'logs/test.log')).get();
 
     this.onInit = function(machine){
+        profile.log.info("onInit.");
         profile.machine = machine;
         machine.socket.on('open', function open() {
-            dbg("WebSocket opened");
+            profile.log.info("WebSocket opened");
             profile.machine.status = WawajiStatus.READY;
         });
 
         machine.socket.on('message', function incoming(data) {
-            dbg(machine.name + " WebSocket receive: " + data);
+            profile.log.info(machine.name + " WebSocket receive: " + data);
         });
 
         machine.socket.onclose = function (e) {
-            dbg("WebSocket closed for " + machine.name);
+            profile.log.info("WebSocket closed for " + machine.name);
             machine.socket = null;
         }
     }
 
     this.onPlay = function(account){
         profile.game_timeout = setTimeout(function(){
-            dbg("auto catch after waiting for 30 seconds");
+            profile.log.info("auto catch after waiting for 30 seconds");
             profile.onCatch();
         }, 30000);
     }

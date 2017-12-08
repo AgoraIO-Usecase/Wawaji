@@ -3,6 +3,7 @@ const vault = require('../../vault.js').kedie
 const WawajiStatus = require('../../constants').WawajiStatus;
 const request = require('request');
 const md5 = require('md5');
+const logger = require('../../logger');
 
 const ACTION = {
     RELEASE: '00',
@@ -43,19 +44,20 @@ KedieProfile = function (mode) {
     this.mode = mode;
     this.actions = {};
     this.protocol = vault.protocol;
+    this.log = (new logger('kedie', 'logs/kedie.log')).get();
 
     this.vendor_device = vault.vendor_device;
     this.vendor_sn = vault.vendor_sn;
     this.vendor_key = vault.vendor_key;
 
     this.onInit = function (machine, done) {
-        dbg("onInit.");
+        profile.log.info("onInit.");
         profile.machine = machine;
         done();
     }
 
     this.onPlay = function (account) {
-        dbg("onPlay.");
+        profile.log.info("onPlay.");
 
         var action = {
             "order": ACTION.PLAY,
@@ -63,16 +65,16 @@ KedieProfile = function (mode) {
             "device": `${profile.vendor_device}`
         };
         action.sign = md5(`device=${action.device}&order=${action.order}&sn=${action.sn}&${profile.vendor_key}`);
-        dbg(JSON.stringify(action));
+        profile.log.info(JSON.stringify(action));
 
         var dst_url = profile.http_url + OPERATION.CMD;
         request.post({ url: dst_url, json: action }, function (err, response, body) {
-            dbg(body);
+            profile.log.info(body);
         });
     }
 
     this.onControl = function (data) {
-        dbg("onControl: " + data.data);
+        profile.log.info("onControl: " + data.data);
 
         var action = {
             "sn": `${profile.vendor_sn}`,
@@ -86,16 +88,16 @@ KedieProfile = function (mode) {
             default: break;
         }
         action.sign = md5(`device=${action.device}&order=${action.order}&sn=${action.sn}&${profile.vendor_key}`);
-        dbg(JSON.stringify(action));
+        profile.log.info(JSON.stringify(action));
 
         var dst_url = profile.http_url + OPERATION.CMD;
         request.post({ url: dst_url, json: action }, function (err, response, body) {
-            dbg(body);
+            profile.log.info(body);
         });
     }
 
     this.onCatch = function () {
-        dbg("onCatch.");
+        profile.log.info("onCatch.");
 
         var action = {
             "order": ACTION.CATCH,
@@ -103,23 +105,23 @@ KedieProfile = function (mode) {
             "device": `${profile.vendor_device}`
         };
         action.sign = md5(`device=${action.device}&order=${action.order}&sn=${action.sn}&${profile.vendor_key}`);
-        dbg(JSON.stringify(action));
+        profile.log.info(JSON.stringify(action));
 
         var dst_url = profile.http_url + OPERATION.CMD;
         request.post({ url: dst_url, json: action }, function (err, response, body) {
-            dbg(body);
+            profile.log.info(body);
         });
     }
 
     this.check = function () {
-        dbg("check.");
+        profile.log.info("check.");
 
         var action = {
 			"sn": `${profile.vendor_sn}`,
 			"device": `${profile.vendor_device}`
         }
         action.sign = md5(`device=${action.device}&sn=${action.sn}&${profile.vendor_key}`);
-        dbg(JSON.stringify(action));
+        profile.log.info(JSON.stringify(action));
 
         var dst_url = profile.http_url + OPERATION.CHECK;
         request.post({ url: dst_url, json: action }, function (err, response, body) {

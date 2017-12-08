@@ -71,7 +71,6 @@ var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
     manager.machines.add(new Wawaji.Machine(unique('machine_leyaoyao'), leyaoyao_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
