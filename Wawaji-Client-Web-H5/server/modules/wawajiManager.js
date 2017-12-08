@@ -59,6 +59,14 @@ Wawaji.Server = function (serverid, io) {
         client.onStartFailed && client.onStartFailed();
     };
 
+    this.session.onLogout = function () {
+        dbg("[Wawaji.Server] logout ");
+        setTimeout( function() {
+            dbg(`[Wawaji.Server] login as ${cc_name}`);
+            client.session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, cc_name, 1));
+        }, 10 * 1000);
+    };
+
     this.session.onMessageInstantReceive = function (account, uid, msg) {
         dbg("msg received from " + account + ": " + msg);
         var data = JSON.parse(msg);
@@ -305,6 +313,14 @@ Wawaji.Server = function (serverid, io) {
         //if fail
         this.session.onLoginFailed = function () {
             dbg("machine login failed");
+        };
+
+        this.session.onLogout = function () {
+            dbg(`[Wawaji.Machine] ${machine.name} logout `);
+            setTimeout( function() {
+                dbg(`[Wawaji.Machine] login as ${machine.name}`);
+                machine.session = signal.login(machine.name, SignalingToken.get(vault.appid, vault.appcert, machine.name, 1));
+            }, 10 * 1000);
         };
 
         this.session.onMessageInstantReceive = function (account, uid, msg) {
