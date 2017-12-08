@@ -144,7 +144,6 @@ Signal_ = function (vid) {
         this.state = 'session_state_logining';
         this.line = '';
         this.uid = 0;
-        this.dbg = true;
         var session = this;
         session.lbs_state = 'requesting';
         var server_urls = [];
