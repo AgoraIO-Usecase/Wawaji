@@ -25,6 +25,7 @@
     "shelljs": "^0.7.8",
     "socket.io": "^2.0.4",
     "sort-keys": "^2.0.0",
+    "winston": "^2.4.0",
     "ws": "^3.3.2",
     "xmlhttprequest": "^1.8.0"
   }
