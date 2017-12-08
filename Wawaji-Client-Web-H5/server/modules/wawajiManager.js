@@ -41,48 +41,55 @@ Wawaji.Server = function (serverid, io) {
     var signal = Signal(vault.appid);
     var cc_name = "wawaji_cc_" + serverid;
     logx.info(`login as ${cc_name}`)
-    this.session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
     this.uid = null;
     this.channel = null;
     this.ipaddress = Utils.getDomain() || Utils.getIp();
 
+    var getSession = function () {
+        var session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
+        
+        session.onLoginSuccess = function (uid) {
+            logx.info("login successful " + uid);
+            client.uid = uid;
+            client.machines = new Wawaji.MachineSet();
+            client.onStarted && client.onStarted();
+        };
 
-    this.session.onLoginSuccess = function (uid) {
-        logx.info("login successful " + uid);
-        client.uid = uid;
-        client.machines = new Wawaji.MachineSet();
-        client.onStarted && client.onStarted();
-    };
+        session.onLoginFailed = function () {
+            logx.info("login failed ");
+            client.onStartFailed && client.onStartFailed();
+        };
 
-    //if fail
-    this.session.onLoginFailed = function () {
-        logx.info("login failed ");
-        client.onStartFailed && client.onStartFailed();
-    };
+        session.onLogout  = function () {
+            logx.info("[Wawaji.Server] logout !!!!!!!");
+            setTimeout( function() {
+                logx.info("[Wawaji.Server] restart session !!!!!!!");
+                client.session = getSession();
+            }, 10 * 1000);
+        };
 
-    this.session.onLogout = function () {
-        logx.info("on log out");
-    }
-
-    this.session.onMessageInstantReceive = function (account, uid, msg) {
-        logx.info("msg received from " + account + ": " + msg);
-        var data = JSON.parse(msg);
-        var machine = null;
-        var response = null;
-
-        if (data.type !== undefined) {
-            switch (data.type) {
-                case "LIST":
-                    response = { type: "LIST", machines: client.machines.toJSON() }
-                    client.session.messageInstantSend(account, JSON.stringify(response));
-                    break;
-                case "PLAY":
-                    machine = client.machines.get(data.machine);
-                    machine && machine.play(account);
-                    break;
+        session.onMessageInstantReceive = function (account, uid, msg) {
+            logx.info("msg received from " + account + ": " + msg);
+            var data = JSON.parse(msg);
+            var machine = null;
+            var response = null;
+    
+            if (data.type !== undefined) {
+                switch (data.type) {
+                    case "LIST":
+                        response = { type: "LIST", machines: client.machines.toJSON() }
+                        client.session.messageInstantSend(account, JSON.stringify(response));
+                        break;
+                    case "PLAY":
+                        machine = client.machines.get(data.machine);
+                        machine && machine.play(account);
+                        break;
+                }
             }
         }
+        return session;
     }
+    this.session = getSession();
 
     /*------------------------------------------------
     |   Class : Machines
@@ -142,7 +149,6 @@ Wawaji.Server = function (serverid, io) {
         machine.profile = profile;
 
         var signal = Signal(vault.appid);
-        this.session = signal.login(this.name, SignalingToken.get(vault.appid, vault.appcert, this.name, 1));
         this.uid = null;
         this.channel = null;
         this.users = [];
@@ -244,95 +250,110 @@ Wawaji.Server = function (serverid, io) {
         initWS();
 
 
-        this.session.onLoginSuccess = function (uid) {
-            machine.log.info("login successful " + uid);
-            machine.uid = uid;
-            machine.channel = machine.session.channelJoin("room_" + machine.name);
-            machine.channel.onChannelJoined = function () {
-                machine.log.debug(`[DEBUG] ${machine.name} is now online`);
-                machine.online = true;
-                machine.channel.channelClearAttr();
-                machine.updateAttrs();
-            };
+        var getSession = function() {
+            var session = signal.login(this.name, SignalingToken.get(vault.appid, vault.appcert, this.name, 1));
 
-            machine.channel.onChannelJoinFailed = function (ecode) {
-                machine.log.info("machine connect failed");
-            };
-
-            machine.channel.onChannelUserJoined = function (account, uid) {
-                machine.users.push(new Wawaji.User(uid, account));
-                machine.log.info(account + " joined, " + machine.users.length + " players in " + machine.name);
-            };
-
-            machine.channel.onChannelUserLeaved = function (account, uid) {
-                machine.dequeuePlayer(account);
-                machine.users = machine.users.filter(function (item) {
-                    return item.uid !== uid;
-                });
-                machine.updateAttrs();
-                machine.log.info(account + " leaved, " + machine.users.length + " players in " + machine.name);
-            };
-
-            machine.channel.onChannelUserList = function (users) {
-                var results = [];
-                for (var i = 0; i < users.length; i++) {
-                    if (users[i][0] === machine.name) {
-                        continue;
+            session.onLoginSuccess = function (uid) {
+                machine.log.info("login successful " + uid);
+                machine.uid = uid;
+                machine.channel = machine.session.channelJoin("room_" + machine.name);
+                machine.channel.onChannelJoined = function () {
+                    machine.log.debug(`[DEBUG] ${machine.name} is now online`);
+                    machine.online = true;
+                    machine.channel.channelClearAttr();
+                    machine.updateAttrs();
+                };
+    
+                machine.channel.onChannelJoinFailed = function (ecode) {
+                    machine.log.info("machine connect failed");
+                };
+    
+                machine.channel.onChannelUserJoined = function (account, uid) {
+                    machine.users.push(new Wawaji.User(uid, account));
+                    machine.log.info(account + " joined, " + machine.users.length + " players in " + machine.name);
+                };
+    
+                machine.channel.onChannelUserLeaved = function (account, uid) {
+                    machine.dequeuePlayer(account);
+                    machine.users = machine.users.filter(function (item) {
+                        return item.uid !== uid;
+                    });
+                    machine.updateAttrs();
+                    machine.log.info(account + " leaved, " + machine.users.length + " players in " + machine.name);
+                };
+    
+                machine.channel.onChannelUserList = function (users) {
+                    var results = [];
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i][0] === machine.name) {
+                            continue;
+                        }
+                        results.push(new Wawaji.User(users[i][1], users[i][0]));
                     }
-                    results.push(new Wawaji.User(users[i][1], users[i][0]));
-                }
-                machine.users = results;
-                machine.log.info(machine.users.length + " players in " + machine.name);
-            };
-
-            machine.channel.onMessageChannelReceive = function (account, uid, msg) {
-                machine.log.info("msg received from " + account + ": " + msg);
-                var data = JSON.parse(msg);
-
-                if (data.type === "PLAY") {
-                    machine.log.info(`player ${account} trying to play`);
-                    machine.play(account);
-                } else {
-                    if (account !== machine.playing) {
-                        machine.log.info("channel msg received from not playing user " + account + ": " + msg);
-                        return;
-                    }
-                    if (data && data.type) {
-                        if (data.type === "CONTROL") {
-                            machine.control(data);
-                        } else if (data.type === "CATCH") {
-                            machine.catch();
+                    machine.users = results;
+                    machine.log.info(machine.users.length + " players in " + machine.name);
+                };
+    
+                machine.channel.onMessageChannelReceive = function (account, uid, msg) {
+                    machine.log.info("msg received from " + account + ": " + msg);
+                    var data = JSON.parse(msg);
+    
+                    if (data.type === "PLAY") {
+                        machine.log.info(`player ${account} trying to play`);
+                        machine.play(account);
+                    } else {
+                        if (account !== machine.playing) {
+                            machine.log.info("channel msg received from not playing user " + account + ": " + msg);
+                            return;
+                        }
+                        if (data && data.type) {
+                            if (data.type === "CONTROL") {
+                                machine.control(data);
+                            } else if (data.type === "CATCH") {
+                                machine.catch();
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
+    
+            session.onLoginFailed = function () {
+                machine.log.info("machine login failed");
+            };
+    
+            session.onLogout  = function () {
+                logx.info("[Wawaji.Machine] logout !!!!!!!");
+                setTimeout( function() {
+                    logx.info("[Wawaji.Machine] restart session !!!!!!!");
+                    machine.session = getSession();
+                }, 10 * 1000);
+            };
 
-        //if fail
-        this.session.onLoginFailed = function () {
-            machine.log.info("machine login failed");
-        };
-
-        this.session.onMessageInstantReceive = function (account, uid, msg) {
-            if (account !== machine.playing) {
-                machine.log.info("instant msg received from not playing user " + account + ": " + msg);
-                return;
-            }
-            machine.log.info("msg received from " + account + ": " + msg);
-            var data = JSON.parse(msg);
-
-            if (data && data.type) {
-                if (data.type === "START") {
-                    //clear timer
-                    clearTimeout(machine.prepare_timer);
-                    machine.prepare_timer = null;
-                    machine.log.info(`response received from ${account}, start play!`);
-                    machine.setStatus(WawajiStatus.READY);
-                    machine.playgame(account);
-                    machine.sendInfo(account, "START");
+            session.onMessageInstantReceive = function (account, uid, msg) {
+                if (account !== machine.playing) {
+                    machine.log.info("instant msg received from not playing user " + account + ": " + msg);
+                    return;
                 }
-            }
-        }
+                machine.log.info("msg received from " + account + ": " + msg);
+                var data = JSON.parse(msg);
+    
+                if (data && data.type) {
+                    if (data.type === "START") {
+                        //clear timer
+                        clearTimeout(machine.prepare_timer);
+                        machine.prepare_timer = null;
+                        machine.log.info(`response received from ${account}, start play!`);
+                        machine.setStatus(WawajiStatus.READY);
+                        machine.playgame(account);
+                        machine.sendInfo(account, "START");
+                    }
+                }
+            };
+
+            return session;
+        };
+
+        this.session = getSession();
 
         this.play = function (account) {
             machine.log.info("machine status: " + machine.status);
