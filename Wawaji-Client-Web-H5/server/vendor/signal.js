@@ -1,1 +1,1070 @@
-const request=require("request"),WebSocket=require("ws");Signal_=function(e){function n(e){var n,t,i;for(i=e.length;i;i--)n=Math.floor(Math.random()*i),t=e[i-1],e[i-1]=e[n],e[n]=t}function t(e,n,t){request({uri:e,method:"GET",timeout:n},function(e,n,i){e?"ETIMEDOUT"===e.code?t("timeout",""):t(e.code,""):t("",i)})}function i(e,n,t){var i=e.split(n,t),o=0;for(var s in i)o+=n.length+i[s].length;return i.push(e.substr(o)),i}this.lbs_url1=["https://lbs-1-sig.agora.io","https://lbs-2-sig.agora.io"],this.lbs_url2=["https://lbs-3-sig.agora.io","https://lbs-4-sig.agora.io"],this.vid=e,this.appid=e;var o=this,s=function(s,a){this.onLoginSuccess="",this.onLoginFailed="",this.onLogout="",this.onInviteReceived="",this.onMessageInstantReceive="",this.account=s,this.state="session_state_logining",this.line="",this.uid=0,this.dbg=!1;var l=this;l.lbs_state="requesting";var r=[];n(r),l.idx=0,l.socket=null;var c=function(){if(l.dbg){var e=[];for(var n in arguments)e.push(arguments[n]);console.log.apply(null,["Agora sig dbg :"].concat(e))}},h=function(e){return"wss://"+(e[0].replace(/\./g,"-")+"-sig-web.agora.io")+":"+(e[1]+1)+"/"};l.logout=function(){"session_state_logined"==l.state&&l.onLogout?l.call2("user_logout",{line:l.line},function(e,n){l.fire_logout(e),l.socket.close()}):"session_state_logining"==l.state&&l.fire_logout(0)},l.fire_logout=function(e){e||(e=0);try{"session_state_logined"==l.state&&l.onLogout&&l.onLogout(e)}catch(e){console.error(e)}finally{l.state="session_state_logout"}};var u=function(n,i,o){if("requesting"==l.lbs_state){t(i[o]+"/getaddr?vid="+e,5e3,function(e,t){if(e)n-1>0?u(n-1,i,(o+1)%i.length):l.fire_login_failed("lbs timeout");else{if("requesting"!=l.lbs_state)return;l.lbs_state="completed",r=JSON.parse(t).web,f(),f()}})}},f=function(){if("session_state_logining"==l.state)var n=new function(){var e=h(r[l.idx]);l.idx+=1;var t=new WebSocket(e);t.state="CONNECTING",setTimeout(function(){t.readyState!=t.CONNECTING||t.close()},6e3),t.onopen=function(e){if("session_state_logout"==l.state)t.close();else if("session_state_logining"==l.state){l.socket=n,t.state="OPEN",l.state="session_state_logined",c("on conn open"),l.go_login();for(var i in s)t.send(JSON.stringify(s[i]))}else"session_state_logined"==l.state&&t.close()},t.onclose=function(e){"OPEN"==t.state&&(o("_close",""),c("on conn close")),"CONNECTING"==t.state&&f()},t.onmessage=function(e){var n=e.data,t=JSON.parse(n);t[0];o(t[0],t[1])},t.onerror=function(e){t.state="CLOSED",l.idx<r.length&&e.target.readyState==e.target.CLOSED?f():(c("on conn error"),"session_state_logined"==l.state?l.fire_logout("conn error"):"session_state_logining"==l.state&&l.fire_login_failed("conn err"))};var i={},o=function(e,n){e in i&&i[e](n)},s=[];this.on=function(e,n){i[e]=n},this.emit=function(e,n){0!=t.readyState?t.send(JSON.stringify([e,n])):s.push([e,n])},this.close=function(){t.close()}};var t=0,o=function(){setTimeout(function(){"session_state_logined"==l.state&&(c("send ping",++t),l.socket.emit("ping",t),o())},1e4)};l.go_login=function(){""==l.line?(l.socket.emit("login",{vid:e,account:s,uid:0,token:a,device:"websdk",ip:""}),l.socket.on("login_ret",function(e){var n=e[0],t=JSON.parse(e[1]);if(c("login ret",n,t),n||"ok"!=t.result)try{l.onLoginFailed&&l.onLoginFailed(0)}catch(e){console.error(e)}else{l.uid=t.uid,l.line=t.line,l.state="session_state_logined",o(),S();try{l.onLoginSuccess&&l.onLoginSuccess(l.uid)}catch(e){console.error(e)}finally{C()}}})):l.socket.emit("line_login",{line:l.line});var n=0,t={},r={};l.call2=function(e,i,o){t[++n]=[e,i,o],c("call ",[e,n,i]),l.socket.emit("call2",[e,n,i])},l.socket.on("call2-ret",function(e){var n=e[0],i=e[1],o=e[2];if(n in t){var s=t[n][2];if(""==i)try{"ok"!=(o=JSON.parse(o)).result&&(i=o.data.result)}catch(e){i="wrong resp:"+o}s&&s(i,o)}});var h,u=function(e,n){return""==e},f=function(e){if(e.startsWith("msg-v2 ")){var n=i(e," ",6);if(7==n.length){return[n[1],n[4],n[6]]}}return null};l.socket.on("pong",function(e){c("recv pong")}),l.socket.on("close",function(e){l.fire_logout(0),l.socket.close()}),l.socket.on("_close",function(e){l.fire_logout(0)}),l.fire_login_failed=function(e){try{"session_state_logining"==l.state&&l.onLoginFailed&&l.onLoginFailed(0)}catch(e){console.error(e)}finally{l.state="session_state_logout"}};var g=function(e){var n=e,t=n[0],i=n[1],o=n[2];if("instant"==i)try{l.onMessageInstantReceive&&l.onMessageInstantReceive(t,0,o)}catch(e){console.error(e)}if(i.startsWith("voip_")){var s,a=JSON.parse(o),c=a.channel,h=a.peer,u=a.extra,f=a.peeruid;if("voip_invite"==i)s=new b(c,h,f,u),l.call2("voip_invite_ack",{line:l.line,channelName:c,peer:h,extra:""});else if(!(s=r[c+h]))return;if("voip_invite"==i)try{l.onInviteReceived&&l.onInviteReceived(s)}catch(e){console.error(e)}if("voip_invite_ack"==i)try{s.onInviteReceivedByPeer&&s.onInviteReceivedByPeer(u)}catch(e){console.error(e)}if("voip_invite_accept"==i)try{s.onInviteAcceptedByPeer&&s.onInviteAcceptedByPeer(u)}catch(e){console.error(e)}if("voip_invite_refuse"==i)try{s.onInviteRefusedByPeer&&s.onInviteRefusedByPeer(u)}catch(e){console.error(e)}if("voip_invite_failed"==i)try{s.onInviteFailed&&s.onInviteFailed(u)}catch(e){console.error(e)}if("voip_invite_bye"==i)try{s.onInviteEndByPeer&&s.onInviteEndByPeer(u)}catch(e){console.error(e)}if("voip_invite_msg"==i)try{s.onInviteMsg&&s.onInviteMsg(u)}catch(e){console.error(e)}}},v=function(){return Date.now()},_=0,d=0,p=0,m=0,y=0,I=!1,C=function(){I||(I=!0,l.call2("user_getmsg",{line:l.line,ver_clear:_,max:30},function(e,n){if(""==e){var t=n;_=t.ver_clear,p=_;for(var i in t.msgs){var o=t.msgs[i][0],s=t.msgs[i][1];g(f(s)),_=o}(30==t.msgs.length||_<d)&&C(),m=v()}I=!1,y=v()}))},N=function(){y=v()},S=function(){setTimeout(function(){if("session_state_logout"!=l.state){if("session_state_logined"==l.state){var e=v();p<_&&e-y>1e3?C():e-y>=6e4&&C()}S()}},100)};l.socket.on("notify",function(e){c("recv notify ",e),"string"==typeof e&&(e=(e=i(e," ",2)).slice(1));var n=e[0];if("channel2"==n){var t=e[1],o=e[2];if(0!=h.m_channel_msgid&&h.m_channel_msgid+1>o)return void c("ignore channel msg",t,o,h.m_channel_msgid);h.m_channel_msgid=o;var s=f(e[3]);if(s){s[0];var a=s[1],l=s[2],r=JSON.parse(l);if("channel_msg"==a)try{h.onMessageChannelReceive&&h.onMessageChannelReceive(r.account,r.uid,r.msg)}catch(n){console.error(n)}if("channel_user_join"==a)try{h.onChannelUserJoined&&h.onChannelUserJoined(r.account,r.uid)}catch(n){console.error(n)}if("channel_user_leave"==a)try{h.onChannelUserLeaved&&h.onChannelUserLeaved(r.account,r.uid)}catch(n){console.error(n)}if("channel_attr_update"==a)try{h.onChannelAttrUpdated&&h.onChannelAttrUpdated(r.name,r.value,r.type)}catch(n){console.error(n)}}}if("msg"==n&&(d=e[1],C()),"recvmsg"==n){var u=JSON.parse(e[1]),v=u[0],p=u[1];v==_+1?(g(f(p)),_=v,N()):(d=v,C())}}),l.messageInstantSend=function(e,n,t){l.call2("user_sendmsg",{line:l.line,peer:e,flag:"v1:E:3600",t:"instant",content:n},function(e,n){t&&t(!u(e,n))})},l.invoke=function(e,n,t){if(e.startsWith("io.agora.signal.")){var i=e.split(".")[3];n.line=l.line,l.call2(i,n,function(e,n){t&&t(e,n)})}};var b=function(e,n,t){this.onInviteReceivedByPeer="",this.onInviteAcceptedByPeer="",this.onInviteRefusedByPeer="",this.onInviteFailed="",this.onInviteEndByPeer="",this.onInviteEndByMyself="",this.onInviteMsg="";var i=this;this.channelName=e,this.peer=n,this.extra=t,r[e+n]=i,this.channelInviteUser2=function(){t=t||"",l.call2("voip_invite",{line:l.line,channelName:e,peer:n,extra:t},function(e,n){if(u(e,n));else try{i.onInviteFailed(e)}catch(e){console.error(e)}})},this.channelInviteAccept=function(t){t=t||"",l.call2("voip_invite_accept",{line:l.line,channelName:e,peer:n,extra:t})},this.channelInviteRefuse=function(t){t=t||"",l.call2("voip_invite_refuse",{line:l.line,channelName:e,peer:n,extra:t})},this.channelInviteDTMF=function(t){l.call2("voip_invite_msg",{line:l.line,channelName:e,peer:n,extra:JSON.stringify({msgtype:"dtmf",msgdata:t})})},this.channelInviteEnd=function(t){t=t||"",l.call2("voip_invite_bye",{line:l.line,channelName:e,peer:n,extra:t});try{i.onInviteEndByMyself&&i.onInviteEndByMyself("")}catch(e){console.error(e)}}};l.channelInviteUser2=function(e,n,t){var i=new b(e,n,t);return i.channelInviteUser2(),i},l.channelJoin=function(e){if("session_state_logined"==l.state)return h=new function(){this.onChannelJoined="",this.onChannelJoinFailed="",this.onChannelLeaved="",this.onChannelUserList="",this.onChannelUserJoined="",this.onChannelUserLeaved="",this.onChannelUserList="",this.onChannelAttrUpdated="",this.onMessageChannelReceive="",this.name=e,this.state="joining",this.m_channel_msgid=0,this.messageChannelSend=function(n,t){l.call2("channel_sendmsg",{line:l.line,name:e,msg:n},function(e,n){t&&t()})},this.channelLeave=function(n){l.call2("channel_leave",{line:l.line,name:e},function(e,t){if(h.state="leaved",n)n();else try{h.onChannelLeaved&&h.onChannelLeaved(0)}catch(e){console.error(e)}})},this.channelSetAttr=function(n,t,i){l.call2("channel_set_attr",{line:l.line,channel:e,name:n,value:t},function(e,n){i&&i()})},this.channelDelAttr=function(n,t){l.call2("channel_del_attr",{line:l.line,channel:e,name:n},function(e,n){t&&t()})},this.channelClearAttr=function(n){l.call2("channel_clear_attr",{line:l.line,channel:e},function(e,t){n&&n()})}},l.call2("channel_join",{line:l.line,name:e},function(e,n){if(""==e){h.state="joined";try{h.onChannelJoined&&h.onChannelJoined()}catch(e){console.error(e)}var t=n;try{h.onChannelUserList&&h.onChannelUserList(t.list)}catch(e){console.error(e)}try{if(h.onChannelAttrUpdated)for(var i in t.attrs)h.onChannelAttrUpdated("update",i,t.attrs[i])}catch(e){console.error(e)}}else try{h.onChannelJoinFailed&&h.onChannelJoinFailed(e)}catch(e){console.error(e)}}),h;c("You should log in first.")}}};n(o.lbs_url1),n(o.lbs_url2),u(2,o.lbs_url1,0),u(2,o.lbs_url2,0)};this.login=function(e,n){return new s(e,n)}},Signal=function(e){return new Signal_(e)},module.exports=Signal;
+/*
+ * Smoking tests
+ * 1. login / logout
+ * 2. logout instantly after invoking login
+ * 3. join / leave channel
+ * 4. join channel without logged in
+ * 5. location balance service failure
+ * 6. access point failure
+ * 7. callback error handlers
+ */
+
+
+const WebSocket = require('ws');
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
+Signal_ = function (vid) {
+
+    var
+        SUCCESS = 0,
+
+        LOGOUT_E_OTHER = 100,  //
+        LOGOUT_E_USER = 101,  // logout by user
+        LOGOUT_E_NET = 102,  // network failure
+        LOGOUT_E_KICKED = 103,  // login in other device
+        LOGOUT_E_PACKET = 104,  //
+        LOGOUT_E_TOKENEXPIRED = 105,  // token expired
+        LOGOUT_E_OLDVERSION = 106,  // 
+        LOGOUT_E_TOKENWRONG = 107,
+        LOGOUT_E_ALREADY_LOGOUT = 108,
+
+        LOGIN_E_OTHER = 200,
+        LOGIN_E_NET = 201,
+        LOGIN_E_FAILED = 202,
+        LOGIN_E_CANCEL = 203,
+        LOGIN_E_TOKENEXPIRED = 204,
+        LOGIN_E_OLDVERSION = 205,
+        LOGIN_E_TOKENWRONG = 206,
+        LOGIN_E_TOKEN_KICKED = 207,
+        LOGIN_E_ALREADY_LOGIN = 208,
+
+        JOINCHANNEL_E_OTHER = 300,
+
+        SENDMESSAGE_E_OTHER = 400,
+        SENDMESSAGE_E_TIMEOUT = 401,
+
+        QUERYUSERNUM_E_OTHER = 500,
+        QUERYUSERNUM_E_TIMEOUT = 501,
+        QUERYUSERNUM_E_BYUSER = 502,
+
+        LEAVECHANNEL_E_OTHER = 600,
+        LEAVECHANNEL_E_KICKED = 601,
+        LEAVECHANNEL_E_BYUSER = 602,
+        LEAVECHANNEL_E_LOGOUT = 603,
+        LEAVECHANNEL_E_DISCONN = 604,
+
+        INVITE_E_OTHER = 700,
+        INVITE_E_REINVITE = 701,
+        INVITE_E_NET = 702,
+        INVITE_E_PEEROFFLINE = 703,
+        INVITE_E_TIMEOUT = 704,
+        INVITE_E_CANTRECV = 705,
+
+        GENERAL_E = 1000,
+        GENERAL_E_FAILED = 1001,
+        GENERAL_E_UNKNOWN = 1002,
+        GENERAL_E_NOT_LOGIN = 1003,
+        GENERAL_E_WRONG_PARAM = 1004,
+        GENERAL_E_LARGE_PARAM = 1005
+
+        ;
+
+    function shuffle(arr) {
+        var j, x, i;
+        for (i = arr.length; i; i--) {
+            j = Math.floor(Math.random() * i);
+            x = arr[i - 1];
+            arr[i - 1] = arr[j];
+            arr[j] = x;
+        }
+    }
+
+    this.lbs_url1 = ['https://lbs-1-sig.agora.io', 'https://lbs-2-sig.agora.io'];
+    this.lbs_url2 = ['https://lbs-3-sig.agora.io', 'https://lbs-4-sig.agora.io'];
+
+    function timedGetText(url, time, callback) {
+        var request = new XMLHttpRequest();
+        var timeout = false;
+        var timer = setTimeout(function () {
+            timeout = true;
+            request.abort();
+            callback('timeout', '');
+        }, time);
+        request.open("GET", url);
+        request.onreadystatechange = function () {
+            if (request.readyState !== 4) return;
+            if (timeout) return;
+            clearTimeout(timer);
+            if (request.status === 200) {
+                callback('', request.responseText);
+            }
+        }
+        request.send(null);
+    }
+
+    function timedConnectWebsockt(url, milliseconds) {
+        var timeout = false
+        var timer = setTimeout(function () {
+            timeout = true;
+        }, milliseconds);
+    }
+
+
+
+    this.vid = vid;
+    this.appid = vid;
+    var signal = this;
+
+    function split_python(a, s, n) {
+        var x = a.split(s, n);
+        var offset = 0;
+        for (var i in x) {
+            offset += s.length + x[i].length;
+        }
+        x.push(a.substr(offset));
+        return x;
+    }
+
+    // Session Object
+    var Session = function (account, token) {
+        /*------------------------------------------------
+        |   API : session level
+        \*----------------------------------------------*/
+        this.onLoginSuccess = '';
+        this.onLoginFailed = '';
+        this.onLogout = '';
+
+        this.onInviteReceived = '';
+        this.onMessageInstantReceive = '';
+
+        /*------------------------------------------------
+        |
+        \*----------------------------------------------*/
+        this.account = account;
+        this.state = 'session_state_logining';
+        this.line = '';
+        this.uid = 0;
+        this.dbg = false;
+        var session = this;
+        session.lbs_state = 'requesting';
+        var server_urls = [];
+        shuffle(server_urls);
+        session.idx = 0
+        // todo lbs
+
+        // todo set login time out
+
+        // login
+        //var socket = io('http://web.sig.agora.io/');
+        session.socket = null;
+        var dbg = function () {
+            if (session.dbg) {
+                var x = [];
+                for (var i in arguments) x.push(arguments[i]);
+                console.log.apply(null, ['Agora sig dbg :'].concat(x));
+            }
+        };
+
+        // var choose_server = function() {
+        //   // var x = server_urls[Math.floor(Math.random() * server_urls.length)];
+        //   // var host = x[0].replace(/\./g, '-') + '-sig-web.agora.io';
+        //   // var port = x[1] + 1;
+        //   // return 'wss://' + host + ':' + port + '/';
+        //   return 'ws://125.88.159.176:3000/';
+        // }
+
+        var format_ws_url = function (x) {
+            var host = x[0].replace(/\./g, '-') + '-sig-web.agora.io';
+            var port = x[1] + 1;
+            return 'wss://' + host + ':' + port + '/';
+        }
+
+        /*------------------------------------------------
+        |   Session API : Logout
+        \*----------------------------------------------*/
+        session.logout = function () {
+            if (session.state == 'session_state_logined' && session.onLogout) {
+                session.call2('user_logout', {
+                    line: session.line
+                }, function (err, data) {
+                    session.fire_logout(LOGOUT_E_USER);
+                    session.socket.close();
+                });
+            } else if (session.state == 'session_state_logining') {
+                session.state == 'session_state_logout';
+                session.fire_logout(LOGOUT_E_USER);
+            }
+        };
+
+        session.fire_logout = function (reason) {
+            if (!reason) {
+                reason = 0;
+            }
+            try {
+                if (session.state == 'session_state_logined' && session.onLogout) {
+                    session.onLogout(reason);
+                }
+            } catch (e) {
+                console.error(e)
+            } finally {
+                session.state = 'session_state_logout';
+            }
+        };
+
+        var do_lbs = function (retry, urls, idx) {
+            if (session.lbs_state != 'requesting') {
+                return;
+            }
+            var url = urls[idx];
+            timedGetText(url + '/getaddr?vid=' + vid, 5000, function (err, data) {
+                if (err) {
+                    if (retry - 1 > 0) {
+                        do_lbs(retry - 1, urls, (idx + 1) % urls.length)
+                    } else {
+                        session.fire_login_failed(LOGIN_E_NET);//'lbs timeout');
+                    }
+                } else {
+                    if (session.lbs_state != 'requesting') {
+                        return;
+                    }
+                    session.lbs_state = 'completed';
+                    server_urls = JSON.parse(data).web;
+                    do_connect();
+                    do_connect();
+                }
+            });
+        };
+
+
+        var do_connect = function () {
+            if (0) {
+                session.socket = io.connect('http://125.88.159.176:3000/');
+            } else {
+                if (session.state == 'session_state_logining') {
+                    var socket = new function () {
+                        var url = format_ws_url(server_urls[session.idx]);
+
+                        // url = 'ws://125.88.159.176:8001/';
+
+                        session.idx += 1;
+                        var websocket = new WebSocket(url);
+                        websocket.state = 'CONNECTING'
+
+                        // Close the connection request afster 5 seconds.
+                        setTimeout(function () {
+                            if (websocket.readyState == websocket.CONNECTING) {
+                                websocket.close();
+                                return;
+                            }
+                        }, 6000);
+
+                        websocket.onopen = function (evt) {
+                            if (session.state == 'session_state_logout') {
+                                websocket.close();
+                            } else if (session.state == 'session_state_logining' && session.socket == null) {
+                                session.socket = socket
+                                websocket.state = 'OPEN'
+
+                                dbg('on conn open')
+                                session.go_login();
+
+                                for (var i in bufs) {
+                                    websocket.send(JSON.stringify(bufs[i]));
+                                }
+                            } else {
+                                websocket.close();
+                            }
+                        };
+                        websocket.onclose = function (evt) {
+                            if (websocket.state == 'OPEN') {
+                                fire('_close', '');
+                                dbg('on conn close');
+                            }
+
+                            if (websocket.state == 'CONNECTING') {
+                                do_connect()
+                            }
+
+                        };
+                        websocket.onmessage = function (evt) {
+                            var msg = evt.data;
+                            var x = JSON.parse(msg);
+                            var name = x[0];
+                            fire(x[0], x[1]);
+                        };
+                        websocket.onerror = function (evt) {
+                            websocket.state = 'CLOSED'
+                            if (session.idx < server_urls.length && evt.target.readyState == evt.target.CLOSED) {
+                                do_connect();
+                                return;
+                            }
+                            dbg('on conn error');
+                            if (session.state == 'session_state_logined') {
+                                session.fire_logout('conn error');
+                            } else if (session.state == 'session_state_logining') {
+                                session.fire_login_failed(LOGIN_E_NET); //'conn err'
+                            }
+                        };
+
+                        var evts = {};
+                        var fire = function (evt, args) {
+                            if (evt in evts) {
+                                evts[evt](args);
+                            }
+                        };
+                        var bufs = [];
+
+                        // api
+
+                        this.on = function (evt, f) {
+                            evts[evt] = f;
+                        }
+
+                        this.emit = function (evt, args) {
+                            if (websocket.readyState == 0) {
+                                bufs.push([evt, args]);
+                                return
+                            }
+                            websocket.send(JSON.stringify([evt, args]));
+                        }
+
+                        this.close = function () {
+                            websocket.close();
+                        }
+                    }();
+                }
+            }
+
+            /*------------------------------------------------
+            | ping
+            \*----------------------------------------------*/
+            var ping_i = 0;
+            var start_ping = function () {
+                setTimeout(function () {
+                    if (session.state != 'session_state_logined') {
+                        return;
+                    }
+                    ping_i++;
+                    dbg('send ping', ping_i);
+                    session.socket.emit('ping', ping_i);
+                    start_ping();
+                }, 1000 * 10);
+            };
+
+            session.go_login = function () {
+                if (session.line == '') {
+                    session.socket.emit('login', {
+                        vid: vid,
+                        account: account,
+                        uid: 0,
+                        token: token,
+                        device: 'websdk',
+                        ip: '',
+                    });
+                    session.socket.on('login_ret', function (x) {
+                        var err = x[0];
+                        var ret = JSON.parse(x[1]);
+                        dbg('login ret', err, ret);
+                        if (!err && ret['result'] == 'ok') {
+                            session.uid = ret['uid'];
+                            session.line = ret['line'];
+                            session.state = 'session_state_logined';
+                            start_ping();
+                            start_tick();
+                            try {
+                                if (session.onLoginSuccess) {
+                                    session.onLoginSuccess(session.uid);
+                                };
+                            } catch (e) {
+                                console.error(e)
+                            } finally {
+                                schedule_poll();
+                            }
+                        } else {
+                            if (err == "") {
+                                err = ret['reason'];
+                            }
+                            try {
+                                if (session.onLoginFailed) {
+                                    var e = err == "kick" ? LOGIN_E_TOKEN_KICKED :
+                                        err == "TokenErrorExpired" ? LOGIN_E_TOKENEXPIRED :
+                                            err.startsWith("TokenError") ? LOGIN_E_TOKENWRONG :
+                                                LOGIN_E_NET;
+
+                                    session.fire_login_failed(e);
+                                }
+                            } catch (e) {
+                                console.error(e)
+                            }
+                        }
+                    });
+                } else {
+                    session.socket.emit('line_login', {
+                        line: session.line
+                    });
+                }
+
+
+
+                /*------------------------------------------------
+                |   Call2
+                \*----------------------------------------------*/
+
+                var callid = 0;
+                var calltable = {};
+                var call_obj_table = {};
+
+                session.call2 = function (func, args, cb) {
+                    callid++;
+                    calltable[callid] = [func, args, cb];
+                    dbg('call ', [func, callid, args]);
+                    session.socket.emit('call2', [func, callid, args]);
+                }
+
+                session.socket.on('call2-ret', function (msg) {
+                    var callid = msg[0];
+                    var err = msg[1];
+                    var data = msg[2];
+                    if (callid in calltable) {
+                        var cb = calltable[callid][2];
+                        if (err == '') {
+                            try {
+                                data = JSON.parse(data);
+                                if (data.result != "ok") {
+                                    err = data.data.result;
+                                }
+                            } catch (e) {
+                                err = "wrong resp:" + data;
+                            }
+                        }
+                        if (cb) cb(err, data);
+                    }
+                });
+
+                var is_ok = function (err, msg) {
+                    return err == '';
+                }
+
+                var channel;
+
+                var proc_msg1 = function (src, t, content) {
+                    if (t == 'channel_msg') {
+
+                    }
+                };
+
+                var decode_msg = function (msg) {
+                    if (msg.startsWith("msg-v2 ")) {
+                        var r = split_python(msg, ' ', 6);
+                        if (r.length == 7) {
+                            var src = r[1];
+                            var t = r[4];
+                            var content = r[6];
+                            return [src, t, content];
+                        }
+                    }
+                    return null;
+                }
+
+                session.socket.on('pong', function (msg) {
+                    dbg('recv pong');
+                });
+
+                session.socket.on('close', function (msg) {
+                    session.fire_logout(0);
+                    session.socket.close();
+                });
+
+                session.socket.on('_close', function (msg) {
+                    session.fire_logout(0);
+                });
+
+                session.fire_login_failed = function (reason) {
+                    try {
+                        if (session.state == 'session_state_logining' && session.onLoginFailed) {
+                            session.onLoginFailed(reason);
+                        }
+                    } catch (e) {
+                        console.error(e)
+                    } finally {
+                        session.state = 'session_state_logout'
+                    }
+                };
+
+                /*------------------------------------------------
+                |   process_msg
+                \*----------------------------------------------*/
+
+                var process_msg = function (msg) {
+                    var tmp = msg;
+                    var src = tmp[0];
+                    var t = tmp[1];
+                    var content = tmp[2];
+
+                    if (t == 'instant') {
+                        try {
+                            if (session.onMessageInstantReceive) session.onMessageInstantReceive(src, 0, content);
+                        } catch (e) { console.error(e) }
+                    };
+
+                    if (t.startsWith('voip_')) {
+                        var root = JSON.parse(content);
+
+                        var channel = root.channel;
+                        var peer = root.peer;
+                        var extra = root.extra;
+                        var peeruid = root.peeruid;
+
+                        var call;
+                        if (t == 'voip_invite') {
+                            call = new Call(channel, peer, peeruid, extra);
+                            session.call2('voip_invite_ack', {
+                                line: session.line,
+                                channelName: channel,
+                                peer: peer,
+                                extra: ''
+                            });
+                        } else {
+                            call = call_obj_table[channel + peer];
+                            if (!call) {
+                                return;
+                            }
+                        }
+
+                        if (t == 'voip_invite') {
+                            try {
+                                if (session.onInviteReceived) session.onInviteReceived(call);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_ack') {
+                            try {
+                                if (call.onInviteReceivedByPeer) call.onInviteReceivedByPeer(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_accept') {
+                            try {
+                                if (call.onInviteAcceptedByPeer) call.onInviteAcceptedByPeer(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_refuse') {
+                            try {
+                                if (call.onInviteRefusedByPeer) call.onInviteRefusedByPeer(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_failed') {
+                            try {
+                                if (call.onInviteFailed) call.onInviteFailed(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_bye') {
+                            try {
+                                if (call.onInviteEndByPeer) call.onInviteEndByPeer(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                        if (t == 'voip_invite_msg') {
+                            try {
+                                if (call.onInviteMsg) call.onInviteMsg(extra);
+                            } catch (e) { console.error(e) }
+                        }
+                    }
+                };
+
+
+                var get_time_in_ms = function () {
+                    return Date.now();
+                }
+
+                /*------------------------------------------------
+                |   poll
+                \*----------------------------------------------*/
+                var m_ver_clear = 0;
+                var m_ver_notify = 0;
+                var m_ver_ack = 0;
+                var m_last_active_time = 0;
+                var m_time_poll_last = 0;
+                var m_is_polling = false;
+
+                var schedule_poll = function () {
+                    if (m_is_polling) return;
+
+                    m_is_polling = true;
+
+                    session.call2('user_getmsg', {
+                        line: session.line,
+                        ver_clear: m_ver_clear,
+                        max: 30
+                    }, function (err, data) {
+                        // todo ecode
+                        if (err == '') {
+                            var resp = data;
+
+                            var ver_clear_old = m_ver_clear;
+                            m_ver_clear = resp["ver_clear"];
+                            m_ver_ack = m_ver_clear;
+
+                            for (var i in resp["msgs"]) {
+                                var v = resp["msgs"][i][0];
+                                var line = resp["msgs"][i][1];
+
+                                process_msg(decode_msg(line));
+
+                                m_ver_clear = v;
+                            }
+
+                            if (resp["msgs"].length == 30 || m_ver_clear < m_ver_notify) {
+                                schedule_poll();
+                            }
+
+                            m_last_active_time = get_time_in_ms();
+                        }
+
+                        m_is_polling = false;
+                        m_time_poll_last = get_time_in_ms();
+                    });
+                };
+
+                var schedule_poll_tail = function () {
+                    m_time_poll_last = get_time_in_ms();
+                };
+
+                var start_tick = function () {
+                    setTimeout(function () {
+                        if (session.state == 'session_state_logout') {
+                            return;
+                        }
+
+                        if (session.state == 'session_state_logined') {
+                            var t = get_time_in_ms();
+
+                            // poll tail
+                            if (m_ver_ack < m_ver_clear && t - m_time_poll_last > 1000) {
+                                schedule_poll();
+                            } else if (t - m_time_poll_last >= 1000 * 60) {
+                                schedule_poll();
+                            }
+                        }
+
+                        start_tick();
+                    }, 100);
+                };
+
+                /*------------------------------------------------
+                |   notify
+                \*----------------------------------------------*/
+
+                session.socket.on('notify', function (msg) {
+                    dbg('recv notify ', msg);
+                    if (typeof (msg) == 'string') {
+                        msg = split_python(msg, ' ', 2);
+                        msg = msg.slice(1);
+                    }
+
+                    var e = msg[0];
+                    if (e == 'channel2') {
+                        var cid = msg[1];
+                        var msgid = msg[2];
+                        if (channel.m_channel_msgid != 0 && channel.m_channel_msgid + 1 > msgid) {
+                            dbg('ignore channel msg', cid, msgid, channel.m_channel_msgid)
+                            return;
+                        }
+
+                        // todo : handle m_channel_msgid + 1 < msgid
+                        channel.m_channel_msgid = msgid;
+
+                        var tmp = decode_msg(msg[3]);
+                        if (tmp) {
+                            var src = tmp[0];
+                            var t = tmp[1];
+                            var content = tmp[2];
+
+                            var jj = JSON.parse(content);
+                            if (t == 'channel_msg') {
+                                try {
+                                    if (channel.onMessageChannelReceive) {
+                                        channel.onMessageChannelReceive(jj.account, jj.uid, jj.msg);
+                                    }
+                                } catch (e) { console.error(e) }
+                            }
+
+                            if (t == 'channel_user_join') {
+                                try {
+                                    if (channel.onChannelUserJoined) {
+                                        channel.onChannelUserJoined(jj.account, jj.uid);
+                                    }
+                                } catch (e) { console.error(e) }
+                            }
+
+                            if (t == 'channel_user_leave') {
+                                try {
+                                    if (channel.onChannelUserLeaved) {
+                                        channel.onChannelUserLeaved(jj.account, jj.uid);
+                                    }
+                                } catch (e) { console.error(e) }
+                            }
+
+                            if (t == 'channel_attr_update') {
+                                try {
+                                    if (channel.onChannelAttrUpdated) {
+                                        channel.onChannelAttrUpdated(jj.name, jj.value, jj.type);
+                                    }
+                                } catch (e) { console.error(e) }
+                            }
+                        }
+                    }
+
+                    if (e == 'msg') {
+                        m_ver_notify = msg[1];
+                        schedule_poll();
+                    }
+
+                    if (e == 'recvmsg') {
+                        var r = JSON.parse(msg[1]);
+                        var v = r[0];
+                        var line = r[1];
+                        if (v == m_ver_clear + 1) {
+                            process_msg(decode_msg(line));
+                            m_ver_clear = v;
+                            schedule_poll_tail();
+                        } else {
+                            m_ver_notify = v;
+                            schedule_poll();
+                        }
+                    }
+                });
+
+                /*------------------------------------------------
+                |   Session API : Inst msg
+                \*----------------------------------------------*/
+                session.messageInstantSend = function (peer, msg, cb) {
+                    session.call2('user_sendmsg', {
+                        line: session.line,
+                        peer: peer,
+                        flag: 'v1:E:3600',
+                        t: 'instant',
+                        content: msg
+                    }, function (err, data) {
+                        if (cb) cb(!is_ok(err, data));
+                    });
+                };
+
+
+                /*------------------------------------------------
+                |   Session API : General Call
+                \*----------------------------------------------*/
+
+                session.invoke = function (func, args, cb) {
+                    if (func.startsWith('io.agora.signal.')) {
+                        var f = func.split('.')[3];
+                        args.line = session.line;
+                        session.call2(f, args, function (err, ret) {
+                            if (cb) {
+                                cb(err, ret);
+                            }
+                        });
+                    }
+                };
+
+                /*------------------------------------------------
+                |   Session API : Attributes
+                \*----------------------------------------------*/
+
+                // // cb(err)
+                // session.setAttr = function(attr, value, cb) {
+                //   session.call2('user_set_attr', {
+                //     line: session.line,
+                //     name: attr,
+                //     value: value
+                //   }, function(err, data) {
+                //     if (cb) {
+                //         cb(err);
+                //     }
+                //   });
+                // };
+
+                // // cb(err, value)
+                // session.getAttr = function(attr, cb) {
+                //   session.call2('user_get_attr', {
+                //     line: session.line,
+                //     account : session.account,
+                //     name: attr,
+                //   }, function(err, data) {
+                //     if (cb) {
+                //         cb(err, data.value);
+                //     }
+                //   });
+                // };
+
+                // // cb(err, value)
+                // session.getAttrAll = function(cb) {
+                //   session.call2('user_get_attr_all', {
+                //     line: session.line,
+                //     account : session.account,
+                //   }, function(err, data) {
+                //     if (cb) {
+                //         cb(err, data.json);
+                //     }
+                //   });
+                // };
+
+                // // cb(err, value)
+                // session.getAttrAll = function(cb) {
+                //   session.call2('user_get_attr_all', {
+                //     line: session.line,
+                //     account : session.account,
+                //   }, function(err, data) {
+                //     if (cb) {
+                //         cb(err, data.json);
+                //     }
+                //   });
+                // };
+
+
+                /*------------------------------------------------
+                |   Session API : Invite
+                \*----------------------------------------------*/
+                var Call = function (channelID, peer, extra) {
+                    // Events
+                    this.onInviteReceivedByPeer = '';
+                    this.onInviteAcceptedByPeer = '';
+                    this.onInviteRefusedByPeer = '';
+                    this.onInviteFailed = '';
+                    this.onInviteEndByPeer = '';
+                    this.onInviteEndByMyself = '';
+                    this.onInviteMsg = '';
+                    var call = this;
+                    this.channelName = channelID;
+                    this.peer = peer;
+                    this.extra = extra;
+
+                    call_obj_table[channelID + peer] = call;
+
+                    // Actions
+                    this.channelInviteUser2 = function () {
+                        extra = extra || '';
+                        session.call2('voip_invite', {
+                            line: session.line,
+                            channelName: channelID,
+                            peer: peer,
+                            extra: extra
+                        }, function (err, msg) {
+                            if (is_ok(err, msg)) {
+
+                            } else {
+                                try {
+                                    call.onInviteFailed(err);
+                                } catch (e) { console.error(e) }
+                            }
+                        });
+                    };
+
+                    this.channelInviteAccept = function (extra) {
+                        extra = extra || '';
+                        session.call2('voip_invite_accept', {
+                            line: session.line,
+                            channelName: channelID,
+                            peer: peer,
+                            extra: extra
+                        });
+                    };
+
+                    this.channelInviteRefuse = function (extra) {
+                        extra = extra || '';
+                        session.call2('voip_invite_refuse', {
+                            line: session.line,
+                            channelName: channelID,
+                            peer: peer,
+                            extra: extra
+                        });
+                    };
+
+                    this.channelInviteDTMF = function (dtmf) {
+                        session.call2('voip_invite_msg', {
+                            line: session.line,
+                            channelName: channelID,
+                            peer: peer,
+                            extra: JSON.stringify({
+                                msgtype: 'dtmf',
+                                msgdata: dtmf
+                            })
+                        });
+                    };
+
+                    this.channelInviteEnd = function (extra) {
+                        extra = extra || '';
+                        session.call2('voip_invite_bye', {
+                            line: session.line,
+                            channelName: channelID,
+                            peer: peer,
+                            extra: extra
+                        });
+
+                        try {
+                            if (call.onInviteEndByMyself) call.onInviteEndByMyself('');
+                        } catch (e) { console.error(e) }
+                    };
+                };
+
+                session.channelInviteUser2 = function (channelID, peer, extra) {
+                    var call = new Call(channelID, peer, extra);
+                    call.channelInviteUser2();
+                    return call;
+                };
+
+                /*------------------------------------------------
+                |   API : Channel
+                \*----------------------------------------------*/
+
+                session.channelJoin = function (name) {
+                    if (session.state != 'session_state_logined') {
+                        dbg('You should log in first.')
+                        return;
+                    }
+                    // Channel Object
+                    //var channel = new function(){
+                    channel = new function () {
+                        //
+                        // Events
+                        //
+                        this.onChannelJoined = '';
+                        this.onChannelJoinFailed = '';
+                        this.onChannelLeaved = '';
+                        this.onChannelUserList = '';
+                        this.onChannelUserJoined = '';
+                        this.onChannelUserLeaved = '';
+                        this.onChannelUserList = '';
+                        this.onChannelAttrUpdated = '';
+                        this.onMessageChannelReceive = '';
+
+                        this.name = name;
+                        this.state = 'joining';
+                        this.m_channel_msgid = 0;
+
+                        //
+                        // Actions
+                        //
+                        this.messageChannelSend = function (msg, f) {
+                            session.call2('channel_sendmsg', {
+                                line: session.line,
+                                name: name,
+                                msg: msg
+                            }, function (err, msg) {
+                                if (f) {
+                                    f();
+                                }
+                            });
+                        };
+
+                        this.channelLeave = function (f) {
+                            session.call2('channel_leave', {
+                                line: session.line,
+                                name: name
+                            }, function (err, msg) {
+                                channel.state = 'leaved';
+                                if (f) {
+                                    f();
+                                } else {
+                                    try {
+                                        if (channel.onChannelLeaved) {
+                                            channel.onChannelLeaved(0);
+                                        }
+                                    } catch (e) { console.error(e) }
+                                }
+                            });
+                        }
+
+                        this.channelSetAttr = function (k, v, f) {
+                            session.call2('channel_set_attr', {
+                                line: session.line,
+                                channel: name,
+                                name: k,
+                                value: v
+                            }, function (err, msg) {
+                                if (f) {
+                                    f();
+                                }
+                            });
+                        }
+
+                        this.channelDelAttr = function (k, f) {
+                            session.call2('channel_del_attr', {
+                                line: session.line,
+                                channel: name,
+                                name: k
+                            }, function (err, msg) {
+                                if (f) {
+                                    f();
+                                }
+                            });
+                        }
+
+                        this.channelClearAttr = function (f) {
+                            session.call2('channel_clear_attr', {
+                                line: session.line,
+                                channel: name
+                            }, function (err, msg) {
+                                if (f) {
+                                    f();
+                                }
+                            });
+                        }
+                    }();
+                    session.call2('channel_join', {
+                        line: session.line,
+                        name: name
+                    }, function (err, msg) {
+                        if (err == '') {
+                            channel.state = 'joined';
+                            try {
+                                if (channel.onChannelJoined) {
+                                    channel.onChannelJoined();
+                                }
+                            } catch (e) { console.error(e) }
+                            // var r = JSON.parse(msg);
+                            var r = msg;
+                            try {
+                                if (channel.onChannelUserList) {
+                                    channel.onChannelUserList(r.list);
+                                }
+                            } catch (e) { console.error(e) }
+                            try {
+                                if (channel.onChannelAttrUpdated) {
+                                    for (var k in r.attrs) {
+                                        channel.onChannelAttrUpdated('update', k, r.attrs[k]);
+                                    }
+                                }
+                            } catch (e) { console.error(e) }
+
+                        } else {
+                            try {
+                                if (channel.onChannelJoinFailed) {
+                                    channel.onChannelJoinFailed(err);
+                                }
+                            } catch (e) { console.error(e) }
+                        }
+                    });
+
+                    return channel;
+                    // call2 ('....')
+                };
+
+            };
+        }
+
+        session.socket = null;
+        shuffle(signal.lbs_url1);
+        shuffle(signal.lbs_url2);
+        do_lbs(2, signal.lbs_url1, 0);
+        do_lbs(2, signal.lbs_url2, 0);
+
+    };
+
+    this.login = function (account, token) {
+        return new Session(account, token);
+    }
+};
+
+Signal = function (vid) {
+    return new Signal_(vid);
+}
+
+module.exports = Signal;
