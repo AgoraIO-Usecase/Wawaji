@@ -1,7 +1,7 @@
 const request = require('request');
 
 function Api(manager, app){
-    app.use("/v1/key", function(req, res){
+    app.get("/v1/key", function(req, res){
         var query = req.query;
         var appid = query.appid;
         var channel = query.channel;
@@ -27,6 +27,10 @@ function Api(manager, app){
         request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${appid}&sign=${appcert}&channelname=${channel}`, function (err, response, body) {
             res.json({key: body})
         });
+    });
+
+    app.get("/v1/list", function(req, res){
+        
     });
 }
 

@@ -1,5 +1,5 @@
 
-const vault = require('./vault.js')
+const vault = require('../../vault.js').huizhi
 const WawajiStatus = require('../../constants').WawajiStatus;
 const request = require('request');
 

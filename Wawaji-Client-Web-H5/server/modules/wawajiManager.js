@@ -1,5 +1,5 @@
 var Signal = require('../vendor/signal.js');
-var vault = require('./vault');
+var vault = require('./vault').signal;
 var SignalingToken = require('./token');
 const WebSocket = require('ws');
 const WawajiStatus = require('./constants').WawajiStatus;
@@ -89,8 +89,8 @@ Wawaji.Server = function (serverid, io) {
     Wawaji.MachineSet = function () {
         var collection = this;
         this.__machines = [];
-        this.add = function (name, url) {
-            collection.__machines.push(new Wawaji.Machine(name, url));
+        this.add = function (machine) {
+            collection.__machines.push(machine);
             dbg("machine " + name + " added");
             return collection;
         }

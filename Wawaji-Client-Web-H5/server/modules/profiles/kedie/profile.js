@@ -1,5 +1,5 @@
 
-const vault = require('./vault.js')
+const vault = require('../../vault.js').kedie
 const WawajiStatus = require('../../constants').WawajiStatus;
 const request = require('request');
 const md5 = require('md5');

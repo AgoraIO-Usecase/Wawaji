@@ -1,4 +1,4 @@
-const vault = require('./vault.js')
+const vault = require('../../vault.js').leidi
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
 var dbg = function () {

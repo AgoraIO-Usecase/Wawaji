@@ -1,4 +1,4 @@
-const vault = require('./vault.js');
+const vault = require('../../vault.js').leyaoyao;
 const request = require('request');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;

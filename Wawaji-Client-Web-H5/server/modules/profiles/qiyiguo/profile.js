@@ -1,4 +1,4 @@
-const vault = require('./vault.js');
+const vault = require('../../vault.js').qiyiguo;
 const request = require('request');
 const md5 = require('md5');
 const sortKeys = require('sort-keys');
