@@ -45,7 +45,7 @@ Wawaji.Server = function (serverid, io) {
     this.channel = null;
     this.ipaddress = Utils.getDomain() || Utils.getIp();
 
-    var getSession = function () {
+    this.initSession = function () {
         var session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
         
         session.onLoginSuccess = function (uid) {
@@ -64,7 +64,7 @@ Wawaji.Server = function (serverid, io) {
             logx.info("[Wawaji.Server] logout !!!!!!!");
             setTimeout( function() {
                 logx.info("[Wawaji.Server] restart session !!!!!!!");
-                client.session = getSession();
+                client.session = client.initSession();
             }, 10 * 1000);
         };
 
@@ -82,14 +82,18 @@ Wawaji.Server = function (serverid, io) {
                         break;
                     case "PLAY":
                         machine = client.machines.get(data.machine);
-                        machine && machine.play(account);
+                        if(machine.online){
+                            machine && machine.play(account);
+                        } else {
+                            logx.info(account + " tries to play but machine " + machine.name + " is not online.")
+                        }
                         break;
                 }
             }
         }
         return session;
     }
-    this.session = getSession();
+    this.session = client.initSession();
 
     /*------------------------------------------------
     |   Class : Machines
@@ -197,60 +201,7 @@ Wawaji.Server = function (serverid, io) {
             machine.status = status;
         }
 
-        if (machine.profile.protocol === 'http') {
-            var initWS = function (cb) {
-
-                var previous_status = machine.status;
-                machine.setStatus(WawajiStatus.INITIALIZING);
-
-                machine.profile.onInit(machine, function () {
-                    if (previous_status === WawajiStatus.INITIAL) {
-                        machine.setStatus(WawajiStatus.READY);
-                    } else {
-                        machine.log.info(`restore status successful ${machine.status}`)
-                        machine.setStatus(previous_status);
-                    }
-                    cb && cb();
-                });
-            }
-        }
-        else {
-            var initWS = function (cb) {
-                if (machine.socket) {
-                    cb && cb();
-                    return;
-                }
-                if (machine.url) {
-                    machine.log.info(machine.url);
-                    var socket = new WebSocket(machine.url);
-                    machine.socket = socket;
-
-                    //need reinitiate websocket link, get current status
-                    var previous_status = machine.status;
-                    machine.setStatus(WawajiStatus.INITIALIZING);
-
-                    machine.profile.onInit(machine, function () {
-                        if (previous_status === WawajiStatus.INITIAL) {
-                            machine.setStatus(WawajiStatus.READY);
-                        } else {
-                            machine.log.info(`restore status successful ${machine.status}`)
-                            machine.setStatus(previous_status);
-                        }
-                        cb && cb();
-                    });
-
-                    machine.socket.onclose = function (e) {
-                        machine.log.info("WebSocket closed for " + machine.name);
-                        machine.socket = null;
-                    }
-                }
-            }
-        }
-
-        initWS();
-
-
-        var getSession = function() {
+        this.initSession = function() {
             var session = signal.login(this.name, SignalingToken.get(vault.appid, vault.appcert, this.name, 1));
 
             session.onLoginSuccess = function (uid) {
@@ -325,7 +276,7 @@ Wawaji.Server = function (serverid, io) {
                 logx.info("[Wawaji.Machine] logout !!!!!!!");
                 setTimeout( function() {
                     logx.info("[Wawaji.Machine] restart session !!!!!!!");
-                    machine.session = getSession();
+                    machine.session = machine.initSession();
                 }, 10 * 1000);
             };
 
@@ -353,12 +304,65 @@ Wawaji.Server = function (serverid, io) {
             return session;
         };
 
-        this.session = getSession();
+        this.session = machine.initSession();
+
+
+        if (machine.profile.protocol === 'http') {
+            var initWS = function (cb) {
+
+                var previous_status = machine.status;
+                machine.setStatus(WawajiStatus.INITIALIZING);
+
+                machine.profile.onInit(machine, function () {
+                    if (previous_status === WawajiStatus.INITIAL) {
+                        machine.setStatus(WawajiStatus.READY);
+                    } else {
+                        machine.log.info(`restore status successful ${machine.status}`)
+                        machine.setStatus(previous_status);
+                    }
+                    cb && cb();
+                });
+            }
+        }
+        else {
+            var initWS = function (cb) {
+                if (machine.socket) {
+                    cb && cb();
+                    return;
+                }
+                if (machine.url) {
+                    machine.log.info(machine.url);
+                    var socket = new WebSocket(machine.url);
+                    machine.socket = socket;
+
+                    //need reinitiate websocket link, get current status
+                    var previous_status = machine.status;
+                    machine.setStatus(WawajiStatus.INITIALIZING);
+
+                    machine.profile.onInit(machine, function () {
+                        if (previous_status === WawajiStatus.INITIAL) {
+                            machine.setStatus(WawajiStatus.READY);
+                        } else {
+                            machine.log.info(`restore status successful ${machine.status}`)
+                            machine.setStatus(previous_status);
+                        }
+                        cb && cb();
+                    });
+
+                    machine.socket.onclose = function (e) {
+                        machine.log.info("WebSocket closed for " + machine.name);
+                        machine.socket = null;
+                    }
+                }
+            }
+        }
+
+        initWS();
 
         this.play = function (account) {
             machine.log.info("machine status: " + machine.status);
             if (machine.playing === account) {
-                machine.log.info("you are already playing");
+                machine.log.info(account + " is already playing");
                 machine.sendInfo(account, "PLAYER_ALREADY_PLAYING");
                 return false;
             }
@@ -382,7 +386,7 @@ Wawaji.Server = function (serverid, io) {
             machine.game_timer = setTimeout(function () {
                 if(machine.game_counter > 0){
                     machine.game_counter--;
-                    machine.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
+                    machine.channel.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
                     machine.countingDown();
                 } else {
                     machine.catch();
@@ -400,8 +404,8 @@ Wawaji.Server = function (serverid, io) {
             machine.setPlaying(account);
             machine.updateAttrs();
             machine.game_counter = 30;
-            machine.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
-
+            machine.channel.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
+            machine.countingDown();
             initWS(function () {
                 machine.profile.onPlay(account);
             });
