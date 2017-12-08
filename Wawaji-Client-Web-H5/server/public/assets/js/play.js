@@ -215,7 +215,7 @@ $(document).ready(function () {
                             break;
                         case "PLAY_COUNTING":
                             result = data.data;
-                            $(".control-catch").text("(" + result + ")")
+                            $(".control-catch").text("(" + result + "s)")
                             break;
                     }
                 }

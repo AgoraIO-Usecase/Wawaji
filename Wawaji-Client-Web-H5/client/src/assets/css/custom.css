@@ -191,6 +191,10 @@ h2{
     font-size: 24px;
 }
 
+.controls .main:active .content{
+    margin-bottom: 0px;
+}
+
 .control-btn {
     position: absolute;
     background-size: 50%;
@@ -205,6 +209,10 @@ h2{
     background-repeat: no-repeat;
 }
 
+.control-left:active{
+    background-image: url('../images/left_down.png');
+}
+
 
 .control-right{
     background-image: url('../images/right.png');
@@ -215,6 +223,9 @@ h2{
     background-repeat: no-repeat;
 }
 
+.control-right:active{
+    background-image: url('../images/right_down.png');
+}
 
 .control-up{
     background-image: url('../images/up.png');
@@ -223,6 +234,9 @@ h2{
     background-size: contain;
     background-color: transparent;
     background-repeat: no-repeat;
+}
+.control-up:active{
+    background-image: url('../images/up_down.png');
 }
 
 
@@ -233,6 +247,9 @@ h2{
     background-size: contain;
     background-color: transparent;
     background-repeat: no-repeat;
+}
+.control-down:active{
+    background-image: url('../images/down_down.png');
 }
 
 .control-catch{
@@ -246,9 +263,13 @@ h2{
     justify-content: center;
     align-items: center;
     color: white;
-    font-weight: bold;
     font-size: 14px;
     padding-top: 12px;
+}
+
+.control-catch:active{
+    background-image: url('../images/catcher_down.png');
+    padding-top: 20px;
 }
 
 .control-camera{
