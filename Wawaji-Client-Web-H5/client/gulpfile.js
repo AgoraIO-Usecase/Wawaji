@@ -82,17 +82,15 @@ gulp.task('htmlmin', function () {
         .pipe(gulp.dest('./dist'))
 });
 
-gulp.task('shell', function () {
-    return gulp.src([
-        'src/start_python_server*'
-    ])
-        .pipe(gulp.dest('./dist'));
+gulp.task('copy', function () {
+    return gulp.src('./dist/**/*')
+        .pipe(gulp.dest('../server/public'))
 });
 
 gulp.task('watch', function () {
     gulp.watch('src/**/*', ['build']);
 });
 
-gulp.task("build", ['jsmin', 'cssmin', 'htmlmin', 'images', 'fonts', 'shell']);
+gulp.task("build", ['jsmin', 'cssmin', 'htmlmin', 'images', 'fonts', 'copy']);
 
 gulp.task("default", ['watch']);

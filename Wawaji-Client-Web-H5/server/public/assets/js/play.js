@@ -46,7 +46,7 @@ $(document).ready(function () {
             cb && cb(null);
         } else {
             $.ajax({
-                url: "http://123.155.153.85:4000/v1/key",
+                url: "/v1/key",
                 // url: "/v1/key",
                 type: "GET", //send it through get method
                 data: {
@@ -75,7 +75,7 @@ $(document).ready(function () {
                 var gateways = domains.gateway_addr || [];
 
                 if (gateways.length === 0) {
-                    alert("gateway not found");
+                    console.log("no gateway available");
                 } else {
                     $.ajax({
                         url: "https://" + domains.gateway_addr[0] + "/v1/machine",

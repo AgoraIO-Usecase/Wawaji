@@ -46,7 +46,7 @@ $(document).ready(function () {
             cb && cb(null);
         } else {
             $.ajax({
-                url: "http://123.155.153.85:4000/v1/key",
+                url: "/v1/key",
                 // url: "/v1/key",
                 type: "GET", //send it through get method
                 data: {
