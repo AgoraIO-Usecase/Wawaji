@@ -41,9 +41,10 @@ $(document).ready(function () {
 
 
 
-    var getKey = function (machine, cb) {
+    var getKey = function (machine) {
+        var deferred = $.Deferred();
         if (!machine.dynamicKeyEnabled) {
-            cb && cb(null);
+            return deferred.resolve(null).promise();
         } else {
             $.ajax({
                 url: "/v1/key",
@@ -54,46 +55,56 @@ $(document).ready(function () {
                     channel: machine.channel
                 }
             }).done(function (key) {
-                cb && cb(key.key);
+                deferred.resolve(key.key);
             });
         }
+        return deferred.promise();
+    }
+
+    var getGateways = function (machine) {
+        var deferred = $.Deferred();
+        $.ajax({
+            url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
+            type: "POST",
+            headers: {
+                "Content-type": "application/json; charset=utf-8"
+            },
+            data: JSON.stringify({
+                key: machine.appid,
+                cname: machine.channel
+            })
+        }).done(function(domains){
+            deferred.resolve(domains);
+        }).fail(function(){
+            deferred.reject();  
+        });
+
+        return deferred.promise();
     }
 
     var prepare_meta = function (machine, cb) {
-        getKey(machine, function (key) {
-            $.ajax({
-                url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
-                type: "POST",
-                headers: {
-                    "Content-type": "application/json; charset=utf-8"
-                },
-                data: JSON.stringify({
-                    key: machine.appid,
-                    cname: machine.channel
-                })
-            }).done(function (domains) {
-                var gateways = domains.gateway_addr || [];
+        $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
+            var gateways = domains.gateway_addr || [];
 
-                if (gateways.length === 0) {
-                    console.log("no gateway available");
-                } else {
-                    $.ajax({
-                        url: "https://" + domains.gateway_addr[0] + "/v1/machine",
-                        // url: "http://wawa1.agoraio.cn:4000/v1/machine",
-                        // url: "http://127.0.0.1:4000/v1/machine",
-                        type: "POST",
-                        data: {
-                            appid: machine.appid,
-                            channel: machine.channel,
-                            key: key
-                        }
-                    }).done(function (video_info) {
-                        cb(video_info);
-                    }).fail(function (e) {
-                        alert("err");
-                    });
-                }
-            });
+            if (gateways.length === 0) {
+                alert("同时观看此机器的人数太多，请稍后再来")
+            } else {
+                $.ajax({
+                    url: "https://" + domains.gateway_addr[0] + "/v1/machine",
+                    // url: "http://wawa1.agoraio.cn:4000/v1/machine",
+                    // url: "http://127.0.0.1:4000/v1/machine",
+                    type: "POST",
+                    data: {
+                        appid: machine.appid,
+                        channel: machine.channel,
+                        key: key
+                    }
+                }).done(function (video_info) {
+                    cb(video_info);
+                }).fail(function (e) {
+                    console.log("err: failed to get machine info");
+                });
+            }
         })
     }
 

@@ -43,7 +43,7 @@ $(function () {
             $.ajax({
                 url: "/v1/list",
                 type: "GET"
-            }).done(function(machines){
+            }).done(function (machines) {
                 lobby.setMachines(machines);
             });
         }
@@ -51,12 +51,8 @@ $(function () {
         this.setMachines = function (macs) {
             dbg("found " + macs.length + " machines");
             lobby.machines = macs;
-            // for (var i = 0; i < macs.length; i++) {
-            //     $('<li name=' + macs[i].name + ' class="roomBtn list-group-item list-group-item-action d-flex justify-content-between align-items-center">' + macs[i].name + '<span class="badge badge-primary badge-pill">' + macs[i].players.length + '</span></li>')
-            //         .appendTo($(".machine-list"));
-            // }
             $(".game-list").html("");
-            for (var i = 0; i < macs.length; i++){
+            for (var i = 0; i < macs.length; i++) {
                 var html = "";
                 html += '<div class="game-room" name="' + macs[i].name + '">';
                 html += '<div class="room-container">';
@@ -64,7 +60,9 @@ $(function () {
                 html += '<div class="room-label">';
                 html += '<div class="name">Agora公仔</div>';
                 html += '<div class="price" style="float: left">24/次</div>';
-                html += '<img class="status" src="./assets/images/available.png" />';
+                html += '<img class="status" src="./assets/images/';
+                html += macs[i].available ? 'available' : 'busy';
+                html += '.png" />';
                 html += '</div></div></div>';
                 html += '<img src="./assets/images/game_frame.png" style="width: 100%" />';
                 html += '</div>';
@@ -73,19 +71,20 @@ $(function () {
 
             localStorage.setItem("machines", JSON.stringify(macs));
 
-            var start_event = isMobile() ? "touchstart" : "mousedown";
-            // var end_event = isMobile() ? "touchend" : "mouseup";
+            // var start_event = isMobile() ? "touchstart" : "mousedown";
+            var end_event = isMobile() ? "touchend" : "mouseup";
 
-            $(".game-room").off(start_event).on(start_event, function () {
+            $(".game-room").off(end_event).on(end_event, function () {
                 var name = $(this).attr("name");
-                if (!name) {
-                    alert("设备维护中！")
-                } else {
-                    for (var i = 0; i < lobby.machines.length; i++) {
-                        if (name === lobby.machines[i].name) {
+
+                for (var i = 0; i < lobby.machines.length; i++) {
+                    if (name === lobby.machines[i].name) {
+                        if (!lobby.machines[i].available) {
+                            alert("设备维护中！");
+                        } else {
                             location.href = "play.html?account=" + lobby.account + "&machine=" + name;
-                            break;
                         }
+                        break;
                     }
                 }
             });

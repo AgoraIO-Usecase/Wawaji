@@ -6,7 +6,7 @@ gulp build
 cd ../server
 cp -r ../client/dist/* ./public/.
 
-deployDir=/home/devops/web_test/project/Wawaji_Full_Profile
+deployDir=/home/devops/web_demo/project/Wawaji_Full_Profile
 ServerName=${@:$OPTIND:1}
 
 # Rev="$(git rev-parse HEAD)"

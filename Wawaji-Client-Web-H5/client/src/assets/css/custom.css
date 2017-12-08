@@ -242,6 +242,13 @@ h2{
     background-size: contain;
     background-color: transparent;
     background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding-top: 12px;
 }
 
 .control-camera{

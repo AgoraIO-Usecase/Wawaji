@@ -60,7 +60,7 @@ Wawaji.Server = function (serverid, io) {
         client.onStartFailed && client.onStartFailed();
     };
 
-    this.session.onLogout = function(){
+    this.session.onLogout = function () {
         logx.info("on log out");
     }
 
@@ -157,6 +157,7 @@ Wawaji.Server = function (serverid, io) {
         this.result = false;
         this.prepare_timer = null;
         this.game_timer = null;
+        this.game_counter = 30;
         this.result_timer = null;
         this.stream_method = profile.mode;
         this.stream_port1 = global_port++;
@@ -356,19 +357,30 @@ Wawaji.Server = function (serverid, io) {
             return false;
         };
 
+        this.countingDown = function (done) {
+            machine.game_timer = setTimeout(function () {
+                if(machine.game_counter > 0){
+                    machine.game_counter--;
+                    machine.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
+                    machine.countingDown();
+                } else {
+                    machine.catch();
+                }
+            }, 1000);
+        }
+
         this.playgame = function (account) {
             if (machine.status !== WawajiStatus.READY) {
                 machine.log.error(`[ERROR] try to start a game whose machine is not ready, current status is ${machine.status}`);
                 return;
             }
             machine.log.debug("[DEBUG] about to start a game for " + account);
-
             machine.setStatus(WawajiStatus.PLAY);
             machine.setPlaying(account);
             machine.updateAttrs();
-            machine.game_timer = setTimeout(function () {
-                machine.catch();
-            }, 30000);
+            machine.game_counter = 30;
+            machine.messageChannelSend(JSON.stringify({type: "PLAY_COUNTING", data: machine.game_counter}));
+
             initWS(function () {
                 machine.profile.onPlay(account);
             });
