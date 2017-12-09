@@ -1,3 +1,23 @@
+var images = new Array()
+function preload() {
+    for (i = 0; i < preload.arguments.length; i++) {
+        images[i] = new Image()
+        images[i].src = preload.arguments[i]
+    }
+}
+preload(
+    "/assets/images/up.png",
+    "/assets/images/up_down.png",
+    "/assets/images/left.png",
+    "/assets/images/left_down.png",
+    "/assets/images/down.png",
+    "/assets/images/down_down.png",
+    "/assets/images/right.png",
+    "/assets/images/right_down.png",
+    "/assets/images/catcher.png",
+    "/assets/images/catcher_down.png",
+)
+
 $(document).ready(function () {
     window.oncontextmenu = function (event) {
         event.preventDefault();
@@ -305,17 +325,23 @@ $(document).ready(function () {
 
     var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
     // localStorage.setItem("account", account);
-    var lobby = new Lobby(account, function () {
-        for (var i = 0; i < machine_list.length; i++) {
-            if (machine_list[i].name === machine_name) {
-                prepare_meta(machine_list[i], function (video_info) {
-                    lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
-                });
-                break;
-            }
-        }
-    });
 
+    var lobby_prepare = $.Deferred();
+    var meta_prepare = $.Deferred();
+    var lobby = new Lobby(account, function () {
+        lobby_prepare.resolve();
+    });
+    for (var i = 0; i < machine_list.length; i++) {
+        if (machine_list[i].name === machine_name) {
+            prepare_meta(machine_list[i], function (video_info) {
+                meta_prepare.resolve(video_info);
+            });
+            break;
+        }
+    }
+    $.when(lobby_prepare, meta_prepare).done(function(result, video_info){
+        lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
+    });
 
 
     (function layoutItems() {
