@@ -8,6 +8,7 @@
     <title>声网 Agora 抓娃娃</title>
     <script src="assets/js/vendor-bundle.js"></script>
     <script src="assets/js/vault.js"></script>
+    <script src="assets/js/jsmpeg.min.js"></script>
     <script src="assets/js/play.js"></script>
     <link rel="stylesheet" href="assets/css/bundle.css" />
 </head>
@@ -21,6 +22,9 @@
 
 <body>
     <div class="wrapper" style="margin: 0 auto">
+        <div class="loading">
+            <img src="./assets/images/grid.svg"/>
+        </div>
         <div class="top-layer" style="display: none">
             <div class="message-box">test</div>
             <div class="confirm">再来一次</div>
@@ -32,7 +36,7 @@
                 </div>
             </div>
             <div class="no-border control-camera"></div>
-            <div id="video" style="height:360px;overflow: hidden;background-color: #000; position: relative">
+            <div id="video" style="height:360px;overflow: hidden;background-color: #000; position: relative; display: none">
                 <img id="player"></img>
                 <canvas id="jsmpeg-player"></canvas>
                 <canvas id="jsmpeg-player2" style="display: none"></canvas>

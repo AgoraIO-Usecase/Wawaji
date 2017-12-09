@@ -41,7 +41,27 @@ gulp.task('jsmin', function () {
 
     gulp.src('./src/assets/js/*.js')
         .pipe(gulp.dest('./dist/assets/js'));
-
+    gulp.src('./src/assets/js/jsmpeg/*.js')
+        .pipe(order([
+            "jsmpeg.js",
+            "video-element.js",
+            "player.js",
+            "buffer.js",
+            "ajax.js",
+            "ajax-progressive.js",
+            "websocket.js",
+            "ts.js",
+            "decoder.js",
+            "mpeg1.js",
+            "mp2.js",
+            "webgl.js",
+            "canvas2d.js",
+            "webaudio.js"
+        ]))
+        .pipe(concat("jsmpeg-all.js"))
+        // .pipe(uglify())
+        .pipe(rename('jsmpeg.min.js'))
+        .pipe(gulp.dest('./dist/assets/js'))
     return gulp.src('./src/assets/vendor/*.js')
         .pipe(order([
             'jquery*.js',

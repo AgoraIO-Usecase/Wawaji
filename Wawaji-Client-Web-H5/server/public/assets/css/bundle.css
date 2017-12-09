@@ -382,3 +382,17 @@ h2{
     background-image: url("../images/game_main_down.png");
     background-position: 50% 55%;
 }
+
+.loading{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading img{
+    width: 44px;
+}

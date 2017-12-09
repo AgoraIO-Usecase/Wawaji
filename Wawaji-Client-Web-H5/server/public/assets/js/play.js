@@ -37,6 +37,7 @@ $(document).ready(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
     var wawaji_control_center = namespace + Vault.cc_server;
     var debug = true;
+    var loading = true;
     var dbg = function () {
         if (debug) {
             var x = [];
@@ -293,11 +294,17 @@ $(document).ready(function () {
                     var canvas2 = document.getElementById('jsmpeg-player2');
                     if (position === 0) {
                         //front
+                        // player.player2.stop();
                         $(canvas2).hide();
+                        // player.player1.seek(player.player1.currentTime);
+                        // player.player1.play();
                         $(canvas).show();
                     } else {
                         //side
+                        // player.player1.stop();
                         $(canvas).hide();
+                        // player.player2.seek(player.player1.currentTime);
+                        // player.player2.play();
                         $(canvas2).show();
                     }
                 }
@@ -313,8 +320,18 @@ $(document).ready(function () {
 
                 var canvas = document.getElementById('jsmpeg-player');
                 var canvas2 = document.getElementById('jsmpeg-player2');
-                player.player1 = new JSMpeg.Player(player.cameras.main, { canvas: canvas });
-                player.player2 = new JSMpeg.Player(player.cameras.sub, { canvas: canvas2 });
+                player.player1 = new JSMpeg.Player(player.cameras.main, {
+                    canvas: canvas,
+                    audio: false,
+                    autoplay: false,
+                    decodeFirstFrame: true,
+                    agora_id: 1,
+                    onStartDecoding: function(){
+                        loading = false;
+                        updateViews();
+                    }
+                 });
+                player.player2 = new JSMpeg.Player(player.cameras.sub, { canvas: canvas2, audio: false, autoplay: false, decodeFirstFrame: true, agora_id: 2 });
                 player.play(player.camera, 0);
             }
 
@@ -432,50 +449,58 @@ $(document).ready(function () {
     }
 
     function updateViews() {
-        if (lobby.game) {
-            //control logic
-            var idx = lobby.game.queue.indexOf(lobby.game.account);
-            if (lobby.game.playing !== account) {
-                //not yet in play
-                $(".controls-game").hide();
-                $(".controls").show();
-
-                if (lobby.game.queue.length === 0 && !lobby.game.playing) {
-                    //no people in queue, starts directly
-                    $(".controls .main .content").text("开始游戏");
-                    $(".controls .info").text("");
-                } else {
-                    //people in queue
-                    var queuelength = lobby.game.playing ? 1 : 0;
-                    if (idx !== -1) {
-                        queuelength += idx;
-                        //i am already in queue
-                        $(".controls .main .content").text("已预约");
-                        //todo disable button
+        if( loading ){
+            $(".loading").show();
+        } else {
+            $(".loading").hide();
+            $("#video").show();
+            if (lobby.game) {
+                //control logic
+                var idx = lobby.game.queue.indexOf(lobby.game.account);
+                if (lobby.game.playing !== account) {
+                    //not yet in play
+                    $(".controls-game").hide();
+                    $(".controls").show();
+    
+                    if (lobby.game.queue.length === 0 && !lobby.game.playing) {
+                        //no people in queue, starts directly
+                        $(".controls .main .content").text("开始游戏");
+                        $(".controls .info").text("");
                     } else {
-                        queuelength += lobby.game.queue.length;
-                        $(".controls .main .content").text("预约排队");
+                        //people in queue
+                        var queuelength = lobby.game.playing ? 1 : 0;
+                        if (idx !== -1) {
+                            queuelength += idx;
+                            //i am already in queue
+                            $(".controls .main .content").text("已预约");
+                            //todo disable button
+                        } else {
+                            queuelength += lobby.game.queue.length;
+                            $(".controls .main .content").text("预约排队");
+                        }
+                        $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
                     }
-                    $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
+    
+                } else {
+                    //playing
+                    $(".controls-game").show();
+                    $(".controls").hide();
                 }
-
-            } else {
-                //playing
-                $(".controls-game").show();
-                $(".controls").hide();
-            }
-
-            $(".banner-container .users").remove();
-
-            if (lobby.game.playing) {
-                $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
-            }
-            if (lobby.game.queue.length > 0) {
-                for (var i = 0; i < lobby.game.queue.length; i++) {
-                    $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+    
+                $(".banner-container .users").remove();
+    
+                if (lobby.game.playing) {
+                    $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
                 }
+                if (lobby.game.queue.length > 0) {
+                    for (var i = 0; i < lobby.game.queue.length; i++) {
+                        $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+                    }
+                }
+    
             }
-
         }
+
+        
     }
 });
