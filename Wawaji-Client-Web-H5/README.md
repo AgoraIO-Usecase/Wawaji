@@ -1,7 +1,7 @@
 # Wawaji streaming client for Web(H5)
 - **为了方便客户体验，我们已经提供了线上部署好的环境，集成方法：**
 
-### v1.2方案
+### v1.2
 
 - 获取节点服务器域名
 ```javascript
@@ -48,7 +48,7 @@ https://github.com/AgoraIO/Wawaji/blob/rtc-only/Wawaji-Client-Web-H5/docs/api.ht
 
 
 
-### v1.1方案 (仍在线，推荐升级到v1.2)
+### v1.1 (仍在线，推荐升级到v1.2)
 
 - [http://wawa1.agoraio.cn:4000/viewer.html](http://wawa1.agoraio.cn:4000/viewer.html)
 - [http://wawa2.agoraio.cn:4000/viewer.html](http://wawa2.agoraio.cn:4000/viewer.html)
