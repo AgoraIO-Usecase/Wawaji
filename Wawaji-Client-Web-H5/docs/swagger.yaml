@@ -10,28 +10,37 @@ tags:
 schemes:
   - http
 paths:
-  /machines/:
+  /machine/:
     post:
       tags:
         - Machine
-      summary: start machines, if already started, return machine data directly
+      summary: start machines, if already started, return machine data directly; in case different uid1 or uid2 is provided, the original process will be restarted with new uid1 and uid2
       operationId: startMachine
       parameters:
-        - name: appid
-          in: query
-          description: App id of your Agora product
-          required: true
-          type: string
-        - name: channel
-          in: query
-          description: Media channel of your machine
-          required: true
-          type: string
-        - name: appcert
-          in: query
-          description: App certificate if enabled
-          required: false
-          type: string
+        - in: body
+          name: machine
+          description: The machine to create.
+          schema:
+            type: object
+            required:
+              - appid
+              - channel
+            properties:
+              appid:
+                type: string
+                example: <your appid>
+              channel:
+                type: string
+                example: <your channel>
+              appcert:
+                type: string
+                example: <your app certificate>
+              uid1:
+                type: integer
+                example: 1
+              uid2:
+                type: integer
+                example: 2
       produces:
         - application/json
       responses:

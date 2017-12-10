@@ -695,28 +695,29 @@ margin-bottom: 20px;
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-            defs.Machine = {
+            defs.machine = {
   "type" : "object",
+  "required" : [ "appid", "channel" ],
   "properties" : {
-    "name" : {
+    "appid" : {
       "type" : "string",
-      "description" : "Machine name"
+      "example" : "<your appid>"
     },
-    "video_channel" : {
+    "channel" : {
       "type" : "string",
-      "description" : "Machine video channel name"
+      "example" : "<your channel>"
     },
-    "stream_method" : {
+    "appcert" : {
       "type" : "string",
-      "description" : "Stream method of machine 0 - Image, 1 - JSMpeg",
-      "enum" : [ "Image", "JSMpeg" ]
+      "example" : "<your app certificate>"
     },
-    "video_rotation" : {
+    "uid1" : {
       "type" : "integer",
-      "description" : "Angles of screen to be rotated"
+      "example" : 1
     },
-    "cameras" : {
-      "$ref" : "#/definitions/Machine_cameras"
+    "uid2" : {
+      "type" : "integer",
+      "example" : 2
     }
   }
 };
@@ -777,7 +778,7 @@ margin-bottom: 20px;
                       <article id="api-Machine-startMachine-0" data-group="User" data-name="startMachine" data-version="0">
                         <div class="pull-left">
                           <h1>startMachine</h1>
-                          <p>start machines, if already started, return machine data directly</p>
+                          <p>start machines, if already started, return machine data directly; in case different uid1 or uid2 is provided, the original process will be restarted with new uid1 and uid2</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
@@ -785,7 +786,7 @@ margin-bottom: 20px;
                         <p class="marked"></p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/machines/</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/machine/</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
@@ -805,7 +806,7 @@ margin-bottom: 20px;
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Machine-startMachine-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "http://localhost/v1/machines/?appid=&channel=&appcert="</code></pre>
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "http://localhost/v1/machine/"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Machine-startMachine-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -821,11 +822,9 @@ public class MachineApiExample {
     public static void main(String[] args) {
         
         MachineApi apiInstance = new MachineApi();
-        String appid = appid_example; // String | App id of your Agora product
-        String channel = channel_example; // String | Media channel of your machine
-        String appcert = appcert_example; // String | App certificate if enabled
+        Machine machine = ; // Machine | The machine to create.
         try {
-            Machine result = apiInstance.startMachine(appid, channel, appcert);
+            Machine result = apiInstance.startMachine(machine);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling MachineApi#startMachine");
@@ -842,11 +841,9 @@ public class MachineApiExample {
 
     public static void main(String[] args) {
         MachineApi apiInstance = new MachineApi();
-        String appid = appid_example; // String | App id of your Agora product
-        String channel = channel_example; // String | Media channel of your machine
-        String appcert = appcert_example; // String | App certificate if enabled
+        Machine machine = ; // Machine | The machine to create.
         try {
-            Machine result = apiInstance.startMachine(appid, channel, appcert);
+            Machine result = apiInstance.startMachine(machine);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling MachineApi#startMachine");
@@ -860,16 +857,12 @@ public class MachineApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Machine-startMachine-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *appid = appid_example; // App id of your Agora product
-String *channel = channel_example; // Media channel of your machine
-String *appcert = appcert_example; // App certificate if enabled (optional)
+                              <pre class="prettyprint"><code class="language-cpp">Machine *machine = ; // The machine to create. (optional)
 
 MachineApi *apiInstance = [[MachineApi alloc] init];
 
-// start machines, if already started, return machine data directly
-[apiInstance startMachineWith:appid
-    channel:channel
-    appcert:appcert
+// start machines, if already started, return machine data directly; in case different uid1 or uid2 is provided, the original process will be restarted with new uid1 and uid2
+[apiInstance startMachineWith:machine
               completionHandler: ^(Machine output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -886,12 +879,8 @@ MachineApi *apiInstance = [[MachineApi alloc] init];
 
 var api = new AgoraWawajiServer.MachineApi()
 
-var appid = appid_example; // {String} App id of your Agora product
-
-var channel = channel_example; // {String} Media channel of your machine
-
 var opts = { 
-  'appcert': appcert_example // {String} App certificate if enabled
+  'machine':  // {Machine} The machine to create.
 };
 
 var callback = function(error, data, response) {
@@ -901,7 +890,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.startMachine(appid, channel, opts, callback);
+api.startMachine(opts, callback);
 </code></pre>
                             </div>
 
@@ -923,14 +912,12 @@ namespace Example
         {
             
             var apiInstance = new MachineApi();
-            var appid = appid_example;  // String | App id of your Agora product
-            var channel = channel_example;  // String | Media channel of your machine
-            var appcert = appcert_example;  // String | App certificate if enabled (optional) 
+            var machine = new Machine(); // Machine | The machine to create. (optional) 
 
             try
             {
-                // start machines, if already started, return machine data directly
-                Machine result = apiInstance.startMachine(appid, channel, appcert);
+                // start machines, if already started, return machine data directly; in case different uid1 or uid2 is provided, the original process will be restarted with new uid1 and uid2
+                Machine result = apiInstance.startMachine(machine);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -948,12 +935,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\Api\MachineApi();
-$appid = appid_example; // String | App id of your Agora product
-$channel = channel_example; // String | Media channel of your machine
-$appcert = appcert_example; // String | App certificate if enabled
+$machine = ; // Machine | The machine to create.
 
 try {
-    $result = $api_instance->startMachine($appid, $channel, $appcert);
+    $result = $api_instance->startMachine($machine);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling MachineApi->startMachine: ', $e->getMessage(), PHP_EOL;
@@ -967,12 +952,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::MachineApi;
 
 my $api_instance = WWW::SwaggerClient::MachineApi->new();
-my $appid = appid_example; # String | App id of your Agora product
-my $channel = channel_example; # String | Media channel of your machine
-my $appcert = appcert_example; # String | App certificate if enabled
+my $machine = WWW::SwaggerClient::Object::Machine->new(); # Machine | The machine to create.
 
 eval { 
-    my $result = $api_instance->startMachine(appid => $appid, channel => $channel, appcert => $appcert);
+    my $result = $api_instance->startMachine(machine => $machine);
     print Dumper($result);
 };
 if ($@) {
@@ -989,13 +972,11 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.MachineApi()
-appid = appid_example # String | App id of your Agora product
-channel = channel_example # String | Media channel of your machine
-appcert = appcert_example # String | App certificate if enabled (optional)
+machine =  # Machine | The machine to create. (optional)
 
 try: 
-    # start machines, if already started, return machine data directly
-    api_response = api_instance.start_machine(appid, channel, appcert=appcert)
+    # start machines, if already started, return machine data directly; in case different uid1 or uid2 is provided, the original process will be restarted with new uid1 and uid2
+    api_response = api_instance.start_machine(machine=machine)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling MachineApi->startMachine: %s\n" % e)</code></pre>
@@ -1006,81 +987,50 @@ except ApiException as e:
 
 
 
-
-
-                            <div class="methodsubtabletitle">Query parameters</div>
+                            <div class="methodsubtabletitle">Body parameters</div>
                             <table id="methodsubtable">
                               <tr>
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">appid*</td>
+                                <tr><td style="width:150px;">machine </td>
 <td>
 
 
-    <div id="d2e199_startMachine_appid">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "in" : "body",
+  "name" : "machine",
+  "description" : "The machine to create.",
+  "required" : false,
+  "schema" : {
+    "$ref" : "#/definitions/machine"
+  }
+};
+  var schema = schemaWrapper.schema;
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
 
-                    <div class="inner description">
-                        App id of your Agora product
-                    </div>
-            </div>
-                <div class="inner required">
-                    Required
-                </div>
-        </div>
-    </div>
-</td>
-</tr>
-
-                                <tr><td style="width:150px;">channel*</td>
-<td>
-
-
-    <div id="d2e199_startMachine_channel">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
-
-                    <div class="inner description">
-                        Media channel of your machine
-                    </div>
-            </div>
-                <div class="inner required">
-                    Required
-                </div>
-        </div>
-    </div>
-</td>
-</tr>
-
-                                <tr><td style="width:150px;">appcert</td>
-<td>
-
-
-    <div id="d2e199_startMachine_appcert">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
-
-                    <div class="inner description">
-                        App certificate if enabled
-                    </div>
-            </div>
-        </div>
-    </div>
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_startMachine_machine');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_startMachine_machine"></div>
 </td>
 </tr>
 
                             </table>
+
+
 
                           <h2>Responses</h2>
                             <h3> Status: 200 - successful operation </h3>
@@ -1151,7 +1101,7 @@ except ApiException as e:
           </div>
           <div id="generator">
             <div class="content">
-              Generated 2017-12-01T14:23:54.321Z
+              Generated 2017-12-05T15:17:43.384Z
             </div>
           </div>
       </div>
