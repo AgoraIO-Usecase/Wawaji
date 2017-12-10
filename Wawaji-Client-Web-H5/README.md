@@ -3,7 +3,7 @@
 
 ### v1.2
 
-1. 获取节点服务器域名
+1. **获取节点服务器域名**
 ```javascript
 $.ajax({
     url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
@@ -23,7 +23,7 @@ $.ajax({
 一般最适合你当前网段和负载的为第一个域名
 
 
-2. 使用获得的节点地址发送machine请求
+2. **使用获得的节点地址发送machine请求**
 基本与v1.1相同，需要使用步骤1获得的域名开启视频服务，或获得视频服务信息若已开启
 ```javascript
 $.ajax({
@@ -42,7 +42,8 @@ $.ajax({
 })
 ```
 
-3. 在返回的视频流信息中会有属于你的appid与频道对应的主副摄像头地址，该地址可直接使用第三方播放器如jsmpeg播放，视频服务信息的数据结构可参阅api文档
+3. **根据获取的信息播放视频**
+在返回的视频流信息中会有属于你的appid与频道对应的主副摄像头地址，该地址可直接使用第三方播放器如jsmpeg播放，视频服务信息的数据结构可参阅api文档
 https://github.com/AgoraIO/Wawaji/blob/rtc-only/Wawaji-Client-Web-H5/docs/api.html
 
 
