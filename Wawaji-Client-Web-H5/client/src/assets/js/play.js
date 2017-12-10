@@ -124,7 +124,9 @@ $(document).ready(function () {
                     data: {
                         appid: machine.appid,
                         channel: machine.channel,
-                        key: key
+                        key: key,
+                        uid1: 1,
+                        uid2: 2
                     }
                 }).done(function (video_info) {
                     dbg("get video info success")

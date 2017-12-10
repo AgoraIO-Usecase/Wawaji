@@ -1,4 +1,5 @@
 const request = require('request');
+const keygen = require('../modules/dynamicKey').generateMediaChannelKey;
 
 function Api(manager, app){
     app.get("/v1/key", function(req, res){
@@ -23,10 +24,11 @@ function Api(manager, app){
             return;
         }
 
-
-        request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=0&key=${appid}&sign=${appcert}&channelname=${channel}`, function (err, response, body) {
-            res.json({key: body})
-        });
+        // var authTs = new Date().getTime() + 60*5;
+        var authTs = Math.floor(new Date() / 1000) + 60*5
+        // var expiredTs = new Date().getTime() + 3600 * 24;
+        var key = keygen(appid, appcert, channel, authTs, Math.floor(Math.random() * 0xFFFFFFFF), 0, 0);
+        res.json({key: key});
     });
 
     app.get("/v1/list", function(req, res){
