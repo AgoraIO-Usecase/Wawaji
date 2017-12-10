@@ -36,13 +36,17 @@ $(document).ready(function () {
     var namespace = getParameterByName("namespace") || "";
     var appid = Vault.appid, appcert = Vault.appcert;
     var wawaji_control_center = namespace + Vault.cc_server;
-    var debug = true;
+    var debug = getParameterByName("debug") === "true";
     var loading = true;
+    var startTime = new Date().getTime();
     var dbg = function () {
         if (debug) {
             var x = [];
             for (var i in arguments) x.push(arguments[i]);
-            console.log.apply(null, ['Agora sig client dbg :'].concat(x));
+            var msg = [(new Date().getTime() - startTime) + "ms: "].concat(x);
+            console.log.apply(null, msg);
+            $(".logs").show();
+            $("<li>" + msg + "</li>").appendTo(".logs");
         }
     };
     var randName = function (length) {
@@ -60,7 +64,7 @@ $(document).ready(function () {
         location.href = "index.html";
     }
 
-
+    dbg("document loaded");
 
     var getKey = function (machine) {
         var deferred = $.Deferred();
@@ -76,6 +80,7 @@ $(document).ready(function () {
                     channel: machine.channel
                 }
             }).done(function (key) {
+                dbg("get key success")
                 deferred.resolve(key.key);
             });
         }
@@ -95,6 +100,7 @@ $(document).ready(function () {
                 cname: machine.channel
             })
         }).done(function(domains){
+            dbg("get gateway success")
             deferred.resolve(domains);
         }).fail(function(){
             deferred.reject();  
@@ -121,6 +127,7 @@ $(document).ready(function () {
                         key: key
                     }
                 }).done(function (video_info) {
+                    dbg("get video info success")
                     cb(video_info);
                 }).fail(function (e) {
                     console.log("err: failed to get machine info");
@@ -139,7 +146,7 @@ $(document).ready(function () {
         this.game = null;
         this.session = this.signal.login(account, SignalingToken.get(appid, appcert, account, 1));
         this.session.onLoginSuccess = function (uid) {
-            dbg("login successful account:" + lobby.account + " uid: " + uid);
+            dbg("signal login successful account:" + lobby.account + " uid: " + uid);
             lobby.uid = uid;
 
             cb && cb();
@@ -147,7 +154,7 @@ $(document).ready(function () {
 
         //if fail
         this.session.onLoginFailed = function () {
-            dbg("login failed ");
+            // dbg("login failed ");
         };
 
         this.session.onMessageInstantReceive = function (account, uid, msg) {
@@ -181,7 +188,7 @@ $(document).ready(function () {
 
             this.channel = lobby.session.channelJoin(namespace + this.machine.room_name);
             this.channel.onChannelJoined = function () {
-                dbg("connected to " + game.machine.name + "  successfully");
+                dbg("Enter room " + game.machine.name + "");
             };
 
             this.channel.onChannelJoinFailed = function (ecode) {
@@ -320,6 +327,7 @@ $(document).ready(function () {
 
                 var canvas = document.getElementById('jsmpeg-player');
                 var canvas2 = document.getElementById('jsmpeg-player2');
+                dbg("setup jsmpeg player..")
                 player.player1 = new JSMpeg.Player(player.cameras.main, {
                     canvas: canvas,
                     audio: false,
@@ -327,6 +335,7 @@ $(document).ready(function () {
                     decodeFirstFrame: true,
                     agora_id: 1,
                     onStartDecoding: function(){
+                        dbg("play start.")
                         loading = false;
                         updateViews();
                     }
@@ -497,7 +506,6 @@ $(document).ready(function () {
                         $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
                     }
                 }
-    
             }
         }
 

@@ -315,6 +315,7 @@ h2{
 
 .banner-container .users{
     display: inline-block;
+    margin: 0 -15px;
 }
 
 .banner-container .users>img{
@@ -388,4 +389,14 @@ h2{
 
 .loading img{
     width: 44px;
+}
+
+.logs{
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    z-index: 999;
+    background: white;
+    padding: 0;
+    overflow: scroll;
 }
