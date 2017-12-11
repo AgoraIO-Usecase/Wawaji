@@ -337,7 +337,7 @@ $(function () {
                     agora_id: 1,
                     onStartDecoding: function () {
                         dbg("play start.")
-                        var width = $(document).innerWidth(), height = $(document).innerHeight();
+                        var width = $(".wrapper").width();
                         var video_width = parseFloat($("#jsmpeg-player").attr("width"));
                         var video_height = parseFloat($("#jsmpeg-player").attr("height"));
 
