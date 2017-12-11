@@ -6,10 +6,10 @@ $(function () {
         if (debug) {
             var x = [];
             for (var i in arguments) x.push(arguments[i]);
-            console.log.apply(null, ['Agora sig client dbg :'].concat(x));
+            console.log(x.join(","));
         }
     };
-    var getParameterByName = (name, url) => {
+    var getParameterByName = function(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),

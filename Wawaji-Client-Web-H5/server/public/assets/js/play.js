@@ -1,8 +1,7 @@
-var images = new Array()
-function preload() {
-    for (i = 0; i < preload.arguments.length; i++) {
-        images[i] = new Image()
-        images[i].src = preload.arguments[i]
+function preload(items) {
+    for (i = 0; i < items.length; i++) {
+        var img = new Image()
+        img.src = items[i]
     }
 }
 preload(
@@ -15,16 +14,16 @@ preload(
     "/assets/images/right.png",
     "/assets/images/right_down.png",
     "/assets/images/catcher.png",
-    "/assets/images/catcher_down.png",
+    "/assets/images/catcher_down.png"
 )
 
-$(document).ready(function () {
+$(function () {
     window.oncontextmenu = function (event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
     };
-    var getParameterByName = (name, url) => {
+    var getParameterByName = function(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -44,7 +43,7 @@ $(document).ready(function () {
             var x = [];
             for (var i in arguments) x.push(arguments[i]);
             var msg = [(new Date().getTime() - startTime) + "ms: "].concat(x);
-            console.log.apply(null, msg);
+            console.log(msg.join(":"));
             $(".logs").show();
             $("<li>" + msg + "</li>").appendTo(".logs");
         }
