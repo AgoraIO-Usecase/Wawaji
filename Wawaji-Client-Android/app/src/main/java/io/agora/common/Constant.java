@@ -19,7 +19,7 @@ public class Constant {
     public static final String LEYAOYAO_SERVER_URL = "leyaoyao server url";
     public static final String LEYAOYAO_APP_ID     = "leyaoyao app id";
     public static final String LEYAOYAO_BINDING    = "leyaoyao binding";
-    public static boolean BEFIRSTWAWAJI            = true;
+    public static final DOLLMARKER DOLL_MARKER     = DOLLMARKER.LEIDI;
 
     public static final int Wawaji_CAM_MAIN = 1;
     public static final int Wawaji_CAM_SECONDARY = 2;
@@ -35,9 +35,17 @@ public class Constant {
     public static final int Wawaji_Ctrl_RIGHT_S = 9;
     public static final int Wawaji_Ctrl_CATCH = 10;
     public static final int Wawaji_Ctrl_CATCH_S = 11;
+    public static final int Wawaji_Ctrl_ENTER = 12;
+    public static final int Wawaji_Ctrl_LEAVE = 13;
 
     public static final int Wawaji_Msg_TIMEOUT = 1;
     public static final int Wawaji_Msg_RESULT = 2;
     public static final int Wawaji_Msg_FORCED_LOGOUT = 3;
     public static final int Wawaji_Msg_STARTCATCH= 4;
+
+    public enum DOLLMARKER{
+        LEYAOYAO,
+        LEIDI
+    }
+
 }

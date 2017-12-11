@@ -39,6 +39,7 @@ public static final String LEYAOYAO_BINDING    = "leyaoyao binding";
 public static boolean BEFIRSTWAWAJI            = true;
 
 private int leyaoyaoRoomid = leyaoyao room id
+private String roomId = "leidi roomname";
 
 ```
 

@@ -90,6 +90,12 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         TextView textRoomName = (TextView) findViewById(R.id.room_name);
         textRoomName.setText(roomName);
 
+        if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+            worker().getWebSocket();
+            worker().ctrlWawaji(Constant.Wawaji_Ctrl_ENTER);
+
+        }
+
     }
 
     private void doConfigEngine(int cRole) {
@@ -111,6 +117,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     private void doLeaveChannel() {
         worker().leaveChannel(config().mChannel);
+        worker().ctrlWawaji(Constant.Wawaji_Ctrl_LEAVE);
         worker().closeWebsocket();
 
     }
@@ -125,6 +132,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     private void doRenderRemoteUi(final int uid) {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -214,8 +222,14 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         switch (msg) {
             case Constant.Wawaji_Msg_TIMEOUT:
                 intv = (Integer) data[0];
-                startBtnCanbeClick = true;
-                startBtnControlWawaji = false;
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    startBtnCanbeClick = true;
+                    startBtnControlWawaji = false;
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    finish();
+                }
                 break;
             case Constant.Wawaji_Msg_RESULT:
                 boolv = (Boolean) data[0];
@@ -224,14 +238,30 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                 } else {
                     showShortToast("Sorry oops");
                 }
-                worker().closeWebsocket();
-                startBtnCanbeClick = true;
-                startBtnControlWawaji = false;
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    worker().closeWebsocket();
+                    startBtnCanbeClick = true;
+                    startBtnControlWawaji = false;
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    startBtnCanbeClick = true;
+                    startBtnControlWawaji = false;
+                }
+
                 break;
             case Constant.Wawaji_Msg_FORCED_LOGOUT:
                 showShortToast("Forced logout by others " + data[0]);
-                startBtnCanbeClick = true;
-                startBtnControlWawaji = false;
+
+
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    startBtnCanbeClick = true;
+                    startBtnControlWawaji = false;
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    finish();
+                }
                 break;
             case Constant.Wawaji_Msg_STARTCATCH:
                 showShortToast("Start catch wawa");
@@ -242,7 +272,13 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     public void onStartBtnClicked(View view) {
         if (startBtnCanbeClick) {
-            getWebSocket();
+            if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                getWebSocket();
+
+            } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                worker().ctrlWawaji(Constant.Wawaji_Ctrl_START);
+            }
+
         }
 
     }
@@ -378,7 +414,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     }
 
     private void getWebSocket() {
-        if (Constant.BEFIRSTWAWAJI) {
+        if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
             worker().prepareWawaji();
             startBtnCanbeClick = false;
             new Thread() {
