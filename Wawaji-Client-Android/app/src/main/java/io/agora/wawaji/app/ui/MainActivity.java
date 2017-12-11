@@ -35,9 +35,11 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Constant.BEFIRSTWAWAJI) {
+        if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
             createLeyaoyaoUser();
             getLeyaoyaoRoomlist();
+        } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
         }
 
     }

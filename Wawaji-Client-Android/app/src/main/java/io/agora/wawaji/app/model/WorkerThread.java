@@ -50,6 +50,9 @@ public class WorkerThread extends Thread {
 
     private static final int ACTION_WORKER_WAWAJI_WEBSOCKET = 0X2017;
 
+    private long mControlTime;
+    private String roomId = "leidi roomname";
+
     private static final class WorkerThreadHandler extends Handler {
 
         private WorkerThread mWorkerThread;
@@ -263,25 +266,78 @@ public class WorkerThread extends Thread {
             public void onMessage(String message) {
                 log.debug("onMessage " + message);
 
-                JsonParser parser = new JsonParser();
-                JsonElement jElem = parser.parse(message);
-                JsonObject obj = jElem.getAsJsonObject();
-                jElem = obj.get("type");
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    JsonParser parser = new JsonParser();
+                    JsonElement jElem = parser.parse(message);
+                    JsonObject obj = jElem.getAsJsonObject();
+                    jElem = obj.get("type");
 
-                String type = jElem.getAsString();
-                if ("Ready".equals(type)) {
-                    mReadyLatch.countDown();
-                } else if ("Time".equals(type)) {
+                    String type = jElem.getAsString();
+
+                    if ("Ready".equals(type)) {
+                        mReadyLatch.countDown();
+                    } else if ("Time".equals(type)) {
+                        jElem = obj.get("data");
+                        int timeout = jElem.getAsInt();
+                        WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_TIMEOUT, timeout);
+                    } else if ("Result".equals(type)) {
+                        jElem = obj.get("data");
+                        boolean gotone = jElem.getAsBoolean();
+                        WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, gotone);
+                    } else if ("Coin".equals(type)) {
+                        WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_STARTCATCH);
+                    }
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                    JsonParser parser = new JsonParser();
+                    JsonElement jElem = parser.parse(message);
+                    JsonObject obj = jElem.getAsJsonObject();
+                    JsonElement jsonElementId = obj.get("id");
                     jElem = obj.get("data");
-                    int timeout = jElem.getAsInt();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_TIMEOUT, timeout);
-                } else if ("Result".equals(type)) {
-                    jElem = obj.get("data");
-                    boolean gotone = jElem.getAsBoolean();
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, gotone);
-                }  else if ("Coin".equals(type)) {
-                    WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_STARTCATCH);
+                    JsonObject objdata = jElem.getAsJsonObject();
+
+                    if (jsonElementId != null && !jsonElementId.isJsonNull()) {
+                        String id = jsonElementId.getAsString();
+                        log.debug("onMessage id : " + id);
+
+                        if (id.equals("" + mControlTime)) {
+
+
+                            jElem = objdata.get("ret");
+
+                            if (jElem != null && !jElem.isJsonNull()) {
+                                int ret = jElem.getAsInt();
+                                log.debug("onMessage ret : " + ret);
+                                if (ret == 1) {
+                                    jElem = objdata.get("start");
+
+                                    if (jElem != null && !jElem.isJsonNull()) {
+                                        ret = jElem.getAsInt();
+                                        log.debug("onMessage start ret : " + ret);
+                                        if (ret == 1) {
+                                            WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_STARTCATCH);
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    } else {
+                        jElem = objdata.get("result");
+
+                        if (jElem != null && !jElem.isJsonNull()) {
+                            int result = jElem.getAsInt();
+                            log.debug("onMessage result : " + result);
+                            if (result == 1) {
+                                WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, true);
+                            } else {
+                                WorkerThread.this.mEngineEventHandler.notifyAppLayer(Constant.Wawaji_Msg_RESULT, false);
+                            }
+                        }
+                    }
+
+
                 }
+
             }
 
             @Override
@@ -306,8 +362,8 @@ public class WorkerThread extends Thread {
 
     }
 
-    public void closeWebsocket(){
-        if (mWawajiCtrl != null && mWawajiCtrl.isOpen()){
+    public void closeWebsocket() {
+        if (mWawajiCtrl != null && mWawajiCtrl.isOpen()) {
             mWawajiCtrl.close();
             mWawajiCtrl = null;
         }
@@ -323,76 +379,122 @@ public class WorkerThread extends Thread {
             return;
         }
 
-        if (mReadyLatch.getCount() > 0) {
-            try {
-                mReadyLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        if (mWawajiCtrl == null) {
+            log.error("ctrlWawaji() - worker thread asynchronously mWawajiCtrl == null ");
+            return;
+        }
+        if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+            if (mReadyLatch.getCount() > 0) {
+                try {
+                    mReadyLatch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        mControlTime = new Date().getTime();
 
         switch (ctrl) {
+            case Wawaji_Ctrl_ENTER:
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                    mWawajiCtrl.send(" { \"data\" : {\"token\" : \"no_token\"}, \"uri\" : \"/rooms/" + roomId + "/enter\",\"type\" : \"post\", \"id\":" + mControlTime + "}");
+                }
+                break;
+            case Wawaji_Ctrl_LEAVE:
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                    mWawajiCtrl.send("{ \"uri\" : \"/rooms/" + roomId + "/move/back\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
+                }
+                break;
             case Wawaji_Ctrl_START:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":null,\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Insert\",\"data\":null,\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{ \"uri\" : \"/rooms/" + roomId + "/start\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_UP:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"u\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"u\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{\"data\" : {\"time\" : 2000}, \"uri\" : \"/rooms/" + roomId + "/move/back\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
+
                 }
                 break;
             case Wawaji_Ctrl_UP_S:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"W\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"W\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{\"uri\" : \"/rooms/" + roomId + "/stop\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_DOWN:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"d\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"d\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{ \"data\" : {\"time\" : 2000},\"uri\" : \"/rooms/" + roomId + "/move/front\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_DOWN_S:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"S\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"S\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{\"uri\" : \"/rooms/" + roomId + "/stop\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_LEFT:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"l\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"l\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{ \"data\" : {\"time\" : 2000},\"uri\" : \"/rooms/" + roomId + "/move/left\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_LEFT_S:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"A\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"A\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{ \"uri\" : \"/rooms/" + roomId + "/stop\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_RIGHT:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"r\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":\"r\"}");
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"r\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+
+                    mWawajiCtrl.send("{\"data\" : {\"time\" : 2000}, \"uri\" : \"/rooms/" + roomId + "/move/right\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_RIGHT_S:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"D\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"D\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                    mWawajiCtrl.send("{ \"uri\" : \"/rooms/" + roomId + "/stop\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
                 }
                 break;
             case Wawaji_Ctrl_CATCH:
-                if (BEFIRSTWAWAJI){
-                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"b\"},\"extra\":"+ new Date().getTime()+"}");
-                }else {
-                }
 
+                if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
+                    mWawajiCtrl.send("{\"type\":\"Control\",\"data\":{\"direction\":\"b\"},\"extra\":" + mControlTime + "}");
+
+                } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
+                    mWawajiCtrl.send("{ \"uri\" : \"/rooms/" + roomId + "/catch\", \"type\" : \"post\",\"id\":" + mControlTime + "}");
+                }
                 break;
             default:
                 log.warn("Unknown ctrl " + ctrl);
