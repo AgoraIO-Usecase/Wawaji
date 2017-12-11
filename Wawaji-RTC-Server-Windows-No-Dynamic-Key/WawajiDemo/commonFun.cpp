@@ -5,52 +5,7 @@
 #pragma comment(lib,"Ws2_32.lib")
 #include <vector>
 #include "commonFun.h"
-#include "InfoManager.h"
-
-void add_json_member_string(Value& root, const char* member_name, const std::string& value, Document::AllocatorType& allocator)
-{
-	Value json_member(kStringType);
-	json_member.SetString(value.c_str(), value.size(), allocator);
-
-	root.AddMember(member_name, json_member, allocator);
-}
-
-void add_json_member_int(Value& root, const char* member_name, const int& value, Document::AllocatorType& allocator)
-{
-	Value json_member(kNumberType);
-	json_member.SetInt(value);
-
-	root.AddMember(member_name, json_member, allocator);
-}
-
-std::string get_json_content_string(Value& root)
-{
-	StringBuffer buffer;
-	Writer<StringBuffer> writer(buffer);
-	root.Accept(writer);
-
-	return buffer.GetString();
-}
-
-std::string get_json_content_stylestring(Value& root)
-{
-	return get_json_content_string(root);
-
-	StringBuffer buffer;
-	PrettyWriter<StringBuffer> writer(buffer);
-	root.Accept(writer);
-
-	return buffer.GetString();
-}
-
-std::string get_document_content_stylestring(Document &document)
-{
-	StringBuffer buffer;
-	PrettyWriter<StringBuffer> writer(buffer);
-	document.Accept(writer);
-
-	return buffer.GetString();
-}
+#include <time.h>
 
 std::string getAbsoluteDir()
 {
@@ -191,6 +146,15 @@ std::string utf82gbk(const std::string &utf8)
 	return utf82gbk(utf8.c_str());
 }
 
+std::string getTime()
+{
+	SYSTEMTIME st = { 0 };
+	GetLocalTime(&st);
+	CString timeStr;
+	timeStr.Format(_T("%d%02d%02d-%02d%02d%02d"),st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wSecond);
+	return cs2s(timeStr);
+}
+
 DWORD getProcessID(const std::string &processName)
 {
 	HANDLE hProcessSnap = INVALID_HANDLE_VALUE;
@@ -296,49 +260,21 @@ int getProcessIdMutil(const std::string &processName)
 	return vecProcessid.size();
 }
 
-std::string getCurSection()
-{
-	std::string section;
-	enumCameraType cameraType = getInfoManager()->getCameraType();
-	switch (cameraType)
-	{
-	case Type_Front:section = INI_DeviceInfoFront; break;
-	case Type_Back:section = INI_DeviceInfoBack; break;
-	default:break;
-	}
-
-	return section;
-}
-
-std::string getOtherSection()
-{
-	std::string section;
-	enumCameraType cameraType = getInfoManager()->getCameraType();
-	switch (cameraType)
-	{
-	case Type_Front:section = INI_DeviceInfoBack; break;
-	case Type_Back:section = INI_DeviceInfoFront; break;
-	default:break;
-	}
-
-	return section;
-}
-
 bool registerRun()
 {
-	//写入注册表，开机自启动  
+	//写入注册表，开机自启动 
 	HKEY hKey;
 
 	//找到系统的启动项  
 
 	DWORD dwDisposition;
 
-	//打开启动项Key  
-	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE, &hKey);
+	//打开启动项Key
+	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_ALL_ACCESS, &hKey);
 
 	if (lRet == ERROR_SUCCESS)
 	{
-		CString currRunPath = s2cs(getPirorDir(getFilePath()) + "start.bat");
+		CString currRunPath = s2cs(getPirorDir(getFilePath()));
 		//添加一个子key，并设置值  
 		lRet = RegSetValueEx(hKey, _T("AgoraWawajiDemo"), 0, REG_SZ, (const unsigned char*)currRunPath.GetBuffer(), (DWORD)(currRunPath.GetLength() * 2));
 		currRunPath.ReleaseBuffer();
@@ -347,4 +283,6 @@ bool registerRun()
 		RegCloseKey(hKey);
 		return TRUE;
 	}
+
+	return TRUE;
 }

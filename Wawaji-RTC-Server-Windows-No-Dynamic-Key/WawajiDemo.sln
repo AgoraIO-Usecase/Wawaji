@@ -11,10 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChineseSimplified", "Langua
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WawajiDemo", "WawajiDemo\WawajiDemo.vcxproj", "{26AF88DC-1933-4A1B-9991-21DF11DCE388}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C9391C9-0F9E-4F50-890A-EDA954372C0B}"
-	ProjectSection(SolutionItems) = preProject
-		Debug\start.bat = Debug\start.bat
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WawajiRunner", "WawajiRunner\WawajiRunner.vcxproj", "{8AB73081-5CBF-440C-904C-3CA6D9113B89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +31,10 @@ Global
 		{26AF88DC-1933-4A1B-9991-21DF11DCE388}.Debug|Win32.Build.0 = Debug|Win32
 		{26AF88DC-1933-4A1B-9991-21DF11DCE388}.Release|Win32.ActiveCfg = Release|Win32
 		{26AF88DC-1933-4A1B-9991-21DF11DCE388}.Release|Win32.Build.0 = Release|Win32
+		{8AB73081-5CBF-440C-904C-3CA6D9113B89}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8AB73081-5CBF-440C-904C-3CA6D9113B89}.Debug|Win32.Build.0 = Debug|Win32
+		{8AB73081-5CBF-440C-904C-3CA6D9113B89}.Release|Win32.ActiveCfg = Release|Win32
+		{8AB73081-5CBF-440C-904C-3CA6D9113B89}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

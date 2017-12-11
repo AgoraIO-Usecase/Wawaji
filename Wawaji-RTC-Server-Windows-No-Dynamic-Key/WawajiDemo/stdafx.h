@@ -48,7 +48,7 @@
 
 #include <IAgoraRtcEngine.h>
 #include <IAgoraMediaEngine.h>
-#pragma comment(lib, "agorartc.lib")
+#pragma comment(lib, "agora_rtc_sdk.lib")
 using namespace agora::util;
 using namespace agora::media;
 

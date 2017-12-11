@@ -312,14 +312,14 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	m_ctrChannel.GetWindowText(param);
 	getInfoManager()->getConfig()->setChannelName(cs2s(param));
 	
-	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
-	if (res){
-		getInfoManager()->setCameraType(Type_Front);
-	}
-	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
-	if (res){
-		getInfoManager()->setCameraType(Type_Back);
-	}
+//	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
+// 	if (res){
+// 		getInfoManager()->setCameraType(Type_Front);
+// 	}
+// 	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
+// 	if (res){
+// 		getInfoManager()->setCameraType(Type_Back);
+// 	}
 
 	if (!m_dlgDevice.DeviceInfoCheck()){
 		OnBnClickedBtntestChannel();
@@ -403,20 +403,23 @@ void CEnterChannelDlg::OnBnClickedCheckFront()
 	((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(!res);
 	
 	if (res){
-		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoFront)){
+		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoFront)){
 			AfxMessageBox(_T("前置摄像头对应进程已经启动..."));
 			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(FALSE);
 			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(TRUE);
+			return;
 		}
 	}
 	else{
-		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoBack)){
 			AfxMessageBox(_T("后置摄像头对应进程已经启动.."));
 			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
 			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+			return;
 		}
 	}	
 
+	getInfoManager()->setCameraType((res ? Type_Front : Type_Back));
 	res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
 	std::string loginUid = getInfoManager()->getConfig()->getLoginUid((res?INI_DeviceInfoFront:INI_DeviceInfoBack));
 	m_ctrUid.SetWindowTextW(s2cs(loginUid));
@@ -429,20 +432,23 @@ void CEnterChannelDlg::OnBnClickedCheckBack()
 	((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(!res);
 	
 	if (res){
-		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoBack)){
 			AfxMessageBox(_T("后置摄像头对应进程已经启动..."));
 			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
 			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
+			return;
 		}
 	}
 	else{
-		if ("1" == getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack)){
+		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoBack)){
 			AfxMessageBox(_T("前置摄像头对应进程已经启动.."));
 			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
 			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+			return;
 		}
 	}
 
+	getInfoManager()->setCameraType((res ? Type_Back : Type_Front));
 	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
 	std::string loginUid = getInfoManager()->getConfig()->getLoginUid((res?INI_DeviceInfoBack:INI_DeviceInfoFront));
 	m_ctrUid.SetWindowTextW(s2cs(loginUid));

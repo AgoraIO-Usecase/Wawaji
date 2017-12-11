@@ -2,8 +2,8 @@
 
 #include <atlcoll.h>
 #include <IAgoraRtcEngine.h>
-#include <IAgoraRtcEngineEx.h>
 #include <IAgoraMediaEngine.h>
+#include <IAgoraRtcEngine2.h>
 
 #include "AGEngineEventHandler.h"
 #include "AGEventDef.h"

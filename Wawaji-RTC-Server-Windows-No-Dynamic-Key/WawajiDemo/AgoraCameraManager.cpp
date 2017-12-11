@@ -59,7 +59,7 @@ CString CAgoraCameraManager::GetCurDeviceID()
 	CHAR		szDeviceID[MAX_DEVICE_ID_LENGTH];
 
 	memset(szDeviceID, 0x00, MAX_DEVICE_ID_LENGTH);
-	if (m_ptrDeviceManager != NULL && *m_ptrDeviceManager != NULL)
+	if (m_ptrDeviceManager != NULL &&  m_lpCollection != NULL)
 		(*m_ptrDeviceManager)->getDevice(szDeviceID);
 
 #ifdef UNICODE
@@ -104,7 +104,7 @@ BOOL CAgoraCameraManager::GetDevice(UINT nIndex, CString &rDeviceName, CString &
 
 BOOL CAgoraCameraManager::SetCurDevice(LPCTSTR lpDeviceID)
 {
-	if (m_ptrDeviceManager == NULL || *m_ptrDeviceManager == NULL)
+	if (m_ptrDeviceManager == NULL || *m_ptrDeviceManager == NULL || nullptr == m_lpCollection)
 		return FALSE;
 
 #ifdef UNICODE
@@ -120,7 +120,7 @@ BOOL CAgoraCameraManager::SetCurDevice(LPCTSTR lpDeviceID)
 
 void CAgoraCameraManager::TestCameraDevice(HWND hVideoWnd, BOOL bTestOn)
 {
-	if (m_ptrDeviceManager == NULL)
+	if (m_ptrDeviceManager == NULL || nullptr == m_lpCollection)
 		return;
 
 	if (bTestOn && !m_bTestingOn) {

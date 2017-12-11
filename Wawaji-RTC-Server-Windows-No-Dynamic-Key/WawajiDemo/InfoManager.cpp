@@ -2,11 +2,58 @@
 #include "InfoManager.h"
 #include "commonFun.h"
 
+
+void add_json_member_string(Value& root, const char* member_name, const std::string& value, Document::AllocatorType& allocator)
+{
+	Value json_member(kStringType);
+	json_member.SetString(value.c_str(), value.size(), allocator);
+
+	root.AddMember(member_name, json_member, allocator);
+}
+
+void add_json_member_int(Value& root, const char* member_name, const int& value, Document::AllocatorType& allocator)
+{
+	Value json_member(kNumberType);
+	json_member.SetInt(value);
+
+	root.AddMember(member_name, json_member, allocator);
+}
+
+std::string get_json_content_string(Value& root)
+{
+	StringBuffer buffer;
+	Writer<StringBuffer> writer(buffer);
+	root.Accept(writer);
+
+	return buffer.GetString();
+}
+
+std::string get_json_content_stylestring(Value& root)
+{
+	return get_json_content_string(root);
+
+	StringBuffer buffer;
+	PrettyWriter<StringBuffer> writer(buffer);
+	root.Accept(writer);
+
+	return buffer.GetString();
+}
+
+std::string get_document_content_stylestring(Document &document)
+{
+	StringBuffer buffer;
+	PrettyWriter<StringBuffer> writer(buffer);
+	document.Accept(writer);
+
+	return buffer.GetString();
+}
+
+
 CInfoManager::CInfoManager():
 m_ProcessType(Type_NULL)
 {
 	m_batFile = (getPirorDir(getFilePath()) + "start.bat");
-	m_curProcessName = getCurRunningExeName()/*"WawajiDemo.exe"*/;//
+	m_curProcessName = getCurRunningExeName();
 	int processNum = getProcessIdMutil(m_curProcessName);
 	//processNum += 1;
 	if (2 < processNum){
@@ -18,9 +65,21 @@ m_ProcessType(Type_NULL)
 	bool frontStatus = str2int(getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoFront));
 	bool backStatus = str2int(getInfoManager()->getConfig()->getDeviceState(INI_DeviceInfoBack));
 	if (frontStatus && backStatus){
-		//AfxMessageBox(_T("配置文件异常,需要手动手动清除DeviceState选项.或者重启所有程序."));
+		//AfxMessageBox(_T("配置文件异常,需要手动清除DeviceState选项.或者重启所有程序."));
 		m_IniConfig.setDeviceState(INI_DeviceInfoFront, "0");
 		m_IniConfig.setDeviceState(INI_DeviceInfoBack, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
+		PostQuitMessage(0);
+		return;
+	}
+
+	bool otherChoosefront = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoFront));
+	bool otherChooseback = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoBack));
+	if (otherChooseback&&otherChoosefront){
+		//AfxMessageBox(_T("配置文件异常,需要手动清除DeviceChoose选项.或者重启所有程序."));
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
 		PostQuitMessage(0);
 		return;
 	}
@@ -28,26 +87,19 @@ m_ProcessType(Type_NULL)
 	if (1== processNum){
 		m_ProcessType = getProcessID(m_curProcessName) > 0 ? Type_Front : Type_Back;
 		m_IniConfig.setDeviceState(INI_DeviceInfoFront, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
 	}
 	else if (2== processNum){
 		if (frontStatus && !backStatus){
 			m_ProcessType = Type_Back;
 			m_IniConfig.setDeviceState(INI_DeviceInfoBack, "0");
+			m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
 		}
 		else if (backStatus && !frontStatus){
 			m_ProcessType = Type_Front;
 			m_IniConfig.setDeviceState(INI_DeviceInfoFront, "0");
+			m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
 		}
-	}
-
-	bool otherChoosefront = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoFront));
-	bool otherChooseback = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoBack));
-	if (otherChooseback&&otherChoosefront){
-		//AfxMessageBox(_T("配置文件异常,需要手动手动清除DeviceChoose选项.或者重启所有程序."));
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
-		PostQuitMessage(0);
-		return;
 	}
 
 	//backup
@@ -60,24 +112,27 @@ m_ProcessType(Type_NULL)
 	else if (Type_NULL == m_ProcessType){
 		}
 
-	if (otherChoosefront){
-		m_ProcessType = Type_Back;
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "1");
-	}
-	else if (otherChooseback){
-		m_ProcessType = Type_Front;
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
-	}
+// 	if (otherChoosefront){
+// 		m_ProcessType = Type_Back;
+// 		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "1");
+// 	}
+// 	else if (otherChooseback){
+// 		m_ProcessType = Type_Front;
+// 		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
+// 	}
+
+	otherChoosefront = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoFront));
+	otherChooseback = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoBack));
 
 	if (Type_Front == m_ProcessType){
 	
 		m_curSection = INI_DeviceInfoFront;
-		m_sdkLogPath = getAbsoluteDir() + "SdkFront.log";
+		m_sdkLogPath = getAbsoluteDir() + getTime() + "_SdkFront.log";
 	}
 	else if (Type_Back == m_ProcessType){
 
 		m_curSection = INI_DeviceInfoBack;
-		m_sdkLogPath = getAbsoluteDir() + "SdkBack.log";
+		m_sdkLogPath = getAbsoluteDir() + getTime() + "_SdkBack.log";
 	}
 
 	std::string cameraFrontComId = m_IniConfig.getCameraComID(INI_DeviceInfoFront);
@@ -97,6 +152,9 @@ void CInfoManager::setCameraType(enumCameraType cameratype)
 {
 	m_ProcessType = cameratype;
 	setStateInfo();
+	m_IniConfig.setDeviceChoose(getOtherSection(), "0");
+	m_IniConfig.setDeviceChoose(getCurSection(), "1");
+	m_IniConfig.setDeviceState(getCurSection(), "0");
 }
 
 void CInfoManager::setStateInfo()
@@ -112,4 +170,32 @@ void CInfoManager::setStateInfo()
 		m_sdkLogPath = getAbsoluteDir() + "SdkBack.log";
 	}
 
+}
+
+std::string getCurSection()
+{
+	std::string section;
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	switch (cameraType)
+	{
+	case Type_Front:section = INI_DeviceInfoFront; break;
+	case Type_Back:section = INI_DeviceInfoBack; break;
+	default:break;
+	}
+
+	return section;
+}
+
+std::string getOtherSection()
+{
+	std::string section;
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	switch (cameraType)
+	{
+	case Type_Front:section = INI_DeviceInfoBack; break;
+	case Type_Back:section = INI_DeviceInfoFront; break;
+	default:break;
+	}
+
+	return section;
 }

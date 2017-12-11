@@ -50,6 +50,7 @@ UINT CAgoraPlayoutManager::GetVolume()
 {
 	int nVol = 0;
 
+	if (NULL != m_ptrDeviceManager && NULL != *m_ptrDeviceManager)
 	(*m_ptrDeviceManager)->getPlaybackDeviceVolume(&nVol);
 
 	return (UINT)nVol;
@@ -57,6 +58,9 @@ UINT CAgoraPlayoutManager::GetVolume()
 
 BOOL CAgoraPlayoutManager::SetVolume(UINT nVol)
 {
+	int nRet = 0;
+
+	if (NULL != m_ptrDeviceManager && NULL != *m_ptrDeviceManager)
 	int nRet = (*m_ptrDeviceManager)->setPlaybackDeviceVolume((int)nVol);
 
 	return nRet == 0 ? TRUE : FALSE;
@@ -64,7 +68,10 @@ BOOL CAgoraPlayoutManager::SetVolume(UINT nVol)
 
 UINT CAgoraPlayoutManager::GetDeviceCount()
 {
+	if (NULL != m_ptrDeviceManager && NULL != *m_ptrDeviceManager)
 	return (UINT)m_lpCollection->getCount();
+	
+	return UINT(0);
 }
 
 BOOL CAgoraPlayoutManager::GetDevice(UINT nIndex, CString &rDeviceName, CString &rDeviceID)
@@ -74,6 +81,9 @@ BOOL CAgoraPlayoutManager::GetDevice(UINT nIndex, CString &rDeviceName, CString 
 
 	ASSERT(nIndex < GetDeviceCount());
 	if (nIndex >= GetDeviceCount())
+		return FALSE;
+
+	if (nullptr == m_lpCollection)
 		return FALSE;
 
 	int nRet = m_lpCollection->getDevice(nIndex, szDeviceName, szDeviceID);
@@ -99,6 +109,7 @@ CString CAgoraPlayoutManager::GetCurDeviceID()
 	CString		str;
 	CHAR		szDeviceID[MAX_DEVICE_ID_LENGTH];
 	
+	if (NULL != m_ptrDeviceManager && NULL != *m_ptrDeviceManager && nullptr != m_lpCollection)
 	(*m_ptrDeviceManager)->getPlaybackDevice(szDeviceID);
 
 #ifdef UNICODE
@@ -115,6 +126,9 @@ BOOL CAgoraPlayoutManager::SetCurDevice(LPCTSTR lpDeviceID)
 {
 #ifdef UNICODE
 	CHAR szDeviceID[128];
+	if (NULL == m_ptrDeviceManager || NULL == *m_ptrDeviceManager)
+		return FALSE;
+
 	::WideCharToMultiByte(CP_ACP, 0, lpDeviceID, -1, szDeviceID, 128, NULL, NULL);
 	int nRet = (*m_ptrDeviceManager)->setPlaybackDevice(szDeviceID);
 #else
@@ -128,7 +142,7 @@ void CAgoraPlayoutManager::TestPlaybackDevice(UINT nWavID, BOOL bTestOn)
 {
 	TCHAR	szWavPath[MAX_PATH];
 
-	if (m_ptrDeviceManager == NULL)
+	if (NULL != m_ptrDeviceManager && *m_ptrDeviceManager == NULL || nullptr == m_ptrDeviceManager)
 		return;
 
 	::GetModuleFileName(NULL, szWavPath, MAX_PATH);
