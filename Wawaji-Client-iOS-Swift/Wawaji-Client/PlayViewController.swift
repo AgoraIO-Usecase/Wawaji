@@ -10,7 +10,7 @@ import UIKit
 import AgoraRtcEngineKit
 
 class PlayViewController: UIViewController {
-    let wawajiManufacturer = WawajiManufacturer.LeYaoYao
+    let wawajiManufacturer = WawajiManufacturer.LeiDi
     
     public var player : Bool!
     public var channel : String!

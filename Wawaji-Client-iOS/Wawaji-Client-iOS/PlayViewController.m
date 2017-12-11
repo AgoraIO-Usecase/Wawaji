@@ -12,7 +12,7 @@
 #import "WawajiControllerCreator.h"
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 
-static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeYaoYao;
+static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeiDi;
 
 @interface PlayViewController () <AgoraRtcEngineDelegate>
 {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7044E1B01FDE78530080CF05 /* LeidiWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7044E1AF1FDE78530080CF05 /* LeidiWawajiController.swift */; };
 		706EFAAE1FD174B50014278F /* WawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAD1FD174B50014278F /* WawajiController.swift */; };
 		706EFAB01FD178300014278F /* ZinianWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAF1FD178300014278F /* ZinianWawajiController.swift */; };
 		707336681FC53AEA005844ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707336671FC53AEA005844ED /* AppDelegate.swift */; };
@@ -31,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.release.xcconfig"; sourceTree = "<group>"; };
+		7044E1AF1FDE78530080CF05 /* LeidiWawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeidiWawajiController.swift; sourceTree = "<group>"; };
 		706EFAAD1FD174B50014278F /* WawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WawajiController.swift; sourceTree = "<group>"; };
 		706EFAAF1FD178300014278F /* ZinianWawajiController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZinianWawajiController.swift; sourceTree = "<group>"; };
 		707336641FC53AEA005844ED /* Wawaji-Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,6 +119,7 @@
 				706EFAAD1FD174B50014278F /* WawajiController.swift */,
 				709DC33A1FD25B1500DFBE68 /* WawajiControllerCreator.swift */,
 				709DC31C1FD17F2F00DFBE68 /* LeyaoyaoWawajiController.swift */,
+				7044E1AF1FDE78530080CF05 /* LeidiWawajiController.swift */,
 				706EFAAF1FD178300014278F /* ZinianWawajiController.swift */,
 				707336851FC54E37005844ED /* KeyCenter.swift */,
 				7073366B1FC53AEA005844ED /* Main.storyboard */,
@@ -290,6 +293,7 @@
 				7073367A1FC53C7C005844ED /* PlayViewController.swift in Sources */,
 				707336681FC53AEA005844ED /* AppDelegate.swift in Sources */,
 				706EFAAE1FD174B50014278F /* WawajiController.swift in Sources */,
+				7044E1B01FDE78530080CF05 /* LeidiWawajiController.swift in Sources */,
 				709DC33B1FD25B1500DFBE68 /* WawajiControllerCreator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

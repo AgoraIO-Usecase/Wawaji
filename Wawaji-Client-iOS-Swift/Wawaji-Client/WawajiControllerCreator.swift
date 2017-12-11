@@ -9,6 +9,7 @@
 import Foundation
 
  enum WawajiManufacturer {
+    case LeiDi
     case LeYaoYao
     case ZiNian
  }
@@ -17,6 +18,9 @@ import Foundation
 
     class func getWawajiController(manufacturer: WawajiManufacturer) ->WawajiController {
         switch manufacturer {
+        case .LeiDi:
+            return LeidiWawajiController()
+            
         case .LeYaoYao:
             return LeyaoyaoWawajiController()
 

@@ -270,6 +270,7 @@ static const int kRoomId = <#Leyaoyao Room ID#>; // you can get all available ro
 // MARK: - WebSocket
 
 - (void)connectWebSocket:(NSString *)urlString {
+    [self.webSocket close];
     self.webSocket.delegate = nil;
     self.webSocket = nil;
     
