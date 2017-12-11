@@ -4,7 +4,7 @@ function preload(items) {
         img.src = items[i]
     }
 }
-preload(
+preload([
     "/assets/images/up.png",
     "/assets/images/up_down.png",
     "/assets/images/left.png",
@@ -15,7 +15,7 @@ preload(
     "/assets/images/right_down.png",
     "/assets/images/catcher.png",
     "/assets/images/catcher_down.png"
-)
+])
 
 $(function () {
     window.oncontextmenu = function (event) {
@@ -23,7 +23,7 @@ $(function () {
         event.stopPropagation();
         return false;
     };
-    var getParameterByName = function(name, url) {
+    var getParameterByName = function (name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -98,11 +98,11 @@ $(function () {
                 key: machine.appid,
                 cname: machine.channel
             })
-        }).done(function(domains){
+        }).done(function (domains) {
             dbg("get gateway success")
             deferred.resolve(domains);
-        }).fail(function(){
-            deferred.reject();  
+        }).fail(function () {
+            deferred.reject();
         });
 
         return deferred.promise();
@@ -335,12 +335,20 @@ $(function () {
                     autoplay: false,
                     decodeFirstFrame: true,
                     agora_id: 1,
-                    onStartDecoding: function(){
+                    onStartDecoding: function () {
                         dbg("play start.")
+                        var width = $(document).innerWidth(), height = $(document).innerHeight();
+                        var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                        var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                        var scale = width / video_width;
+                        scale = scale > 1 ? 1 : scale;
+                        $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+                        $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
                         loading = false;
                         updateViews();
                     }
-                 });
+                });
                 player.player2 = new JSMpeg.Player(player.cameras.sub, { canvas: canvas2, audio: false, autoplay: false, decodeFirstFrame: true, agora_id: 2 });
                 player.play(player.camera, 0);
             }
@@ -366,7 +374,7 @@ $(function () {
             break;
         }
     }
-    $.when(lobby_prepare, meta_prepare).done(function(result, video_info){
+    $.when(lobby_prepare, meta_prepare).done(function (result, video_info) {
         lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
     });
 
@@ -459,7 +467,7 @@ $(function () {
     }
 
     function updateViews() {
-        if( loading ){
+        if (loading) {
             $(".loading").show();
         } else {
             $(".loading").hide();
@@ -471,7 +479,7 @@ $(function () {
                     //not yet in play
                     $(".controls-game").hide();
                     $(".controls").show();
-    
+
                     if (lobby.game.queue.length === 0 && !lobby.game.playing) {
                         //no people in queue, starts directly
                         $(".controls .main .content").text("开始游戏");
@@ -490,15 +498,15 @@ $(function () {
                         }
                         $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
                     }
-    
+
                 } else {
                     //playing
                     $(".controls-game").show();
                     $(".controls").hide();
                 }
-    
+
                 $(".banner-container .users").remove();
-    
+
                 if (lobby.game.playing) {
                     $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
                 }
@@ -510,6 +518,6 @@ $(function () {
             }
         }
 
-        
+
     }
 });
