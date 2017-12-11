@@ -7,6 +7,7 @@
 //
 
 #import "WawajiControllerCreator.h"
+#import "LeidiWawajiController.h"
 #import "LeyaoyaoWawajiController.h"
 #import "ZinianWawajiController.h"
 
@@ -16,6 +17,10 @@
     id<WawajiController> wawajiController;
     
     switch (manufacturer) {
+        case WawajiManufacturer_LeiDi:
+            wawajiController = [[LeidiWawajiController alloc] init];
+            break;
+            
         case WawajiManufacturer_LeYaoYao:
             wawajiController = [[LeyaoyaoWawajiController alloc] init];
             break;

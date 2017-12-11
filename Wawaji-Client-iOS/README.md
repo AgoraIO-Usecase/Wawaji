@@ -18,7 +18,21 @@
 NSString * const kAppID = @"Your App ID";
 ```
 
-本项目目前支持乐摇摇和和梓年两个厂家的娃娃机。默认连接乐摇摇娃娃机，请将乐摇摇 AppID 和房间号填写进 LeyaoyaoWawajiController.m。
+本项目目前支持雷迪、乐摇摇和和梓年三个厂家的娃娃机。默认连接雷迪娃娃机，请将雷迪娃娃机的控制 URL 和 RoomID 填写进 LeidiWawajiController.m。
+
+```
+static NSString * const kWebSocketUrl = @"Leidi Server Address";
+static const int kRoomId = Leidi Room ID;
+```
+
+
+如需连接乐摇摇娃娃机，请修改 PlayViewController.m 中 wawajiManufacturer 常量的值。
+
+```
+static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeYaoYao;
+```
+
+并将乐摇摇 AppID 和 RoomID 填写进 LeyaoyaoWawajiController.m。
 
 ```
 static NSString * const kLeyaoyaoServer = @"Leyaoyao Server Address";

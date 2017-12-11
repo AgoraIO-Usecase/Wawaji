@@ -317,9 +317,9 @@ extension LeyaoyaoWawajiController : SRWebSocketDelegate {
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
-        let string = message as! String
         print("webSocket:didReceiveMessage: \(message!)")
         
+        let string = message as! String
         let data = string.data(using: .utf8)
         let decoded = try! JSONSerialization.jsonObject(with: data!, options: [])
         let dic = decoded as! [String : Any]

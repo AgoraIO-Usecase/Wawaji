@@ -10,6 +10,7 @@
 #import "WawajiController.h"
 
 typedef NS_ENUM(NSInteger, WawajiManufacturer) {
+    WawajiManufacturer_LeiDi,
     WawajiManufacturer_LeYaoYao,
     WawajiManufacturer_ZiNian,
 };
