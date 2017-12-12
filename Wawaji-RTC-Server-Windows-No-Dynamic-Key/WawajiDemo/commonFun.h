@@ -7,6 +7,7 @@ std::string getFilePath();
 std::string getCurRunningExeName();
 std::string getFileAbsolutePath(const std::string &file);
 std::string getPirorDir(const std::string &file);
+std::string getPirorDirEx(const std::string &file);
 std::string getRootDir(const std::string &file);
 
 std::string int2str(int nNum);
@@ -25,6 +26,6 @@ DWORD getProcessID(const std::string &processName);
 void closeProcess(const std::string &processName);
 int getProcessIdMutil(const std::string &processName);
 void closeCurrentProcess();
-bool registerRun();
+bool registerStartUp();
 
 #endif

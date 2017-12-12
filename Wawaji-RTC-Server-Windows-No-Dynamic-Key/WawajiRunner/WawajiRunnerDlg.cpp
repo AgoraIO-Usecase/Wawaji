@@ -217,6 +217,8 @@ void CWawajiRunnerDlg::initExe()
 	GetDlgItem(IDC_EDIT_FRONT)->SetFocus();
 	GetDlgItem(IDC_EDIT_BACK)->SetFocus();
 	GetDlgItem(IDC_STATIC_TIMERSTATUS)->SetFocus();
+
+	registerStartUp();
 }
 
 void CWawajiRunnerDlg::uninitExe()

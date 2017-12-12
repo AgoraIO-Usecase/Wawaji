@@ -41,10 +41,10 @@ private:
 
 	std::string m_curProcessName;
 	CFileIO m_filelog;
-	std::string m_batFile;
 };
 
 std::string getCurSection();
 std::string getOtherSection();
+std::string getsdkLogPath();
 
 #endif

@@ -49,6 +49,11 @@ std::string getPirorDir(const std::string &file)
 	return fullpath.substr(0, fullpath.rfind("\\") + 1);
 }
 
+std::string getPirorDirEx(const std::string &file)
+{
+	return file.substr(0, file.rfind("\\") + 1);
+}
+
 std::string getRootDir(const std::string &file)
 {
 	std::string FileDir = getFileAbsolutePath(file);
@@ -260,29 +265,22 @@ int getProcessIdMutil(const std::string &processName)
 	return vecProcessid.size();
 }
 
-bool registerRun()
+bool registerStartUp()
 {
-	//写入注册表，开机自启动 
 	HKEY hKey;
-
-	//找到系统的启动项  
-
 	DWORD dwDisposition;
 
-	//打开启动项Key
 	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_ALL_ACCESS, &hKey);
 
 	if (lRet == ERROR_SUCCESS)
 	{
-		CString currRunPath = s2cs(getPirorDir(getFilePath()));
-		//添加一个子key，并设置值  
+		CString currRunPath = s2cs((getFilePath()));
 		lRet = RegSetValueEx(hKey, _T("AgoraWawajiDemo"), 0, REG_SZ, (const unsigned char*)currRunPath.GetBuffer(), (DWORD)(currRunPath.GetLength() * 2));
 		currRunPath.ReleaseBuffer();
 
-		//关闭注册表  
 		RegCloseKey(hKey);
 		return TRUE;
 	}
 
-	return TRUE;
+	return FALSE;
 }

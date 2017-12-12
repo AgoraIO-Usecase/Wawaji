@@ -70,6 +70,12 @@ BOOL CWawajiRunnerApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
+	HANDLE hMutex = CreateMutex(NULL, TRUE, _T("AgoraWawajiRunner"));
+	if (ERROR_ALREADY_EXISTS == GetLastError()){
+		AfxMessageBox(_T("不能启动多个守护进程"));
+		return FALSE;
+	}
+
 	CWawajiRunnerDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();

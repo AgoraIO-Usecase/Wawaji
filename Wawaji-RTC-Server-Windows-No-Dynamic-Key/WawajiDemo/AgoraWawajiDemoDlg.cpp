@@ -168,8 +168,6 @@ void CAgoraWawajiDemoDlg::InitCtrls()
 	m_linkAgora.SetURL(_T("http://www.agora.io"));
 	m_linkAgora.SetWindowText(LANG_STR("IDS_LOGO_AGORAWEB"));
 	CMFCButton::EnableWindowsTheming(FALSE);
-
-	registerRun();
 }
 
 void CAgoraWawajiDemoDlg::InitChildDialog()

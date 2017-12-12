@@ -52,7 +52,6 @@ std::string get_document_content_stylestring(Document &document)
 CInfoManager::CInfoManager():
 m_ProcessType(Type_NULL)
 {
-	m_batFile = (getPirorDir(getFilePath()) + "start.bat");
 	m_curProcessName = getCurRunningExeName();
 	int processNum = getProcessIdMutil(m_curProcessName);
 	//processNum += 1;
@@ -112,27 +111,18 @@ m_ProcessType(Type_NULL)
 	else if (Type_NULL == m_ProcessType){
 		}
 
-// 	if (otherChoosefront){
-// 		m_ProcessType = Type_Back;
-// 		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "1");
-// 	}
-// 	else if (otherChooseback){
-// 		m_ProcessType = Type_Front;
-// 		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
-// 	}
-
 	otherChoosefront = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoFront));
 	otherChooseback = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoBack));
 
 	if (Type_Front == m_ProcessType){
 	
 		m_curSection = INI_DeviceInfoFront;
-		m_sdkLogPath = getAbsoluteDir() + getTime() + "_SdkFront.log";
+		m_sdkLogPath = getsdkLogPath();
 	}
 	else if (Type_Back == m_ProcessType){
 
 		m_curSection = INI_DeviceInfoBack;
-		m_sdkLogPath = getAbsoluteDir() + getTime() + "_SdkBack.log";
+		m_sdkLogPath = getsdkLogPath();
 	}
 
 	std::string cameraFrontComId = m_IniConfig.getCameraComID(INI_DeviceInfoFront);
@@ -162,14 +152,13 @@ void CInfoManager::setStateInfo()
 	if (Type_Front == m_ProcessType){
 
 		m_curSection = INI_DeviceInfoFront;
-		m_sdkLogPath = getAbsoluteDir() + "SdkFront.log";
+		m_sdkLogPath = getsdkLogPath();
 	}
 	else if (Type_Back == m_ProcessType){
 
 		m_curSection = INI_DeviceInfoBack;
-		m_sdkLogPath = getAbsoluteDir() + "SdkBack.log";
+		m_sdkLogPath = getsdkLogPath();
 	}
-
 }
 
 std::string getCurSection()
@@ -198,4 +187,31 @@ std::string getOtherSection()
 	}
 
 	return section;
+}
+
+std::string getsdkLogPath()
+{
+	CString strRet;
+	std::string strTime;
+	std::string exeName;
+	std::string pirorDir;
+
+	pirorDir = getPirorDir(getFilePath());
+	strTime = getTime();
+
+	enumCameraType cameraType = getInfoManager()->getCameraType();
+	if (Type_Front == cameraType){
+
+		exeName = "AgoraWawajiDemo-Front.log";
+	}
+	else if (Type_Back == cameraType){
+
+		exeName = "AgoraWawajiDemo-Back.log";
+	}
+
+	strRet.Format(_T("%slogger\\%s_%s"),s2cs(pirorDir),s2cs(strTime),s2cs(exeName));
+	CString logPirorDir = s2cs(getPirorDirEx(cs2s(strRet)));
+	BOOL res = CreateDirectory(logPirorDir,NULL);
+
+	return cs2s(strRet);
 }
