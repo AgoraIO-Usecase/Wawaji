@@ -1,5 +1,7 @@
-const vault = require('./vault.js');
+const vault = require('../../vault.js').leyaoyao;
 const request = require('request');
+const logger = require('../../logger');
+
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
 var dbg = function () {
@@ -23,6 +25,7 @@ LeyaoyaoProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
+    this.log = (new logger('leyaoyao', 'leyaoyao.log')).get();
 
     this.onResult = null;
     this.onError = null;
@@ -32,19 +35,20 @@ LeyaoyaoProfile = function(mode){
         var data = {type:type, data: msgObj, extra: id};
         profile.actions[id] = data;
         profile.machine.socket.send(JSON.stringify(data));
-        dbg(`sending action ${JSON.stringify(data)}`);
+        profile.log.info(`sending action ${JSON.stringify(data)}`);
     }
 
     this.onInit = function(machine, done){
+        profile.log.info("onInit.");
         profile.machine = machine;
 
         machine.socket.on('open', function open() {
-            dbg("WebSocket opened");
+            profile.log.info("WebSocket opened");
             done();
         });
 
         machine.socket.on('message', function incoming(data) {
-            dbg(machine.name + " WebSocket receive: " + data);
+            profile.log.info(machine.name + " WebSocket receive: " + data);
             var json = JSON.parse(data);
             if(json.type) {
                 var action = profile.actions[json.extra] || {};

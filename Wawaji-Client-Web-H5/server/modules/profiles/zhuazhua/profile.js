@@ -1,4 +1,5 @@
-const vault = require('./vault.js')
+const vault = require('../../vault.js').zhuazhua;
+const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
 var dbg = function () {
@@ -20,16 +21,18 @@ ZhuaZhuaProfile = function(mode){
     this.video_rotation = vault.video_rotation;
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
+    this.log = (new logger('zhuazhua', 'logs/zhuazhua.log')).get();
 
     this.onInit = function(machine, done){
+        profile.log.info("onInit.");
         profile.machine = machine;
         machine.socket.on('open', function open() {
-            dbg("WebSocket opened");
+            profile.log.info("WebSocket opened");
             done();
         });
 
         machine.socket.on('message', function incoming(data) {
-            dbg(machine.name + " WebSocket receive: " + data);
+            profile.log.info(machine.name + " WebSocket receive: " + data);
         });
     }
 

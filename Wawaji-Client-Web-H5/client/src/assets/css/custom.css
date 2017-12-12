@@ -191,6 +191,10 @@ h2{
     font-size: 24px;
 }
 
+.controls .main:active .content{
+    margin-bottom: 0px;
+}
+
 .control-btn {
     position: absolute;
     background-size: 50%;
@@ -205,6 +209,10 @@ h2{
     background-repeat: no-repeat;
 }
 
+.control-left:active{
+    background-image: url('../images/left_down.png');
+}
+
 
 .control-right{
     background-image: url('../images/right.png');
@@ -215,6 +223,9 @@ h2{
     background-repeat: no-repeat;
 }
 
+.control-right:active{
+    background-image: url('../images/right_down.png');
+}
 
 .control-up{
     background-image: url('../images/up.png');
@@ -223,6 +234,9 @@ h2{
     background-size: contain;
     background-color: transparent;
     background-repeat: no-repeat;
+}
+.control-up:active{
+    background-image: url('../images/up_down.png');
 }
 
 
@@ -234,6 +248,9 @@ h2{
     background-color: transparent;
     background-repeat: no-repeat;
 }
+.control-down:active{
+    background-image: url('../images/down_down.png');
+}
 
 .control-catch{
     background-image: url('../images/catcher.png');
@@ -242,6 +259,17 @@ h2{
     background-size: contain;
     background-color: transparent;
     background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    padding-top: 12px;
+}
+
+.control-catch:active{
+    background-image: url('../images/catcher_down.png');
+    padding-top: 20px;
 }
 
 .control-camera{
@@ -287,16 +315,17 @@ h2{
 
 .banner-container .users{
     display: inline-block;
+    margin: 0 -15px;
 }
 
 .banner-container .users>img{
     display: inline-block;
-    transform: scale(0.8,0.8);
+    transform: scale(0.5,0.5);
 }
 
 .banner-container .active.users>img{
     display: inline-block;
-    transform: scale(1,1);
+    transform: scale(0.75,0.75);
 }
 
 
@@ -346,4 +375,28 @@ h2{
 .top-layer .confirm:active{
     background-image: url("../images/game_main_down.png");
     background-position: 50% 55%;
+}
+
+.loading{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading img{
+    width: 44px;
+}
+
+.logs{
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    z-index: 999;
+    background: white;
+    padding: 0;
+    overflow: scroll;
 }

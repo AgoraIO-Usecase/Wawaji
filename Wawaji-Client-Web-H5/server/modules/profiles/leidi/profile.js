@@ -1,4 +1,5 @@
-const vault = require('./vault.js')
+const vault = require('../../vault.js').leidi
+const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
 var dbg = function () {
@@ -21,8 +22,9 @@ LeiDiProfile = function(mode){
     this.stream_secret = vault.stream_secret;
     this.mode = mode;
     this.actions = {};
+    this.log = (new logger('leidi', 'leidi.log')).get();
 
-    dbg(`${this.appid}, ${vault.appid}, ${vault.appcert}`);
+    profile.log.info(`${this.appid}, ${vault.appid}, ${vault.appcert}`);
 
     this.onResult = null;
     this.onError = null;
@@ -32,30 +34,30 @@ LeiDiProfile = function(mode){
         var data = Object.assign({id: id}, msgObj);
         profile.actions[id] = {type:type, data: msgObj};
         profile.machine.socket.send(JSON.stringify(data));
-        dbg(`sending action ${JSON.stringify(data)} ${type}`);
+        profile.log.info(`sending action ${JSON.stringify(data)} ${type}`);
     }
 
     this.onInit = function(machine, done){
         profile.machine = machine;
         machine.socket.on('open', function open() {
-            dbg("WebSocket opened");
+            profile.log.info("WebSocket opened");
             profile.sendMessage({"uri":"/rooms/3/enter","type":"post","data":{"token":"no_token"}}, "ENTER");
         });
 
         machine.socket.on('message', function incoming(data) {
-            dbg(machine.name + " WebSocket receive: " + data);
+            profile.log.info(machine.name + " WebSocket receive: " + data);
             var json = JSON.parse(data);
             if(json.id){
                 //action related
                 var action = profile.actions[json.id] || {};
                 if(json.data.ret === 1){
-                    dbg(`${action.type} action ${json.id} success`);
+                    profile.log.info(`${action.type} action ${json.id} success`);
                     if(action.type === "ENTER"){
                         done();
                     } else if(action.type === "PLAY"){
                     }
                 } else {
-                    dbg(`${action.type} action ${json.id} failed`);
+                    profile.log.info(`${action.type} action ${json.id} failed`);
                     profile.onError && profile.onError();
                 }
     

@@ -9,18 +9,17 @@ const ps = require('ps-node');
 const request = require('request');
 var WawajiManager = require('./modules/wawajiManager.js')
 var bodyParser = require('body-parser');
-var vault = require('./modules/vault')
+var vault = require('./modules/vault').signal
 var ZhuaZhuaProfile = require('./modules/profiles/zhuazhua/profile');
 var LeiDiProfile = require('./modules/profiles/leidi/profile');
 var LeyaoyaoProfile = require('./modules/profiles/leyaoyao/profile');
 var QiyiguoProfile = require('./modules/profiles/qiyiguo/profile');
 var HuizhiProfile = require('./modules/profiles/huizhi/profile');
 var KedieProfile = require('./modules/profiles/kedie/profile');
-var TestProfile = require('./modules/profiles/test/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
 var api  = require('./routes/api');
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // parse application/json
 app.use(bodyParser.json());
@@ -53,8 +52,6 @@ var leyaoyao_profile = new LeyaoyaoProfile(StreamMethod.JSMPEG);
 var huizhi_profile = new HuizhiProfile(StreamMethod.JSMPEG);
 var kedie_profile = new KedieProfile(StreamMethod.JSMPEG);
 //var qiyiguo_profile = new QiyiguoProfile(StreamMethod.JSMPEG);
-var test_profile = new TestProfile(StreamMethod.JSMPEG);
-// var test = new TestProfile(StreamMethod.IMAGES);
 
 var unique = function(s){
     return s + (process.argv[2] ? "_" + process.argv[2] :  "");
@@ -72,13 +69,11 @@ request(leyaoyao_profile.http_url, function (err, response, body) {
 
 var manager = new WawajiManager(unique("server_agora"), io);
 manager.onStarted = function(){
-    
-    manager.machines.add(unique('machine_leyaoyao'), leyaoyao_profile);
-    manager.machines.add(unique('machine_leidi'), leidi_profile);
-    manager.machines.add(unique('machine_zhuazhua2'), zhuazhua2_profile);
-    manager.machines.add(unique('machine_huizhi'), huizhi_profile);
-    manager.machines.add(unique('machine_kedie'), kedie_profile);
-
+    manager.machines.add(new Wawaji.Machine(unique('machine_leyaoyao'), leyaoyao_profile));
+    manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
+    manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
+    manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
+    manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
     //manager.machines.add(unique('machine_qiyiguo'), qiyiguo_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }

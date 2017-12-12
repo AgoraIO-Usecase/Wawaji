@@ -1,20 +1,29 @@
+function preload(items) {
+    for (i = 0; i < items.length; i++) {
+        var img = new Image()
+        img.src = items[i]
+    }
+}
+preload([
+    "/assets/images/up.png",
+    "/assets/images/up_down.png",
+    "/assets/images/left.png",
+    "/assets/images/left_down.png",
+    "/assets/images/down.png",
+    "/assets/images/down_down.png",
+    "/assets/images/right.png",
+    "/assets/images/right_down.png",
+    "/assets/images/catcher.png",
+    "/assets/images/catcher_down.png"
+])
+
 $(function () {
-    window.oncontextmenu = function(event) {
+    window.oncontextmenu = function (event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
-   };
-    var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = Vault.cc_server;
-    var debug = true;
-    var dbg = function () {
-        if (debug) {
-            var x = [];
-            for (var i in arguments) x.push(arguments[i]);
-            console.log.apply(null, ['Agora sig client dbg :'].concat(x));
-        }
     };
-    var getParameterByName = (name, url) => {
+    var getParameterByName = function (name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -23,6 +32,21 @@ $(function () {
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
+    var namespace = getParameterByName("namespace") || "";
+    var appid = Vault.appid, appcert = Vault.appcert;
+    var wawaji_control_center = namespace + Vault.cc_server;
+    var debug = getParameterByName("debug") === "true";
+    var loading = true;
+    var startTime = new Date().getTime();
+    var dbg = function (msg) {
+        if (debug) {
+            var x = [];
+            var tsmsg = [(new Date().getTime() - startTime) + "ms: ", msg];
+            console.log(tsmsg.join(":"));
+            $(".logs").show();
+            $("<li>" + tsmsg + "</li>").appendTo(".logs");
+        }
+    };
     var randName = function (length) {
         var text = "";
         var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -34,8 +58,104 @@ $(function () {
     var machine_name = getParameterByName("machine");
     var machine_list = JSON.parse(localStorage.getItem("machines"));
 
-    if(!machine_name || !machine_list){
+    if (!machine_name || !machine_list) {
         location.href = "index.html";
+    }
+
+    dbg("document loaded");
+
+    var getKey = function (machine) {
+        var deferred = $.Deferred();
+        if (!machine.dynamicKeyEnabled) {
+            return deferred.resolve(null).promise();
+        } else {
+            $.ajax({
+                url: "/v1/key",
+                // url: "/v1/key",
+                type: "GET", //send it through get method
+                data: {
+                    appid: machine.appid,
+                    channel: machine.channel
+                }
+            }).done(function (key) {
+                dbg("get key success")
+                deferred.resolve(key.key);
+            });
+        }
+        return deferred.promise();
+    }
+
+    var getGateways = function (machine) {
+        var deferred = $.Deferred();
+        $.ajax({
+            url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
+            type: "POST",
+            headers: {
+                "Content-type": "application/json; charset=utf-8"
+            },
+            data: JSON.stringify({
+                key: machine.appid,
+                cname: machine.channel
+            })
+        }).done(function (domains) {
+            dbg("get gateway success")
+            deferred.resolve(domains);
+        }).fail(function () {
+            deferred.reject();
+        });
+
+        return deferred.promise();
+    }
+
+    var prepare_meta = function (machine, cb) {
+        var internal = getParameterByName("internal") === "true";
+        if (!internal) {
+            $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
+                var gateways = domains.gateway_addr || [];
+
+                if (gateways.length === 0) {
+                    alert("同时观看此机器的人数太多，请稍后再来")
+                } else {
+                    $.ajax({
+                        url: "https://" + domains.gateway_addr[0] + "/v1/machine",
+                        // url: "http://wawa1.agoraio.cn:4000/v1/machine",
+                        // url: "http://127.0.0.1:4000/v1/machine",
+                        type: "POST",
+                        data: {
+                            appid: machine.appid,
+                            channel: machine.channel,
+                            key: key,
+                            uid1: 1,
+                            uid2: 2
+                        }
+                    }).done(function (video_info) {
+                        dbg("get video info success")
+                        cb(video_info);
+                    }).fail(function (e) {
+                        console.log("err: failed to get machine info");
+                    });
+                }
+            })
+        } else {
+            getKey(machine).done(function (key) {
+                $.ajax({
+                    url: "https://123.155.153.85:4000/v1/machine",
+                    type: "POST",
+                    data: {
+                        appid: machine.appid,
+                        channel: machine.channel,
+                        key: key,
+                        uid1: 1,
+                        uid2: 2
+                    }
+                }).done(function (video_info) {
+                    dbg("get video info success")
+                    cb(video_info);
+                }).fail(function (e) {
+                    console.log("err: failed to get machine info");
+                });
+            });
+        }
     }
 
 
@@ -48,7 +168,7 @@ $(function () {
         this.game = null;
         this.session = this.signal.login(account, SignalingToken.get(appid, appcert, account, 1));
         this.session.onLoginSuccess = function (uid) {
-            dbg("login successful account:" + lobby.account + " uid: " + uid);
+            dbg("signal login successful account:" + lobby.account + " uid: " + uid);
             lobby.uid = uid;
 
             cb && cb();
@@ -56,7 +176,7 @@ $(function () {
 
         //if fail
         this.session.onLoginFailed = function () {
-            dbg("login failed ");
+            // dbg("login failed ");
         };
 
         this.session.onMessageInstantReceive = function (account, uid, msg) {
@@ -78,18 +198,19 @@ $(function () {
             }
         }
 
-        Lobby.Game = function (machine, account) {
+        Lobby.Game = function (machine, account, info) {
             var game = this;
 
             this.machine = machine;
             this.account = account;
+            this.video_info = info;
             this.users = 0;
             game.queue = [];
             game.playing = null;
 
-            this.channel = lobby.session.channelJoin("room_" + this.machine.name);
+            this.channel = lobby.session.channelJoin(namespace + this.machine.room_name);
             this.channel.onChannelJoined = function () {
-                dbg("connected to " + game.machine.name + "  successfully");
+                dbg("Enter room " + game.machine.name + "");
             };
 
             this.channel.onChannelJoinFailed = function (ecode) {
@@ -107,13 +228,6 @@ $(function () {
                 }
                 game.queue = attrs.queue || [];
                 game.playing = attrs.playing;
-
-                if(game.player.method === 1 && !game.player.cameras){
-                    //camera update for jsmpeg player
-                    game.player.cameras = attrs.cameras || {};
-                    game.player.camera = game.player.camera || game.player.cameras.front;
-                    game.player.renderCanvas();
-                }
                 updateViews();
                 dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
             };
@@ -149,30 +263,34 @@ $(function () {
                                 }
                             }
                             break;
+                        case "PLAY_COUNTING":
+                            result = data.data;
+                            $(".control-catch").text("(" + result + "s)")
+                            break;
                     }
                 }
             };
 
             this.play = function () {
-                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name}));
+                lobby.session.messageInstantSend(wawaji_control_center, JSON.stringify({ "type": "PLAY", "machine": machine_name }));
             }
             this.control = function (data, pressed) {
                 var action = data;
-                if(!game.player.isUsingFrontCamera()){
+                if (!game.player.isUsingFrontCamera()) {
                     //if is using side camera, update control
-                    switch(data){
+                    switch (data) {
                         case 'left':
-                        action = 'down';
-                        break;
+                            action = 'down';
+                            break;
                         case 'right':
-                        action = 'up';
-                        break;
+                            action = 'up';
+                            break;
                         case 'up':
-                        action = 'left';
-                        break;
+                            action = 'left';
+                            break;
                         case 'down':
-                        action = 'right';
-                        break;
+                            action = 'right';
+                            break;
                     }
                 }
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
@@ -182,180 +300,117 @@ $(function () {
             }
 
 
-            Lobby.VideoPlayer = function (eleId, method) {
+            Lobby.VideoPlayer = function (info) {
                 var player = this;
-
-                if (game.machine.video_rotation === 90) {
-                    $("#" + eleId).addClass("rotation-90");
-                }
-
-                player.images = [];
-                player.domId = eleId;
-                player.frame_rate = 50;
-                player.cameras = null;
-                player.camera = null;
-                player.method = method;
-                player.player = null;
+                player.cameras = info.cameras || {};
+                player.camera = info.cameras.main;
+                player.player1 = null;
                 player.player2 = null;
                 player.slow_switch = parseInt(getParameterByName("slow_switch")) === 1;
 
-
-                player.isUsingFrontCamera = function(){
-                    return player.cameras && player.camera === player.cameras.front;
+                if (game.machine.video_rotation === 90) {
+                    $("#jsmpeg-player").addClass("rotation-90");
+                    $("#jsmpeg-player2").addClass("rotation-90");
                 }
 
-                if (player.method === 1) {
-                    if (game.machine.video_rotation === 90) {
-                        $("#jsmpeg-player").addClass("rotation-90");
-                        $("#jsmpeg-player2").addClass("rotation-90");
-                    }
-                    player.renderCanvas = function (force) {
-                        if (player.method !== 1) {
-                            //only allowed for jsmpeg
-                            return;
-                        }
 
-                        if(player.slow_switch){
-                            var canvas = document.getElementById('jsmpeg-player');
-                            var url = player.camera;
-    
-                            if (!player.player) {
-                                player.player = new JSMpeg.Player(url, { canvas: canvas });
-                            } else if (force) {
-                                player.player.destroy();
-                                player.player = null;
-                                player.player = new JSMpeg.Player(url, { canvas: canvas });
-                            }
+                player.isUsingFrontCamera = function () {
+                    return player.cameras && player.camera === player.cameras.main;
+                }
+
+                player.play = function (url, position) {
+                    var canvas = document.getElementById('jsmpeg-player');
+                    var canvas2 = document.getElementById('jsmpeg-player2');
+                    if (position === 0) {
+                        //front
+                        // player.player2.stop();
+                        $(canvas2).hide();
+                        // player.player1.seek(player.player1.currentTime);
+                        // player.player1.play();
+                        $(canvas).show();
+                    } else {
+                        //side
+                        // player.player1.stop();
+                        $(canvas).hide();
+                        // player.player2.seek(player.player1.currentTime);
+                        // player.player2.play();
+                        $(canvas2).show();
+                    }
+                }
+                player.switchCamera = function () {
+                    if (player.camera === player.cameras.main) {
+                        player.camera = player.cameras.sub;
+                        player.play(player.camera, 1);
+                    } else {
+                        player.camera = player.cameras.main;
+                        player.play(player.camera, 0);
+                    }
+                }
+
+                var canvas = document.getElementById('jsmpeg-player');
+                var canvas2 = document.getElementById('jsmpeg-player2');
+                dbg("setup jsmpeg player..")
+                player.player1 = new JSMpeg.Player(player.cameras.main, {
+                    canvas: canvas,
+                    audio: false,
+                    autoplay: false,
+                    decodeFirstFrame: true,
+                    agora_id: 1,
+                    onStartDecoding: function () {
+                        dbg("play start.")
+
+                        if (game.machine.video_rotation === 90) {
+                            //do nothing
+                            var width = $(".wrapper").width();
+                            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                            var scale = width / video_height;
+                            scale = scale > 1 ? 1 : scale;
+                            $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+                            $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
                         } else {
-                            var canvas1 = document.getElementById('jsmpeg-player');
-                            var canvas2 = document.getElementById('jsmpeg-player2');
-                            var url1 = player.cameras.front;
-                            var url2 = player.cameras.back;
-    
-                            if (!player.player) {
-                                player.player = new JSMpeg.Player(url1, { canvas: canvas1 });
-                                player.player2 = new JSMpeg.Player(url2, { canvas: canvas2 });
-                            } else if (force) {
-                                if(player.camera === player.cameras.front){
-                                    $("#jsmpeg-player").show();
-                                    $("#jsmpeg-player2").hide();
-                                } else {
-                                    $("#jsmpeg-player2").show();
-                                    $("#jsmpeg-player").hide();
-                                }
-                            }
-                        }
+                            var width = $(".wrapper").width();
+                            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
 
+                            var scale = width / video_width;
+                            scale = scale > 1 ? 1 : scale;
+                            $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+                            $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
+                        }
+                        loading = false;
+                        updateViews();
                     }
-                    player.switchCamera = function () {
-                        if (player.cameras && player.camera) {
-                            if (player.cameras.front === player.camera) {
-                                player.camera = player.cameras.back;
-                            } else {
-                                player.camera = player.cameras.front;
-                            }
-                            console.log("switching to " + player.camera);
-
-                        }
-                        player.renderCanvas(true);
-                    }
-                } else {
-
-                    player.socket = io(game.machine.video_host, {
-                        query: {
-                            channel: game.machine.video_channel,
-                            appid: game.machine.video_appid
-                        }
-                    });
-
-                    player.socket.on('connect', function () {
-                        //getting cameras
-                        player.socket.emit("cameras", { channel: game.machine.video_appid + game.machine.video_channel, socketid: player.socket.id }, function (result) {
-                            if (!result || !result.cameras || !result.using) {
-                                if (!result.using) {
-                                    alert("failed to get using camera");
-                                } else {
-                                    alert("failed to get camera");
-                                }
-                                return;
-                            }
-
-                            player.cameras = result.cameras;
-                            player.camera = result.using;
-
-
-
-                            player.socket.on('message', function (data) {
-                                console.log("message received");
-                                let arrayBufferView = new Uint8Array(data);
-                                let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-                                let urlCreator = window.URL || window.webkitURL;
-                                let imageUrl = urlCreator.createObjectURL(blob);
-                                player.images.push(imageUrl);
-                            });
-
-                            player.socket.on('disconnect', function (data) {
-                                alert("socket disconnected!");
-                            });
-
-                            $("#player").height($("#video").width());
-
-                            //when done start play
-                            player.play();
-                        })
-
-                    });
-
-
-                    player.switchCamera = function () {
-                        if (player.cameras && player.camera) {
-                            if (player.cameras.front === player.camera) {
-                                player.camera = player.cameras.back;
-                            } else {
-                                player.camera = player.cameras.front;
-                            }
-                            console.log("switching to " + player.camera);
-
-                        }
-                        player.socket.emit("switch", { socketid: player.socket.id, camera: player.camera, channel: game.machine.video_appid + game.machine.video_channel });
-                    }
-
-                    player.play = function () {
-                        if (player.images.length > 0) {
-                            var img = document.querySelector("#" + player.domId);
-                            var imageUrl = null;
-
-                            if (player.images.length > 100) {
-                                imageUrl = player.images.pop();
-                                player.images = [];
-                            } else {
-                                imageUrl = player.images.shift();
-                            }
-
-                            if (imageUrl) {
-                                img.src = imageUrl;
-                            }
-                        }
-                        setTimeout(player.play, 1000 / player.frame_rate);
-                    }
-                }
+                });
+                player.player2 = new JSMpeg.Player(player.cameras.sub, { canvas: canvas2, audio: false, autoplay: false, decodeFirstFrame: true, agora_id: 2 });
+                player.play(player.camera, 0);
             }
-            game.player = new Lobby.VideoPlayer("player", game.machine.stream_method);
+
+            game.player = new Lobby.VideoPlayer(game.video_info);
         }
 
     };
 
-    var account = getParameterByName("account") /*|| localStorage.getItem("account")*/ || randName(10);
+    var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
     // localStorage.setItem("account", account);
-    var lobby = new Lobby(account, function(){
-        for(var i = 0; i < machine_list.length; i++){
-            if(machine_list[i].name === machine_name){
-                lobby.game = new Lobby.Game(machine_list[i], lobby.account);
-                break;
-            }
-        }
-    });
 
+    var lobby_prepare = $.Deferred();
+    var meta_prepare = $.Deferred();
+    var lobby = new Lobby(account, function () {
+        lobby_prepare.resolve();
+    });
+    for (var i = 0; i < machine_list.length; i++) {
+        if (machine_list[i].name === machine_name) {
+            prepare_meta(machine_list[i], function (video_info) {
+                meta_prepare.resolve(video_info);
+            });
+            break;
+        }
+    }
+    $.when(lobby_prepare, meta_prepare).done(function (result, video_info) {
+        lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
+    });
 
 
     (function layoutItems() {
@@ -446,50 +501,57 @@ $(function () {
     }
 
     function updateViews() {
-        if (lobby.game) {
-            //control logic
-            var idx = lobby.game.queue.indexOf(lobby.game.account);
-            if (lobby.game.playing !== account) {
-                //not yet in play
-                $(".controls-game").hide();
-                $(".controls").show();
+        if (loading) {
+            $(".loading").show();
+        } else {
+            $(".loading").hide();
+            $("#video").show();
+            if (lobby.game) {
+                //control logic
+                var idx = lobby.game.queue.indexOf(lobby.game.account);
+                if (lobby.game.playing !== account) {
+                    //not yet in play
+                    $(".controls-game").hide();
+                    $(".controls").show();
 
-                if (lobby.game.queue.length === 0 && !lobby.game.playing) {
-                    //no people in queue, starts directly
-                    $(".controls .main .content").text("开始游戏");
-                    $(".controls .info").text("");
-                } else {
-                    //people in queue
-                    var queuelength = lobby.game.playing ? 1 : 0;
-                    if (idx !== -1) {
-                        queuelength += idx;
-                        //i am already in queue
-                        $(".controls .main .content").text("已预约");
-                        //todo disable button
+                    if (lobby.game.queue.length === 0 && !lobby.game.playing) {
+                        //no people in queue, starts directly
+                        $(".controls .main .content").text("开始游戏");
+                        $(".controls .info").text("");
                     } else {
-                        queuelength += lobby.game.queue.length;
-                        $(".controls .main .content").text("预约排队");
+                        //people in queue
+                        var queuelength = lobby.game.playing ? 1 : 0;
+                        if (idx !== -1) {
+                            queuelength += idx;
+                            //i am already in queue
+                            $(".controls .main .content").text("已预约");
+                            //todo disable button
+                        } else {
+                            queuelength += lobby.game.queue.length;
+                            $(".controls .main .content").text("预约排队");
+                        }
+                        $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
                     }
-                    $(".controls .info").text(queuelength === 0 ? "" : "前面还有" + queuelength + "人排队");
+
+                } else {
+                    //playing
+                    $(".controls-game").show();
+                    $(".controls").hide();
                 }
 
-            } else {
-                //playing
-                $(".controls-game").show();
-                $(".controls").hide();
-            }
+                $(".banner-container .users").remove();
 
-            $(".banner-container .users").remove();
-
-            if (lobby.game.playing) {
-                $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
-            }
-            if (lobby.game.queue.length > 0) {
-                for (var i = 0; i < lobby.game.queue.length; i++) {
-                    $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+                if (lobby.game.playing) {
+                    $('<div class="users active"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+                }
+                if (lobby.game.queue.length > 0) {
+                    for (var i = 0; i < lobby.game.queue.length; i++) {
+                        $('<div class="users"><img src="/assets/images/avatar.png" /></div>').appendTo($(".banner-container"))
+                    }
                 }
             }
-
         }
+
+
     }
 });
