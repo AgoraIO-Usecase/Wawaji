@@ -2,7 +2,7 @@
 
 - **注意，本娃娃机项目使用了第三方的娃娃机控制协议，开发者需要做些修改，适配自己的娃娃机控制协议**
 - **为了安全，建议大家在正式环境中启用 [动态密钥鉴权](https://document.agora.io/cn/1.14/instruction/key.html) 机制**
-- **H5方案的视频传输需要特殊的Agora转码SDK，该SDK并不包括在本开源库中，如需要请找声网BD或客户支持同事索取，可以拨打 400 632 6626，或加入官方Q群 12742516 提问。**
+- **H5方案已由本地部署的形式正式变为服务式，使用h5推流不再需要本地部署sdk，h5视频集成方法请参阅 https://github.com/AgoraIO/Wawaji/tree/rtc-only/Wawaji-Client-Web-H5**
 
 这个示例项目演示了如何在H5环境(移动端浏览器或微信内置浏览器)快速集成 Agora 视频和信令 SDK，实现在线抓娃娃。
 
@@ -15,7 +15,7 @@
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。
-项目中一共有4个vault_template.js文件，请按照里面的提示填好对应的内容后将文件重命名为vault.js
+项目中一共有2个vault_template.js文件，请按照里面的提示填好对应的内容后将文件重命名为vault.js
 
 完成后安装node依赖
 ```shell
@@ -36,11 +36,6 @@ manager.onStarted = function(){
   
   
 *注意：项目预置的Profile需要对应的娃娃机才可以正常控制，若没有对应的娃娃机，也可以参考已有的插件撰写自己的插件*
-  
-  
-
-
-将Agora转码SDK解压后重命名为**Agora_Recording_SDK_for_Linux_FULL**与server.js置于同一目录。
 
 完成后运行
 ```
