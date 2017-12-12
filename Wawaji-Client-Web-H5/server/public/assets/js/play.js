@@ -109,16 +109,38 @@ $(function () {
     }
 
     var prepare_meta = function (machine, cb) {
-        $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
-            var gateways = domains.gateway_addr || [];
-
-            if (gateways.length === 0) {
-                alert("同时观看此机器的人数太多，请稍后再来")
-            } else {
+        var internal = getParameterByName("internal") === "true";
+        if(!internal){
+            $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
+                var gateways = domains.gateway_addr || [];
+    
+                if (gateways.length === 0) {
+                    alert("同时观看此机器的人数太多，请稍后再来")
+                } else {
+                    $.ajax({
+                        url: "https://" + domains.gateway_addr[0] + "/v1/machine",
+                        // url: "http://wawa1.agoraio.cn:4000/v1/machine",
+                        // url: "http://127.0.0.1:4000/v1/machine",
+                        type: "POST",
+                        data: {
+                            appid: machine.appid,
+                            channel: machine.channel,
+                            key: key,
+                            uid1: 1,
+                            uid2: 2
+                        }
+                    }).done(function (video_info) {
+                        dbg("get video info success")
+                        cb(video_info);
+                    }).fail(function (e) {
+                        console.log("err: failed to get machine info");
+                    });
+                }
+            })
+        } else {
+            getKey(machine).done(function(key){
                 $.ajax({
-                    url: "https://" + domains.gateway_addr[0] + "/v1/machine",
-                    // url: "http://wawa1.agoraio.cn:4000/v1/machine",
-                    // url: "http://127.0.0.1:4000/v1/machine",
+                    url: "https://123.155.153.85:4000/v1/machine",
                     type: "POST",
                     data: {
                         appid: machine.appid,
@@ -133,8 +155,8 @@ $(function () {
                 }).fail(function (e) {
                     console.log("err: failed to get machine info");
                 });
-            }
-        })
+            });
+        }
     }
 
 

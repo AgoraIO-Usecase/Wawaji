@@ -40,13 +40,8 @@ $(function () {
         this.game = null;
 
         this.list = function () {
-            // $.ajax({
-            //     url: "/v1/list",
-            //     type: "GET"
-            // }).done(function (machines) {
-            //     lobby.setMachines(machines);
-            // });
             var machines = [{
+                id: "wawaji_machine_leidi",
                 name: "wawaji_machine_leidi",
                 appid: "324f0da1e2284832a44fee5fcbec44c1",
                 channel: "leidi01",
@@ -54,6 +49,7 @@ $(function () {
                 image: "IMG_5468.png",
                 available: true
             }, {
+                id: "wawaji_machine_leyaoyao",
                 name: "wawaji_machine_leyaoyao",
                 appid: "274acaf097b54d86acd6b21d0a753205",
                 channel: "10001",
@@ -62,6 +58,7 @@ $(function () {
                 image: "IMG_5467.png",
                 available: false
             }, {
+                id: "wawaji_machine_zhuazhua2",
                 name: "wawaji_machine_zhuazhua2",
                 appid: "8b0faaf944034061a5ffd263d3f3f7a4",
                 channel: "wawajiDemo",
@@ -70,6 +67,7 @@ $(function () {
                 image: "IMG_5469.png",
                 available: false
             }, {
+                id: "wawaji_machine_kedie",
                 name: "wawaji_machine_kedie",
                 appid: "9aa74fadb6594733a673f40fab8d933d",
                 channel: "03A3",
@@ -77,12 +75,22 @@ $(function () {
                 image: "IMG_5470.png",
                 available: false
             }, {
+                id: "wawaji_machine_huizhi",
                 name: "wawaji_machine_huizhi",
                 appid: "f451ae655cfe491b907d67728f9dee8b",
                 channel: "555",
                 dynamicKeyEnabled: false,
                 image: "IMG_5467.png",
                 available: false
+            },{
+                id: "wawaji_machine_leidi_internal",
+                name: "wawaji_machine_leidi",
+                appid: "324f0da1e2284832a44fee5fcbec44c1",
+                channel: "leidi01",
+                dynamicKeyEnabled: true,
+                image: "IMG_5468.png",
+                internal: true,
+                available: true
             }];
             for(var i = 0; i < machines.length; i++){
                 machines[i].room_name = "room_" + machines[i].name;
@@ -92,15 +100,16 @@ $(function () {
         }
 
         this.setMachines = function (macs) {
+            var internal = getParameterByName("internal") === "true";
             dbg("found " + macs.length + " machines");
             lobby.machines = macs;
             $(".game-list").html("");
             for (var i = 0; i < macs.length; i++) {
-                if(macs[i].name === "wawaji_machine_zhuazhua2"){
-                    macs[i].available = true;
+                if(macs[i].internal && !internal){
+                    continue;
                 }
                 var html = "";
-                html += '<div class="game-room" name="' + macs[i].name + '">';
+                html += '<div class="game-room" name="' + macs[i].id + '">';
                 html += '<div class="room-container">';
                 html += '<div class="room-img" style="background-image: url(\'/assets/images/' + macs[i].image + '\')">';
                 html += '<div class="room-label">';
@@ -124,11 +133,16 @@ $(function () {
                 var name = $(this).attr("name");
 
                 for (var i = 0; i < lobby.machines.length; i++) {
-                    if (name === lobby.machines[i].name) {
+                    if (name === lobby.machines[i].id) {
                         if (!lobby.machines[i].available) {
                             alert("设备维护中！");
                         } else {
-                            location.href = "play.html?account=" + lobby.account + "&machine=" + name;
+                            if(lobby.machines[i].internal){
+                                location.href = "play.html?account=" + lobby.account + "&machine=" + lobby.machines[i].name + "&internal=true";
+                            } else {
+                                location.href = "play.html?account=" + lobby.account + "&machine=" + lobby.machines[i].name;
+                            }
+                            
                         }
                         break;
                     }
