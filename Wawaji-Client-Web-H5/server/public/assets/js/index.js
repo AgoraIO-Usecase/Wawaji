@@ -2,11 +2,9 @@ $(function () {
     var appid = Vault.appid, appcert = Vault.appcert;
     var wawaji_control_center = Vault.cc_server;
     var debug = true;
-    var dbg = function () {
+    var dbg = function (msg) {
         if (debug) {
-            var x = [];
-            for (var i in arguments) x.push(arguments[i]);
-            console.log(x.join(","));
+            console.log(msg);
         }
     };
     var getParameterByName = function(name, url) {
@@ -65,7 +63,7 @@ $(function () {
                 dynamicKeyEnabled: false,
                 video_rotation: 90,
                 image: "IMG_5469.png",
-                available: false
+                available: true
             }, {
                 id: "wawaji_machine_kedie",
                 name: "wawaji_machine_kedie",

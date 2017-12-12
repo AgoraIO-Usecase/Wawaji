@@ -38,14 +38,13 @@ $(function () {
     var debug = getParameterByName("debug") === "true";
     var loading = true;
     var startTime = new Date().getTime();
-    var dbg = function () {
+    var dbg = function (msg) {
         if (debug) {
             var x = [];
-            for (var i in arguments) x.push(arguments[i]);
-            var msg = [(new Date().getTime() - startTime) + "ms: "].concat(x);
-            console.log(msg.join(":"));
+            var tsmsg = [(new Date().getTime() - startTime) + "ms: ", msg];
+            console.log(tsmsg.join(":"));
             $(".logs").show();
-            $("<li>" + msg + "</li>").appendTo(".logs");
+            $("<li>" + tsmsg + "</li>").appendTo(".logs");
         }
     };
     var randName = function (length) {
@@ -110,10 +109,10 @@ $(function () {
 
     var prepare_meta = function (machine, cb) {
         var internal = getParameterByName("internal") === "true";
-        if(!internal){
+        if (!internal) {
             $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
                 var gateways = domains.gateway_addr || [];
-    
+
                 if (gateways.length === 0) {
                     alert("同时观看此机器的人数太多，请稍后再来")
                 } else {
@@ -138,7 +137,7 @@ $(function () {
                 }
             })
         } else {
-            getKey(machine).done(function(key){
+            getKey(machine).done(function (key) {
                 $.ajax({
                     url: "https://123.155.153.85:4000/v1/machine",
                     type: "POST",
@@ -359,14 +358,27 @@ $(function () {
                     agora_id: 1,
                     onStartDecoding: function () {
                         dbg("play start.")
-                        var width = $(".wrapper").width();
-                        var video_width = parseFloat($("#jsmpeg-player").attr("width"));
-                        var video_height = parseFloat($("#jsmpeg-player").attr("height"));
 
-                        var scale = width / video_width;
-                        scale = scale > 1 ? 1 : scale;
-                        $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
-                        $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
+                        if (game.machine.video_rotation === 90) {
+                            //do nothing
+                            var width = $(".wrapper").width();
+                            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                            var scale = width / video_height;
+                            scale = scale > 1 ? 1 : scale;
+                            $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+                            $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+                        } else {
+                            var width = $(".wrapper").width();
+                            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                            var scale = width / video_width;
+                            scale = scale > 1 ? 1 : scale;
+                            $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+                            $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
+                        }
                         loading = false;
                         updateViews();
                     }
