@@ -1,7 +1,20 @@
-var Vault = (function(){
+var Vault = (function () {
     return {
-        // appid : "YOUR APP ID",
-        // appcert : "YOUR CERTIFICATE",
-        // cc_server : "YOUR CENTER CONTROL MACHINE NAME"
+        signal: {
+            appid: "信令appid",
+            appcert: "信令appcert"
+        },
+        leidi: {
+        },
+        leyaoyao: {
+        },
+        zhuazhua: {
+        },
+        kedie: {
+        },
+        huizhi: {
+        },
+        qiyiguo: {
+        }
     }
 }());

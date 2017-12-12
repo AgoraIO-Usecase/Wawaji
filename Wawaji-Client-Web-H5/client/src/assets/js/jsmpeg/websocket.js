@@ -3,7 +3,8 @@ JSMpeg.Source.WebSocket = (function(){ "use strict";
 var WSSource = function(url, options) {
 	this.url = url;
 	this.options = options;
-	this.socket = null;	
+	this.socket = null;
+	this.firstPacketReceived = false;
 
 	this.callbacks = {connect: [], data: []};
 	this.destination = null;
@@ -50,6 +51,7 @@ WSSource.prototype.resume = function(secondsHeadroom) {
 WSSource.prototype.onOpen = function() {
 	this.progress = 1;
 	this.established = true;
+	this.options.onConnectionEstablished && this.options.onConnectionEstablished();
 };
 
 WSSource.prototype.onClose = function() {
@@ -63,7 +65,10 @@ WSSource.prototype.onClose = function() {
 
 WSSource.prototype.onMessage = function(ev) {
 	if (this.destination) {
-		// console.log(new Date + ": socket data comes in");
+		if(!this.firstPacketReceived){
+			this.firstPacketReceived = true;
+			this.options.onFirstPacketReceived && this.options.onFirstPacketReceived();
+		}
 		this.destination.write(ev.data);
 	}
 };

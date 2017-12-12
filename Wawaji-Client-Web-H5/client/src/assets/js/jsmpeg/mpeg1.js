@@ -18,7 +18,8 @@ var MPEG1 = function(options) {
 	this.blockData = new Int32Array(64);
 
 	this.agora_id = options.agora_id;
-	this.onStartDecoding = options.onStartDecoding;
+	this.onWillDecodeFirstFrame = options.onWillDecodeFirstFrame;
+	this.onDidDecodeFirstFrame = options.onDidDecodeFirstFrame;
 	this.decodingFrame = false;
 	this.currentFrame = 0;
 	this.decodeFirstFrame = options.decodeFirstFrame !== false;
@@ -52,10 +53,13 @@ MPEG1.prototype.decode = function() {
 		return false;
 	}
 	// console.log(new Date() + ": decode frame for player " + this.agora_id);
+	if(!this.decodingFrame){
+		this.onWillDecodeFirstFrame && this.onWillDecodeFirstFrame();
+	}
 	this.decodePicture();
 	if(!this.decodingFrame){
 		this.decodingFrame = true;
-		this.onStartDecoding && this.onStartDecoding();
+		this.onDidDecodeFirstFrame && this.onDidDecodeFirstFrame();
 	}
 	this.advanceDecodedTime(1/this.frameRate);
 	return true;
