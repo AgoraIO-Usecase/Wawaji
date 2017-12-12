@@ -33,8 +33,8 @@ $(function () {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
     var namespace = getParameterByName("namespace") || "";
-    var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = namespace + Vault.cc_server;
+    var appid = Vault.signal.appid, appcert = Vault.signal.appcert;
+    var wawaji_control_center = namespace + Vault.signal.cc_server;
     var debug = getParameterByName("debug") === "true";
     var loading = true;
     var startTime = new Date().getTime();

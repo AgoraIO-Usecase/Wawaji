@@ -1,6 +1,6 @@
 $(function () {
-    var appid = Vault.appid, appcert = Vault.appcert;
-    var wawaji_control_center = Vault.cc_server;
+    var appid = Vault.signal.appid, appcert = Vault.signal.appcert;
+    var wawaji_control_center = Vault.signal.cc_server;
     var debug = true;
     var dbg = function (msg) {
         if (debug) {

@@ -88,7 +88,7 @@ $(document).ready(function(){
         }, {
             name: "wawaji_machine_leidi",
             appid: "324f0da1e2284832a44fee5fcbec44c1",
-            appcert: "164aa13965394ffbb5ebeb43c4c7ed5c",
+            appcert: Vault.leidi.appcert,
             channel: "leidi01",
             dynamicKeyEnabled: true,
             image: "IMG_5468.png",
@@ -106,7 +106,7 @@ $(document).ready(function(){
             appid: "9aa74fadb6594733a673f40fab8d933d",
             channel: "03A3",
             dynamicKeyEnabled: true,
-            appcert: "18db294f9bb347c1bbeabd30ef13793d",
+            appcert: Vault.kedie.appcert,
             image: "IMG_5470.png",
             available: true
         }, {
