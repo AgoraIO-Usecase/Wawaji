@@ -334,6 +334,7 @@ LRESULT CAgoraWawajiDemoDlg::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 
 	vc.uid = 0;
 	vc.view = m_dlgVideo.GetLocalVideoWnd();
+	//vc.view = nullptr;
 	vc.renderMode = RENDER_MODE_TYPE::RENDER_MODE_FIT;
 
 	m_lpAgoraObject->EnableLastmileTest(FALSE);

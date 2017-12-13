@@ -311,15 +311,6 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 
 	m_ctrChannel.GetWindowText(param);
 	getInfoManager()->getConfig()->setChannelName(cs2s(param));
-	
-//	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->GetCheck();
-// 	if (res){
-// 		getInfoManager()->setCameraType(Type_Front);
-// 	}
-// 	res = ((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->GetCheck();
-// 	if (res){
-// 		getInfoManager()->setCameraType(Type_Back);
-// 	}
 
 	if (!m_dlgDevice.DeviceInfoCheck()){
 		OnBnClickedBtntestChannel();

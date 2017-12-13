@@ -861,6 +861,12 @@ LRESULT CVideoDlg::OnEIDVideoDeviceChanged(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+LRESULT CVideoDlg::OnEIDLocalVideoStat(WPARAM wParam, LPARAM lParam)
+{
+	//	LPAGE_FIRST_LOCAL_VIDEO_FRAME 
+	return TRUE;
+}
+
 LRESULT CVideoDlg::OnRemoteVideoStat(WPARAM wParam, LPARAM lParam)
 {
 	LPAGE_REMOTE_VIDEO_STAT lpData = (LPAGE_REMOTE_VIDEO_STAT)wParam;
