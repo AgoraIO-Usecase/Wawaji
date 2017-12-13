@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CWawajiRunnerDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(DTN_DATETIMECHANGE, IDC_DATETIMEPICKER_RESTART, &CWawajiRunnerDlg::OnDtnDatetimechangeDatetimepickerRestart)
+	ON_BN_CLICKED(IDC_CHECK_TIMER_RESTART, &CWawajiRunnerDlg::OnBnClickedCheckTimerRestart)
 END_MESSAGE_MAP()
 
 
@@ -290,4 +291,21 @@ void CWawajiRunnerDlg::OnDtnDatetimechangeDatetimepickerRestart(NMHDR *pNMHDR, L
 		gWawajiConfig.setRestartTimerStatus("1");
 		gWawajiConfig.setRestartTimer(cs2s(restartFormat));
 	}
+}
+
+void CWawajiRunnerDlg::OnBnClickedCheckTimerRestart()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_TIMER_RESTART)))->GetCheck();
+	if (res)
+	{
+		m_DataTimeCtlRestart.GetTime(&m_TimerRestart);
+
+		CString restartFormat;
+		restartFormat.Format(_T("%02d:%02d:%02d"), m_TimerRestart.wHour, m_TimerRestart.wMinute, m_TimerRestart.wSecond);
+		gWawajiConfig.setRestartTimerStatus("1");
+		gWawajiConfig.setRestartTimer(cs2s(restartFormat));
+	}
+
+	gWawajiConfig.setRestartTimerStatus(int2str(res));
 }
