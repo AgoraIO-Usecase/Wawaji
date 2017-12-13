@@ -1253,7 +1253,7 @@ void CVideoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	// TODO:  在此处添加消息处理程序代码
 
 	if (bShow && GetSafeHwnd() != NULL) {
-		RebindVideoWnd();
+		//RebindVideoWnd();
 		int nRole = CAgoraObject::GetAgoraObject()->GetClientRole();
 
 		if (nRole == 1)
