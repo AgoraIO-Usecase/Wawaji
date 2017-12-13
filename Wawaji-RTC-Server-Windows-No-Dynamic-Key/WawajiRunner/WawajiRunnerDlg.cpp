@@ -74,6 +74,7 @@ BEGIN_MESSAGE_MAP(CWawajiRunnerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(DTN_DATETIMECHANGE, IDC_DATETIMEPICKER_RESTART, &CWawajiRunnerDlg::OnDtnDatetimechangeDatetimepickerRestart)
 	ON_BN_CLICKED(IDC_CHECK_TIMER_RESTART, &CWawajiRunnerDlg::OnBnClickedCheckTimerRestart)
+	ON_BN_CLICKED(IDC_CHECK_VideoPreview, &CWawajiRunnerDlg::OnBnClickedCheckVideopreview)
 END_MESSAGE_MAP()
 
 
@@ -253,6 +254,9 @@ void CWawajiRunnerDlg::initExe()
 	getTimerStartIni(m_TimerRestart, restartTimer);
 	m_DataTimeCtlRestart.SetTime(m_TimerRestart);
 
+	std::string strVideoPreview = gWawajiConfig.getVideoPreview();
+	((CButton*)(GetDlgItem(IDC_CHECK_VideoPreview)))->SetCheck(str2int(strVideoPreview));
+
 	if ("1" == restartTimerStatus)
 	SetTimer(TIMER_IDEVENT_RESTARTTIMER, TIMER_INTERVAL_RESTARTTIMER, nullptr);
 }
@@ -308,4 +312,12 @@ void CWawajiRunnerDlg::OnBnClickedCheckTimerRestart()
 	}
 
 	gWawajiConfig.setRestartTimerStatus(int2str(res));
+}
+
+
+void CWawajiRunnerDlg::OnBnClickedCheckVideopreview()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_VideoPreview)))->GetCheck();
+	gWawajiConfig.setVideoPreview(int2str(res));
 }

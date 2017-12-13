@@ -27,6 +27,7 @@ public:
 
 	HWND GetRemoteVideoWnd(int nIndex);
 	HWND GetLocalVideoWnd() { return m_wndLocal.GetSafeHwnd(); };
+	void setLocalVideoSolution(int width,int height);
 
 	void RebindVideoWnd();
 
@@ -170,14 +171,4 @@ private:	// data
 	BOOL			m_bRecording;
 	BOOL			m_bFullScreen;
 	int				m_nTimeCounter;
-
-	//SINGLE
-
-	std::string appId_;
-	std::string channelName_;
-	std::string appCertificateId_;
-	std::string tokenId_;
-	std::string userName_;
-
-	std::string callRemoteAccount_;
 };

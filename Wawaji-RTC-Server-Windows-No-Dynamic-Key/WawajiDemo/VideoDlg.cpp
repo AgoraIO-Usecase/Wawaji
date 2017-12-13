@@ -61,6 +61,7 @@ BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_USER_JOINED),&CVideoDlg::OnEIDUserJoined)
 	ON_MESSAGE(WM_MSGID(EID_USER_OFFLINE), &CVideoDlg::OnEIDUserOffline)
 	
+	ON_MESSAGE(WM_MSGID(EID_LOCAL_VIDEO_STAT),&CVideoDlg::OnEIDLocalVideoStat)
 	ON_MESSAGE(WM_MSGID(EID_REMOTE_VIDEO_STAT), &CVideoDlg::OnRemoteVideoStat)
 
 	ON_MESSAGE(WM_MSGID(EID_START_RCDSRV), &CVideoDlg::OnStartRecordingService)
@@ -863,7 +864,14 @@ LRESULT CVideoDlg::OnEIDVideoDeviceChanged(WPARAM wParam, LPARAM lParam)
 
 LRESULT CVideoDlg::OnEIDLocalVideoStat(WPARAM wParam, LPARAM lParam)
 {
-	//	LPAGE_FIRST_LOCAL_VIDEO_FRAME 
+	LPAGE_LOCAL_VIDEO_STAT lpData = (LPAGE_LOCAL_VIDEO_STAT)wParam;
+
+	m_wndLocal.SetFrameRateInfo(lpData->sentFrameRate);
+	m_wndLocal.SetBitrateInfo(lpData->sentBitrate);
+	m_wndLocal.ShowVideoInfo(TRUE);
+
+	delete lpData;	lpData = nullptr;
+
 	return TRUE;
 }
 
@@ -1157,6 +1165,10 @@ HWND CVideoDlg::GetRemoteVideoWnd(int nIndex)
 	return m_wndVideo[nIndex].GetSafeHwnd();
 }
 
+void CVideoDlg::setLocalVideoSolution(int width, int height)
+{
+	m_wndLocal.SetVideoResolution(width, height);
+}
 
 void CVideoDlg::RebindVideoWnd()
 {

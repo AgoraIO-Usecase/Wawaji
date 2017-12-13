@@ -329,12 +329,21 @@ LRESULT CAgoraWawajiDemoDlg::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	m_dlgVideo.MoveWindow(0, 0, 960, 720, 1);
 	m_dlgVideo.ShowWindow(SW_SHOW);
 	m_dlgVideo.CenterWindow();
+	m_dlgVideo.setLocalVideoSolution(m_dlgSetup.getSolutionWidth(), m_dlgSetup.getSolutionHeight());
 
 	VideoCanvas vc;
 
+	std::string strVideoPreview = getInfoManager()->getConfig()->getVideoPreview();
 	vc.uid = 0;
-	vc.view = m_dlgVideo.GetLocalVideoWnd();
-	//vc.view = nullptr;
+	if ("" == strVideoPreview){
+		vc.view = m_dlgVideo.GetLocalVideoWnd();
+	}
+	else if ("0" == strVideoPreview){
+		vc.view = nullptr;
+	}
+	else if ("1" == strVideoPreview){
+		vc.view = m_dlgVideo.GetLocalVideoWnd();
+	}
 	vc.renderMode = RENDER_MODE_TYPE::RENDER_MODE_FIT;
 
 	m_lpAgoraObject->EnableLastmileTest(FALSE);

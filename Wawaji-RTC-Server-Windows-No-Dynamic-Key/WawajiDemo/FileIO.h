@@ -83,6 +83,7 @@ protected:
 #define INI_LoginInfo_ChannelName	"ChannelName"
 #define INI_LoginInfo_RestartTimeStatus "RestartTimerStatus"
 #define INI_LoginInfo_RestaTimer        "RestartTimer"
+#define INI_LoginInfo_VideoPreview     "VideoPreview"
 
 #define INI_DeviceInfoFront						"DeviceInfoFront"
 #define INI_DeviceInfoBack						"DeviceInfoBack"
@@ -108,6 +109,7 @@ public:
 	__DECLARE_INICONFIG_FUN(ChannelName)
 	__DECLARE_INICONFIG_FUN(RestartTimerStatus)
 	__DECLARE_INICONFIG_FUN(RestartTimer)
+	__DECLARE_INICONFIG_FUN(VideoPreview)
 
 	__DECLARE_INICONFIG_SIMILAR_FUN(LoginUid)
 	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInName)

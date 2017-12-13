@@ -20,6 +20,8 @@ public:
     void SetVideoSolution(int nIndex);
     int GetVideoSolution();
     CString GetVideoSolutionDes();
+	int getSolutionWidth();
+	int getSolutionHeight();
 
 	void SetVideoProfile();
 

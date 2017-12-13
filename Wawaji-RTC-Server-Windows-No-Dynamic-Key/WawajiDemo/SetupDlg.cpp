@@ -5,7 +5,7 @@
 #include "AgoraWawajiDemo.h"
 #include "SetupDlg.h"
 #include "afxdialogex.h"
-
+#include "commonFun.h"
 
 // CSetupDlg ¶Ô»°¿ò
 
@@ -318,6 +318,22 @@ CString CSetupDlg::GetVideoSolutionDes()
 	}
 
 	return str;
+}
+
+int CSetupDlg::getSolutionWidth()
+{
+	CString sWidth;
+	m_edWidth.GetWindowText(sWidth);
+
+	return str2int(cs2s(sWidth));
+}
+
+int CSetupDlg::getSolutionHeight()
+{
+	CString sHeight;
+	m_edHeight.GetWindowTextW(sHeight);
+
+	return str2int(cs2s(sHeight));
 }
 
 void CSetupDlg::SetVideoProfile()

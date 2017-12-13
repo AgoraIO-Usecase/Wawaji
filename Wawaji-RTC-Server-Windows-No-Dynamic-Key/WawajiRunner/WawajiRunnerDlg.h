@@ -40,4 +40,5 @@ public:
 	afx_msg void OnDtnDatetimechangeDatetimepickerRestart(NMHDR *pNMHDR, LRESULT *pResult);
 	SYSTEMTIME m_TimerRestart;
 	afx_msg void OnBnClickedCheckTimerRestart();
+	afx_msg void OnBnClickedCheckVideopreview();
 };
