@@ -320,6 +320,8 @@ CIniBase(path)
 
 __IMPLEMENT_INICONFIG_FUN(CConfigWawaji, AppId, INI_LoginInfo, INI_LoginInfo_APPID)
 __IMPLEMENT_INICONFIG_FUN(CConfigWawaji, ChannelName, INI_LoginInfo, INI_LoginInfo_ChannelName)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, RestartTimerStatus, INI_LoginInfo, INI_LoginInfo_RestartTimeStatus)
+__IMPLEMENT_INICONFIG_FUN(CConfigWawaji, RestartTimer, INI_LoginInfo, INI_LoginInfo_RestaTimer)
 
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, LoginUid, INI_LoginInfo_UID)
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, AudioInName, INI_DeviceInfo_AudioInName)

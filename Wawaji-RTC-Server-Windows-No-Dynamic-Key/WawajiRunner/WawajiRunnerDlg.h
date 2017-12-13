@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxdtctl.h"
 
 
 // CWawajiRunnerDlg 对话框
@@ -21,6 +22,7 @@ public:
 protected:
 	void initExe();
 	void uninitExe();
+	void getTimerStartIni(SYSTEMTIME &st,const std::string &timeStr);
 
 // 实现
 protected:
@@ -33,4 +35,8 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CDateTimeCtrl m_DataTimeCtlRestart;
+	afx_msg void OnDtnDatetimechangeDatetimepickerRestart(NMHDR *pNMHDR, LRESULT *pResult);
+	SYSTEMTIME m_TimerRestart;
 };

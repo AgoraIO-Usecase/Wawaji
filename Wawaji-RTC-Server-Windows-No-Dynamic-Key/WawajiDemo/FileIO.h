@@ -81,6 +81,8 @@ protected:
 #define INI_LoginInfo									"LoginInfo"
 #define INI_LoginInfo_APPID					"AppId"
 #define INI_LoginInfo_ChannelName	"ChannelName"
+#define INI_LoginInfo_RestartTimeStatus "RestartTimerStatus"
+#define INI_LoginInfo_RestaTimer        "RestartTimer"
 
 #define INI_DeviceInfoFront						"DeviceInfoFront"
 #define INI_DeviceInfoBack						"DeviceInfoBack"
@@ -104,6 +106,8 @@ public:
 public:
 	__DECLARE_INICONFIG_FUN(AppId)
 	__DECLARE_INICONFIG_FUN(ChannelName)
+	__DECLARE_INICONFIG_FUN(RestartTimerStatus)
+	__DECLARE_INICONFIG_FUN(RestartTimer)
 
 	__DECLARE_INICONFIG_SIMILAR_FUN(LoginUid)
 	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInName)

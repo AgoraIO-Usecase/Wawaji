@@ -1,6 +1,7 @@
 #ifndef __COMMONFUN_H__
 #define __COMMONFUN_H__
 
+#include <vector>
 //comfun
 std::string getAbsoluteDir();
 std::string getFilePath();
@@ -23,8 +24,9 @@ std::string cs2s(const CString &str);
 
 std::string getTime();
 DWORD getProcessID(const std::string &processName);
-void closeProcess(const std::string &processName);
+bool closeProcess(const std::string &processName,int &num);
 int getProcessIdMutil(const std::string &processName);
+std::vector<DWORD> getProcessMutilVec(const std::string processName);
 void closeCurrentProcess();
 bool registerStartUp();
 

@@ -86,33 +86,24 @@ m_ProcessType(Type_NULL)
 	if (1== processNum){
 		m_ProcessType = getProcessID(m_curProcessName) > 0 ? Type_Front : Type_Back;
 		m_IniConfig.setDeviceState(INI_DeviceInfoFront, "0");
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
+		m_IniConfig.setDeviceState(INI_DeviceInfoBack, "0");
+		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
 	}
 	else if (2== processNum){
-		if (frontStatus && !backStatus){
+		if (otherChoosefront && !otherChooseback){
 			m_ProcessType = Type_Back;
 			m_IniConfig.setDeviceState(INI_DeviceInfoBack, "0");
 			m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "0");
+			m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "1");
 		}
-		else if (backStatus && !frontStatus){
+		else if (otherChooseback && !otherChoosefront){
 			m_ProcessType = Type_Front;
 			m_IniConfig.setDeviceState(INI_DeviceInfoFront, "0");
 			m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "0");
+			m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
 		}
 	}
-
-	//backup
-	if (Type_Front == m_ProcessType){
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoFront, "1");
-	}
-	else if (Type_Back == m_ProcessType){
-		m_IniConfig.setDeviceChoose(INI_DeviceInfoBack, "1");
-	}
-	else if (Type_NULL == m_ProcessType){
-		}
-
-	otherChoosefront = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoFront));
-	otherChooseback = str2int(m_IniConfig.getDeviceChoose(INI_DeviceInfoBack));
 
 	if (Type_Front == m_ProcessType){
 	

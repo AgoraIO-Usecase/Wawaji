@@ -192,25 +192,28 @@ DWORD getProcessID(const std::string &processName)
 	return -1;
 }
 
-void closeProcess(const std::string &processName)
+bool closeProcess(const std::string &processName,int &num)
 {
 	DWORD processId = getProcessID(processName);
 	HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, false, processId);
-	if (INVALID_HANDLE_VALUE != processHandle)
+	if (INVALID_HANDLE_VALUE != processHandle && processHandle)
 	{
+		num++;
 		if (TerminateProcess(processHandle, 0))
 		{
-			CloseHandle(processHandle);
-			return;
 		}
 		else
 		{
 			WaitForSingleObject(processHandle, 2000);
 		}
-	}
 
-	CloseHandle(processHandle);
-	return;
+		CloseHandle(processHandle);
+	}
+	else
+	{
+		return true;
+	}
+	return closeProcess(processName,num);
 }
 
 void closeCurrentProcess()
@@ -263,6 +266,37 @@ int getProcessIdMutil(const std::string &processName)
 
 	CloseHandle(hProcessSnap);
 	return vecProcessid.size();
+}
+
+std::vector<DWORD> getProcessMutilVec(const std::string processName)
+{
+	std::vector<DWORD> vecProcessid;
+	HANDLE hProcessSnap = INVALID_HANDLE_VALUE;
+	PROCESSENTRY32 pe32;
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (INVALID_HANDLE_VALUE == hProcessSnap)
+	{
+		return vecProcessid;
+	}
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		CloseHandle(hProcessSnap);     // Must clean up the snapshot object!
+		return vecProcessid;
+	}
+
+	do
+	{
+		if (processName == cs2s(pe32.szExeFile)){
+
+			vecProcessid.push_back(pe32.th32ProcessID);
+			printf("processName: %s, processId: %d\n", CStringA(pe32.szExeFile).GetBuffer(), pe32.th32ProcessID);
+		}
+
+	} while (Process32Next(hProcessSnap, &pe32));
+
+	CloseHandle(hProcessSnap);
+	return vecProcessid;
 }
 
 bool registerStartUp()
