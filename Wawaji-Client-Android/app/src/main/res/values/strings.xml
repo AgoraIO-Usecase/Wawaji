@@ -11,9 +11,13 @@
 
     <string name="label_leave">Leave</string>
 
+    <string name="label_add_control">Add control model</string>
+
     <string name="label_not_a_player">Only player can control Wawaji</string>
 
     <string name="label_can_not_switch_cam">Only one stream, can not switch</string>
+
+
 
     <string-array
         name="string_array_resolutions">
