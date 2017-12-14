@@ -115,6 +115,10 @@ m_ProcessType(Type_NULL)
 		m_curSection = INI_DeviceInfoBack;
 		m_sdkLogPath = getsdkLogPath();
 	}
+	else if (Type_NULL == m_ProcessType){
+		int num = 0;
+		closeProcess("WawajiDemo.exe", num);
+	}
 
 	std::string cameraFrontComId = m_IniConfig.getCameraComID(INI_DeviceInfoFront);
 	std::string cameraBackComId = m_IniConfig.getCameraComID(INI_DeviceInfoBack);

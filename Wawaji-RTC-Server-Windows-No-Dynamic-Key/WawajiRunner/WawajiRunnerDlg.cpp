@@ -255,6 +255,12 @@ void CWawajiRunnerDlg::initExe()
 	m_DataTimeCtlRestart.SetTime(m_TimerRestart);
 
 	std::string strVideoPreview = gWawajiConfig.getVideoPreview();
+	if ("" == strVideoPreview){
+
+		strVideoPreview = "1";
+		gWawajiConfig.setVideoPreview(strVideoPreview);
+	}
+
 	((CButton*)(GetDlgItem(IDC_CHECK_VideoPreview)))->SetCheck(str2int(strVideoPreview));
 
 	if ("1" == restartTimerStatus)
