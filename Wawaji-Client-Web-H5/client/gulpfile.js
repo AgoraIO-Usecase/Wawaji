@@ -59,7 +59,7 @@ gulp.task('jsmin', function () {
             "webaudio.js"
         ]))
         .pipe(concat("jsmpeg-all.js"))
-        // .pipe(uglify())
+        .pipe(uglify())
         .pipe(rename('jsmpeg.min.js'))
         .pipe(gulp.dest('./dist/assets/js'))
     return gulp.src('./src/assets/vendor/*.js')

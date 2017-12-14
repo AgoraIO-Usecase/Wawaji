@@ -37,6 +37,7 @@ $(function () {
     var wawaji_control_center = namespace + Vault.signal.cc_server;
     var debug = getParameterByName("debug") === "true";
     var loading = true;
+    var control_ready = false;
     var startTime = new Date().getTime();
     var dbg = function (msg) {
         if (debug) {
@@ -166,11 +167,12 @@ $(function () {
         this.uid = null;
         this.machines = [];
         this.game = null;
+        this.player = null;
+        this.machine = null;
         this.session = this.signal.login(account, SignalingToken.get(appid, appcert, account, 1));
         this.session.onLoginSuccess = function (uid) {
             dbg("signal login successful account:" + lobby.account + " uid: " + uid);
             lobby.uid = uid;
-
             cb && cb();
         };
 
@@ -191,26 +193,25 @@ $(function () {
                         alert("错误");
                         break;
                     case "PREPARE":
-                        console.log("receive prepare, sending start to " + lobby.game.machine.name);
-                        lobby.session.messageInstantSend(lobby.game.machine.name, JSON.stringify({ type: "START" }));
+                        console.log("receive prepare, sending start to " + lobby.machine.name);
+                        lobby.session.messageInstantSend(lobby.machine.name, JSON.stringify({ type: "START" }));
                         break;
                 }
             }
         }
 
-        Lobby.Game = function (machine, account, info) {
+        Lobby.Game = function (account) {
             var game = this;
-
-            this.machine = machine;
             this.account = account;
-            this.video_info = info;
             this.users = 0;
             game.queue = [];
             game.playing = null;
 
-            this.channel = lobby.session.channelJoin(namespace + this.machine.room_name);
+            this.channel = lobby.session.channelJoin(namespace + lobby.machine.room_name);
             this.channel.onChannelJoined = function () {
-                dbg("Enter room " + game.machine.name + "");
+                dbg("Enter room " + lobby.machine.name + "");
+                control_ready = true;
+                updateViews();
             };
 
             this.channel.onChannelJoinFailed = function (ecode) {
@@ -276,7 +277,7 @@ $(function () {
             }
             this.control = function (data, pressed) {
                 var action = data;
-                if (!game.player.isUsingFrontCamera()) {
+                if (!lobby.player.isUsingFrontCamera()) {
                     //if is using side camera, update control
                     switch (data) {
                         case 'left':
@@ -298,86 +299,59 @@ $(function () {
             this.catch = function () {
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CATCH" }));
             }
+        }
+        Lobby.VideoPlayer = function (info) {
+            var player = this;
+            var canvas = document.getElementById('jsmpeg-player');
+            var canvas2 = document.getElementById('jsmpeg-player2');
+            var doubleStream = getParameterByName("double-stream") === "true";
+            player.cameras = info.cameras || {};
+            player.camera = info.cameras.main;
+            player.player1 = null;
+            player.player2 = null;
+            player.switching = false;
 
+            var onConnectionEstablished = function () { dbg("socket open") };
+            var onFirstPacketReceived = function () { dbg("first packet received") };
+            var onWillDecodeFirstFrame = function () { dbg("will decode first frame") };
 
-            Lobby.VideoPlayer = function (info) {
-                var player = this;
-                var canvas = document.getElementById('jsmpeg-player');
-                var canvas2 = document.getElementById('jsmpeg-player2');
-                var doubleStream = getParameterByName("double-stream") === "true";
-                player.cameras = info.cameras || {};
-                player.camera = info.cameras.main;
-                player.player1 = null;
-                player.player2 = null;
-                player.switching = false;
+            if (lobby.machine.video_rotation === 90) {
+                $("#jsmpeg-player").addClass("rotation-90");
+                $("#jsmpeg-player2").addClass("rotation-90");
+            }
 
-                var onConnectionEstablished = function(){dbg("socket open")};
-                var onFirstPacketReceived = function(){dbg("first packet received")};
-                var onWillDecodeFirstFrame = function(){dbg("will decode first frame")};
+            player.isUsingFrontCamera = function () {
+                return player.cameras && player.camera === player.cameras.main;
+            }
 
-                if (game.machine.video_rotation === 90) {
-                    $("#jsmpeg-player").addClass("rotation-90");
-                    $("#jsmpeg-player2").addClass("rotation-90");
+            player.fitScreen = function () {
+                if (lobby.machine.video_rotation === 90) {
+                    //do nothing
+                    var width = $(".wrapper").width();
+                    var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                    var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                    var scale = width / video_height;
+                    scale = scale > 1 ? 1 : scale;
+                    $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+                    $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+                } else {
+                    var width = $(".wrapper").width();
+                    var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+                    var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+                    var scale = width / video_width;
+                    scale = scale > 1 ? 1 : scale;
+                    $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+                    $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
                 }
+            }
 
-                player.isUsingFrontCamera = function () {
-                    return player.cameras && player.camera === player.cameras.main;
-                }
 
-                player.fitScreen = function () {
-                    if (game.machine.video_rotation === 90) {
-                        //do nothing
-                        var width = $(".wrapper").width();
-                        var video_width = parseFloat($("#jsmpeg-player").attr("width"));
-                        var video_height = parseFloat($("#jsmpeg-player").attr("height"));
-
-                        var scale = width / video_height;
-                        scale = scale > 1 ? 1 : scale;
-                        $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
-                        $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
-                    } else {
-                        var width = $(".wrapper").width();
-                        var video_width = parseFloat($("#jsmpeg-player").attr("width"));
-                        var video_height = parseFloat($("#jsmpeg-player").attr("height"));
-
-                        var scale = width / video_width;
-                        scale = scale > 1 ? 1 : scale;
-                        $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
-                        $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
-                    }
-                }
-
-                if (doubleStream) {
-                    player.play = function (url, position) {
-                        var canvas = document.getElementById('jsmpeg-player');
-                        var canvas2 = document.getElementById('jsmpeg-player2');
-                        if (position === 0) {
-                            //front
-                            // player.player2.stop();
-                            $(canvas2).hide();
-                            // player.player1.seek(player.player1.currentTime);
-                            // player.player1.play();
-                            $(canvas).show();
-                        } else {
-                            //side
-                            // player.player1.stop();
-                            $(canvas).hide();
-                            // player.player2.seek(player.player1.currentTime);
-                            // player.player2.play();
-                            $(canvas2).show();
-                        }
-                    }
-                    player.switchCamera = function () {
-                        if (player.camera === player.cameras.main) {
-                            player.camera = player.cameras.sub;
-                            player.play(player.camera, 1);
-                        } else {
-                            player.camera = player.cameras.main;
-                            player.play(player.camera, 0);
-                        }
-                    }
-
-                    dbg("setup jsmpeg player..")
+            player.play = function (url, position) {
+                player.switching = true;
+                if (position === 0) {
+                    //front
                     player.player1 = new JSMpeg.Player(player.cameras.main, {
                         canvas: canvas,
                         audio: false,
@@ -385,102 +359,71 @@ $(function () {
                         onDidDecodeFirstFrame: function () {
                             dbg("play start.")
                             player.fitScreen();
-                            loading = false;
-                            updateViews();
+                            $(canvas2).hide();
+                            $(canvas).show();
+
+                            player.player2.destroy();
+                            player.player2 = null;
+                            player.switching = false;
                         },
                         onConnectionEstablished: onConnectionEstablished,
                         onFirstPacketReceived: onFirstPacketReceived,
                         onWillDecodeFirstFrame: onWillDecodeFirstFrame
                     });
+                } else {
+                    //side
                     player.player2 = new JSMpeg.Player(player.cameras.sub, {
                         canvas: canvas2,
                         audio: false,
-                        autoplay: false,
-                        decodeFirstFrame: true,
-                        agora_id: 2
-                    });
-                    player.play(player.camera, 0);
-                } else {
-                    player.play = function (url, position) {
-                        player.switching = true;
-                        if (position === 0) {
-                            //front
-                            player.player1 = new JSMpeg.Player(player.cameras.main, {
-                                canvas: canvas,
-                                audio: false,
-                                agora_id: 1,
-                                onDidDecodeFirstFrame: function () {
-                                    dbg("play start.")
-                                    player.fitScreen();
-                                    $(canvas2).hide();
-                                    $(canvas).show();
-
-                                    player.player2.destroy();
-                                    player.player2 = null;
-                                    player.switching = false;
-                                },
-                                onConnectionEstablished: onConnectionEstablished,
-                                onFirstPacketReceived: onFirstPacketReceived,
-                                onWillDecodeFirstFrame: onWillDecodeFirstFrame
-                            });
-                        } else {
-                            //side
-                            player.player2 = new JSMpeg.Player(player.cameras.sub, {
-                                canvas: canvas2,
-                                audio: false,
-                                agora_id: 2,
-                                onDidDecodeFirstFrame: function () {
-                                    dbg("play start.")
-                                    player.fitScreen();
-                                    $(canvas).hide();
-                                    $(canvas2).show();
-
-                                    player.player1.destroy();
-                                    player.player1 = null;
-                                    player.switching = false;
-                                },
-                                onConnectionEstablished: onConnectionEstablished,
-                                onFirstPacketReceived: onFirstPacketReceived,
-                                onWillDecodeFirstFrame: onWillDecodeFirstFrame
-                            });
-                        }
-                    }
-                    player.switchCamera = function () {
-                        if (player.switching) {
-                            console.log("switching..pls wait");
-                            return;
-                        }
-                        if (player.camera === player.cameras.main) {
-                            player.camera = player.cameras.sub;
-                            player.play(player.camera, 1);
-                        } else {
-                            player.camera = player.cameras.main;
-                            player.play(player.camera, 0);
-                        }
-                    }
-
-                    dbg("setup jsmpeg player..")
-                    player.player1 = new JSMpeg.Player(player.cameras.main, {
-                        canvas: canvas,
-                        audio: false,
-                        autoplay: false,
-                        decodeFirstFrame: true,
-                        agora_id: 1,
+                        agora_id: 2,
                         onDidDecodeFirstFrame: function () {
                             dbg("play start.")
                             player.fitScreen();
-                            loading = false;
-                            updateViews();
+                            $(canvas).hide();
+                            $(canvas2).show();
+
+                            player.player1.destroy();
+                            player.player1 = null;
+                            player.switching = false;
                         },
                         onConnectionEstablished: onConnectionEstablished,
                         onFirstPacketReceived: onFirstPacketReceived,
                         onWillDecodeFirstFrame: onWillDecodeFirstFrame
                     });
                 }
-
+            }
+            player.switchCamera = function () {
+                if (player.switching) {
+                    console.log("switching..pls wait");
+                    return;
+                }
+                if (player.camera === player.cameras.main) {
+                    player.camera = player.cameras.sub;
+                    player.play(player.camera, 1);
+                } else {
+                    player.camera = player.cameras.main;
+                    player.play(player.camera, 0);
+                }
             }
 
-            game.player = new Lobby.VideoPlayer(game.video_info);
+            dbg("setup jsmpeg player..")
+            player.player1 = new JSMpeg.Player(player.cameras.main, {
+                canvas: canvas,
+                audio: false,
+                autoplay: false,
+                decodeFirstFrame: true,
+                agora_id: 1,
+                onDidDecodeFirstFrame: function () {
+                    dbg("play start.")
+                    player.fitScreen();
+                    loading = false;
+                    updateViews();
+                },
+                onConnectionEstablished: onConnectionEstablished,
+                onFirstPacketReceived: onFirstPacketReceived,
+                onWillDecodeFirstFrame: onWillDecodeFirstFrame
+            });
+
         }
 
     };
@@ -488,21 +431,23 @@ $(function () {
     var account = getParameterByName("account") || localStorage.getItem("account") || randName(10);
     // localStorage.setItem("account", account);
 
-    var lobby_prepare = $.Deferred();
     var meta_prepare = $.Deferred();
     var lobby = new Lobby(account, function () {
-        lobby_prepare.resolve();
+        lobby.game = new Lobby.Game(machine_list[i], lobby.account);
     });
     for (var i = 0; i < machine_list.length; i++) {
         if (machine_list[i].name === machine_name) {
-            prepare_meta(machine_list[i], function (video_info) {
-                meta_prepare.resolve(video_info);
-            });
+            lobby.machine = machine_list[i];
             break;
         }
     }
-    $.when(lobby_prepare, meta_prepare).done(function (result, video_info) {
-        lobby.game = new Lobby.Game(machine_list[i], lobby.account, video_info);
+    prepare_meta(lobby.machine, function (video_info) {
+        meta_prepare.resolve({
+            info: video_info
+        });
+    });
+    meta_prepare.done(function (meta) {
+        lobby.player = new Lobby.VideoPlayer(meta.info);
     });
 
 
@@ -550,7 +495,7 @@ $(function () {
     });
 
     $(".control-camera").off("click").on("click", function () {
-        lobby.game.player.switchCamera();
+        lobby.player.switchCamera();
     });
 
     $("body").on(start_event, ".control-left", function () {
@@ -597,6 +542,9 @@ $(function () {
         if (loading) {
             $(".loading").show();
         } else {
+            if(control_ready){
+                $(".disabled").removeClass("disabled");
+            }
             $(".loading").hide();
             $("#video").show();
             if (lobby.game) {

@@ -296,6 +296,11 @@ h2{
     border: 0;
 }
 
+.controls .disabled.main{
+    pointer-events: none;
+    color: rgba(255,255,255,0.7);
+}
+
 .banner{
     position: absolute;
     width: 100%;
