@@ -62,24 +62,8 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onJoinBtnClicked(View view) {
-        // show dialog to choose role
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.msg_choose_role);
-        builder.setNegativeButton(R.string.label_audience, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(Constants.CLIENT_ROLE_AUDIENCE);
-            }
-        });
-        builder.setPositiveButton(R.string.label_broadcaster, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.forwardToLiveRoom(Constants.CLIENT_ROLE_BROADCASTER);
-            }
-        });
-        AlertDialog dialog = builder.create();
+        MainActivity.this.forwardToLiveRoom(Constants.CLIENT_ROLE_AUDIENCE);
 
-        dialog.show();
     }
 
     public void forwardToLiveRoom(int cRole) {

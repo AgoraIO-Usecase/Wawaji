@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import io.agora.common.Constant;
 import io.agora.common.ToastUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
@@ -20,6 +21,7 @@ import io.agora.rtc.video.VideoCanvas;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.AGEventHandler;
 import io.agora.wawaji.app.model.ConstantApp;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,22 +118,25 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     return;
                 }
 
-                if (mUidList.size() >= 1) {
+                if (uid != Constant.Wawaji_CAM_MAIN && uid != Constant.Wawaji_CAM_SECONDARY) {
                     return;
                 }
 
-                mUidList.put(uid, true);
+                boolean isMain = uid == Constant.Wawaji_CAM_MAIN;
+                if (isMain) { // always be the main cam
+                    doSetupVideoStreamView(uid);
+                }
 
-                doSetupView(uid);
+                mUidList.put(uid, isMain);
             }
         });
     }
 
-    private void doSetupView(int uid) {
+    private void doSetupVideoStreamView(int uid) {
         SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
-        if (config().mUid == uid) {
+        if (config().mWawajiUid == uid) {
             return;
         } else {
             rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
@@ -141,6 +146,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (container.getChildCount() >= 2) {
             return;
         }
+        container.removeAllViews();
         container.addView(surfaceV);
 
         config().mWawajiUid = uid;
@@ -188,7 +194,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
 
     public void onRightBtnClicked(View view) {
@@ -197,7 +203,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
 
     public void onDownBtnClicked(View view) {
@@ -206,7 +212,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
 
     public void onUpBtnClicked(View view) {
@@ -215,7 +221,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
 
     public void onLeftBtnClicked(View view) {
@@ -224,14 +230,10 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             return;
         }
 
-        ToastUtils.show(new WeakReference<Context>(this) , "请加入控制模块");
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
 
     public void onSwitchCameraClicked(View view) {
-        if (!isBroadcaster()) {
-            showShortToast(getString(R.string.label_not_a_player));
-            return;
-        }
 
         // running on UI thread
         if (mUidList.size() > 1) {
@@ -250,8 +252,9 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                     break;
                 }
             }
+            mUidList.put(targetUid, true);
             // targetUid should not be 0
-            doSetupView(targetUid);
+            doSetupVideoStreamView(targetUid);
         } else {
             showShortToast(getString(R.string.label_can_not_switch_cam));
         }

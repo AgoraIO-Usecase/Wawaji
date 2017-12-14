@@ -176,6 +176,7 @@ public class WorkerThread extends Thread {
         mRtcEngine.setVideoProfile(mEngineConfig.mVideoProfile, true);
 
         mRtcEngine.setClientRole(cRole, "");
+        mRtcEngine.enableWebSdkInteroperability(true);
 
         if (cRole == Constants.CLIENT_ROLE_BROADCASTER) {
             mRtcEngine.setExternalVideoSource(true, false, true);
