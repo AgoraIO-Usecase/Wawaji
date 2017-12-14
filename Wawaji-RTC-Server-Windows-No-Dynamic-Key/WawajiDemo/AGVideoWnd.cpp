@@ -263,7 +263,7 @@ void CAGVideoWnd::ShowVideoInfo(BOOL bShow)
 	m_bShowVideoInfo = bShow;
 
 	m_wndInfo.ShowTips(bShow);
-	Invalidate(TRUE);
+	Invalidate(FALSE);
 
 /*	if (!bShow) {
 		CRect rcTip;
