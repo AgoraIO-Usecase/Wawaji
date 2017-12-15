@@ -112,7 +112,7 @@ $(document).ready(function(){
         }, {
             name: "wawaji_machine_huizhi",
             appid: "f451ae655cfe491b907d67728f9dee8b",
-            channel: "555",
+            channel: "7008",
             dynamicKeyEnabled: false,
             image: "IMG_5467.png",
             available: true
