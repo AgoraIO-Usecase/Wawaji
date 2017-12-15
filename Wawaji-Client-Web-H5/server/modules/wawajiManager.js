@@ -47,7 +47,7 @@ Wawaji.Server = function (serverid, io) {
 
     this.initSession = function () {
         var session = signal.login(cc_name, SignalingToken.get(vault.appid, vault.appcert, "wawaji_cc_" + serverid, 1));
-        
+        // session.dbg = 1;
         session.onLoginSuccess = function (uid) {
             logx.info("login successful " + uid);
             client.uid = uid;
@@ -203,7 +203,7 @@ Wawaji.Server = function (serverid, io) {
 
         this.initSession = function() {
             var session = signal.login(this.name, SignalingToken.get(vault.appid, vault.appcert, this.name, 1));
-
+            // session.dbg = 1;
             session.onLoginSuccess = function (uid) {
                 machine.log.info("login successful " + uid);
                 machine.uid = uid;
