@@ -549,7 +549,7 @@ $(function () {
             $("#video").show();
             if (lobby.game) {
                 //control logic
-                var idx = lobby.game.queue.indexOf(lobby.game.account);
+                var idx = lobby.game.queue.indexOf(lobby.account);
                 if (lobby.game.playing !== account) {
                     //not yet in play
                     $(".controls-game").hide();
