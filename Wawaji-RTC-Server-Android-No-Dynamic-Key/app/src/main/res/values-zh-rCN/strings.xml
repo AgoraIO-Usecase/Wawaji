@@ -9,6 +9,11 @@
     <string name="main_input_name">输入直播间名称(必填)</string>
     <string name="main_input_appid">输入 Agora Appid(可选)</string>
     <string name="main_input_uid">输入 Uid(可选)</string>
+    <string name="main_input_url">输入推流地址 (可选)</string>
+    <string name="main_input_width">宽</string>
+    <string name="main_input_height">高</string>
+    <string name="main_input_bitrate">比特率</string>
+    <string name="main_input_fps">帧率</string>
     <string name="main_button">进入直播间</string>
 
 </resources>
