@@ -27,7 +27,9 @@ public class WawajiServerActivity extends Activity {
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
-    private String mChannelName;
+    private String channelName = "";
+    private String appid = "";
+    private int uid = 0;
 
     private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
@@ -57,9 +59,9 @@ public class WawajiServerActivity extends Activity {
     }
 
     private void initAgoraEngineAndJoinChannel() {
-        initializeAgoraEngine();     // Step 1
-        setupVideoProfile();         // Step 2
-        setupUI();           // Step 3
+        setupUI();                   // Step 1
+        initializeAgoraEngine();     // Step 2
+        setupVideoProfile();         // Step 3
         joinChannel();               // Step 4
     }
 
@@ -125,17 +127,34 @@ public class WawajiServerActivity extends Activity {
     }
 
     // Step 1
+    private void setupUI() {
+        Intent intent = getIntent();
+        channelName = intent.getStringExtra("channelname");
+        if (channelName != null) {
+            TextView mTextChannel = (TextView) findViewById(R.id.room_name);
+            mTextChannel.setText(channelName);
+        }
+
+        uid = intent.getIntExtra("uid", 0);
+        appid = intent.getStringExtra("appid");
+    }
+
+    // Step 2
     private void initializeAgoraEngine() {
         try {
-            mRtcEngine = RtcEngine.create(getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
+            if (appid.equals("")) {
+                appid = getString(R.string.agora_app_id);
+            }
+            mRtcEngine = RtcEngine.create(getBaseContext(), appid, mRtcEventHandler);
         } catch (Exception e) {
+            WawajiApplication.the().setSetting("appid", "");
             Log.e(LOG_TAG, Log.getStackTraceString(e));
 
             throw new RuntimeException("NEED TO check rtc sdk init fatal error\n" + Log.getStackTraceString(e));
         }
     }
 
-    // Step 2
+    // Step 3
     private void setupVideoProfile() {
         mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.enableVideo();
@@ -146,15 +165,6 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.enableWebSdkInteroperability(true);
     }
 
-    // Step 3
-    private void setupUI() {
-        Intent intent = getIntent();
-        mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null) {
-            TextView mTextChannel = (TextView) findViewById(R.id.room_name);
-            mTextChannel.setText(mChannelName);
-        }
-    }
 
     // Step 4
     private void joinChannel() {
@@ -162,7 +172,7 @@ public class WawajiServerActivity extends Activity {
             @Override
             public void run() {
                 super.run();
-                mRtcEngine.joinChannel(null, mChannelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+                mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", uid); // if you do not specify the uid, we will generate the uid for you
             }
         }.start();
     }
@@ -176,10 +186,10 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, 0));
 
         Intent intent = getIntent();
-        mChannelName = intent.getStringExtra("channelname");
-        if (mChannelName != null) {
+        channelName = intent.getStringExtra("channelname");
+        if (channelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
-            mTextChannel.setText(mChannelName);
+            mTextChannel.setText(channelName);
         }
     }
 
