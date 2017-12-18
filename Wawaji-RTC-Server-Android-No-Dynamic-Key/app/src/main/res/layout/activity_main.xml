@@ -25,10 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:text="Name: "/>
             <EditText
@@ -45,10 +45,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:text="AppId: "/>
 
@@ -65,10 +65,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:text="Uid: "/>
 
@@ -80,6 +80,63 @@
                 android:hint="@string/main_input_uid"
                 android:inputType="number" />
         </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp">
+            <TextView
+                android:id="@+id/room_url_name"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="Url: "/>
+
+            <EditText
+                android:id="@+id/room_url_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/room_url_name"
+                android:gravity="center_vertical"
+                android:hint="@string/main_input_uid"
+                android:inputType="text" />
+            <EditText
+                android:id="@+id/room_url_width"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/room_url_edit"
+                android:gravity="center_vertical"
+                android:hint="@string/main_input_width"
+                android:layout_alignLeft="@+id/room_url_edit"
+                android:inputType="number" />
+            <EditText
+                android:id="@+id/room_url_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/room_url_edit"
+                android:layout_toRightOf="@+id/room_url_width"
+                android:gravity="center_vertical"
+                android:hint="@string/main_input_height"
+                android:inputType="number" />
+            <EditText
+                android:id="@+id/room_url_bitrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/room_url_edit"
+                android:layout_toRightOf="@+id/room_url_height"
+                android:gravity="center_vertical"
+                android:hint="@string/main_input_bitrate"
+                android:inputType="number" />
+            <EditText
+                android:id="@+id/room_url_fps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/room_url_edit"
+                android:layout_toRightOf="@+id/room_url_bitrate"
+                android:gravity="center_vertical"
+                android:hint="@string/main_input_fps"
+                android:inputType="number" />
+        </RelativeLayout>
 
 
         <Button

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import io.agora.wawaji.utils.Constant;
 import io.agora.wawaji.utils.WawajiCrashHandler;
 
 
@@ -24,9 +25,21 @@ public class MainActivity extends AppCompatActivity {
     private String channelName = "";
     private String appid = "";
     private int uid = 0;
+
+    private String rtmpUrl = "";
+    private int width = 0;
+    private int height = 0;
+    private int bitrate = 0;
+    private int fps = 0;
+
     private EditText textRoomName;
     private EditText textRoomAppid;
     private EditText textRoomUid;
+    private EditText textRoomUrl;
+    private EditText textWidth;
+    private EditText textHeight;
+    private EditText textBitrate;
+    private EditText textFps;
 
 
     @Override
@@ -70,10 +83,20 @@ public class MainActivity extends AppCompatActivity {
 
         textRoomAppid = (EditText) findViewById(R.id.room_appid);
         textRoomUid = (EditText) findViewById(R.id.room_uid);
+        textRoomUrl = (EditText) findViewById(R.id.room_url_edit);
+        textWidth = (EditText) findViewById(R.id.room_url_width);
+        textHeight = (EditText) findViewById(R.id.room_url_height);
+        textBitrate = (EditText) findViewById(R.id.room_url_bitrate);
+        textFps = (EditText) findViewById(R.id.room_url_fps);
 
-        channelName = WawajiApplication.the().getSetting("channelname", "");
-        appid = WawajiApplication.the().getSetting("appid", "");
-        uid = WawajiApplication.the().getSetting("uid", 0);
+        channelName = WawajiApplication.the().getSetting(Constant.CHANNEL_NAME, "");
+        appid = WawajiApplication.the().getSetting(Constant.CHANNEL_APPID, "");
+        uid = WawajiApplication.the().getSetting(Constant.CHANNEL_UID, 0);
+        rtmpUrl = WawajiApplication.the().getSetting(Constant.CHANNEL_URL, "");
+        width = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_W, 0);
+        height = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_H, 0);
+        bitrate = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_BITRATE, 0);
+        fps = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_FPS, 0);
 
         if (!channelName.equals("")) {
             textRoomName.setText(channelName);
@@ -83,7 +106,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (uid != 0) {
-                textRoomUid.setText(uid);
+                textRoomUid.setText("" + uid);
+            }
+            if (!rtmpUrl.equals("")) {
+                textRoomUrl.setText(rtmpUrl);
+            }
+            if (width != 0) {
+                textWidth.setText("" + width);
+            }
+            if (height != 0) {
+                textHeight.setText("" + height);
+            }
+            if (bitrate != 0) {
+                textBitrate.setText("" + bitrate);
+            }
+            if (fps != 0) {
+                textFps.setText("" + fps);
             }
 
             startActivity();
@@ -127,14 +165,33 @@ public class MainActivity extends AppCompatActivity {
 
         channelName = textRoomName.getText().toString();
         appid = textRoomAppid.getText().toString();
+        rtmpUrl = textRoomUrl.getText().toString();
 
         if (!textRoomUid.getText().toString().isEmpty()) {
             uid = Integer.parseInt(textRoomUid.getText().toString());
         }
 
-        WawajiApplication.the().setSetting("channelname", channelName);
-        WawajiApplication.the().setSetting("appid", appid);
-        WawajiApplication.the().setSetting("uid", uid);
+        if (!textWidth.getText().toString().isEmpty()) {
+            width = Integer.parseInt(textWidth.getText().toString());
+        }
+        if (!textHeight.getText().toString().isEmpty()) {
+            height = Integer.parseInt(textHeight.getText().toString());
+        }
+        if (!textBitrate.getText().toString().isEmpty()) {
+            bitrate = Integer.parseInt(textBitrate.getText().toString());
+        }
+        if (!textFps.getText().toString().isEmpty()) {
+            fps = Integer.parseInt(textFps.getText().toString());
+        }
+
+        WawajiApplication.the().setSetting(Constant.CHANNEL_NAME, channelName);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_APPID, appid);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_UID, uid);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL, rtmpUrl);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_W, width);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_H, height);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_BITRATE, bitrate);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_FPS, fps);
 
         startActivity();
 
@@ -142,9 +199,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void startActivity() {
         Intent i = new Intent(MainActivity.this, WawajiServerActivity.class);
-        i.putExtra("channelname", channelName);
-        i.putExtra("appid", appid);
-        i.putExtra("uid", uid);
+        i.putExtra(Constant.CHANNEL_NAME, channelName);
+        i.putExtra(Constant.CHANNEL_APPID, appid);
+        i.putExtra(Constant.CHANNEL_UID, uid);
+        i.putExtra(Constant.CHANNEL_URL, rtmpUrl);
+        i.putExtra(Constant.CHANNEL_URL_W, width);
+        i.putExtra(Constant.CHANNEL_URL_H, height);
+        i.putExtra(Constant.CHANNEL_URL_BITRATE, bitrate);
+        i.putExtra(Constant.CHANNEL_URL_FPS, fps);
         startActivity(i);
     }
 

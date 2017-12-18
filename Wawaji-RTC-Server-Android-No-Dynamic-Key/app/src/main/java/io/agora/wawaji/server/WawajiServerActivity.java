@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -17,8 +18,11 @@ import android.widget.Toast;
 
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
+import io.agora.rtc.PublisherConfiguration;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.wawaji.utils.Constant;
+
 
 public class WawajiServerActivity extends Activity {
 
@@ -30,6 +34,12 @@ public class WawajiServerActivity extends Activity {
     private String channelName = "";
     private String appid = "";
     private int uid = 0;
+
+    private String rtmpUrl = "";
+    private int width = 0;
+    private int height = 0;
+    private int bitrate = 0;
+    private int fps = 0;
 
     private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
@@ -129,14 +139,19 @@ public class WawajiServerActivity extends Activity {
     // Step 1
     private void setupUI() {
         Intent intent = getIntent();
-        channelName = intent.getStringExtra("channelname");
+        channelName = intent.getStringExtra(Constant.CHANNEL_NAME);
         if (channelName != null) {
             TextView mTextChannel = (TextView) findViewById(R.id.room_name);
             mTextChannel.setText(channelName);
         }
 
-        uid = intent.getIntExtra("uid", 0);
-        appid = intent.getStringExtra("appid");
+        appid = intent.getStringExtra(Constant.CHANNEL_APPID);
+        uid = intent.getIntExtra(Constant.CHANNEL_UID, 0);
+        rtmpUrl = intent.getStringExtra(Constant.CHANNEL_URL);
+        width = intent.getIntExtra(Constant.CHANNEL_URL_W, 0);
+        height = intent.getIntExtra(Constant.CHANNEL_URL_H, 0);
+        bitrate = intent.getIntExtra(Constant.CHANNEL_URL_BITRATE, 0);
+        fps = intent.getIntExtra(Constant.CHANNEL_URL_FPS, 0);
     }
 
     // Step 2
@@ -163,6 +178,19 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
+
+        if (!rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
+            PublisherConfiguration config = new PublisherConfiguration.Builder()
+                    .owner(true)
+                    .size(width, height)
+                    .frameRate(fps)
+                    .biteRate(bitrate)
+                    .rawStreamUrl(rtmpUrl)
+                    .extraInfo("{\"lowDelay\":true}")
+                    .build();
+
+            mRtcEngine.configPublisher(config);
+        }
     }
 
 
@@ -185,12 +213,6 @@ public class WawajiServerActivity extends Activity {
         container.addView(surfaceView);
         mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, 0));
 
-        Intent intent = getIntent();
-        channelName = intent.getStringExtra("channelname");
-        if (channelName != null) {
-            TextView mTextChannel = (TextView) findViewById(R.id.room_name);
-            mTextChannel.setText(channelName);
-        }
     }
 
     // Step 6
