@@ -3,6 +3,8 @@
 
     <string name="label_leave">Leave</string>
     <string name="main_title">Welcome to Open Live!</string>
-    <string name="main_input">Input name of the Live?</string>
+    <string name="main_input_name">Input name of the Live (Required)</string>
+    <string name="main_input_appid">Input Aogra AppId (Optional)</string>
+    <string name="main_input_uid">Input uid of the Live (Optional)</string>
     <string name="main_button">Join Room</string>
 </resources>
