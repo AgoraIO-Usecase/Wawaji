@@ -13,6 +13,11 @@
 - 直播抓娃娃；
 - 离开
 
+##新增功能点
+- 加入存储用户名，APPID， UID 功能，第一次进入后设置了对应的选项， 第二次进入可以直接进入直播间直播
+- 如需修改对应的字段的值，可在进入直播间后返回到主界面修改对应的选项
+- 旁路推流功能，可设置帧率码率分辨率及推流地址（APPID 需开通了旁路推流功能）
+
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "app/src/main/res/values/strings_config.xml"
 
