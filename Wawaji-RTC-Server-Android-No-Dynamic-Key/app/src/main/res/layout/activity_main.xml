@@ -80,12 +80,35 @@
                 android:hint="@string/main_input_uid"
                 android:inputType="number" />
         </LinearLayout>
-        <RelativeLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="Flow: "/>
+
+            <CheckBox
+                android:id="@+id/room_push_flow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/main_push_flow" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/room_layout_bypass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:visibility="gone">
             <TextView
                 android:id="@+id/room_url_name"
                 android:layout_width="50dp"
@@ -98,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/room_url_name"
                 android:gravity="center_vertical"
-                android:hint="@string/main_input_uid"
+                android:hint="@string/main_input_url"
                 android:inputType="text" />
             <EditText
                 android:id="@+id/room_url_width"
@@ -144,7 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:enabled="false"
             android:onClick="onClickJoin"
             android:text="@string/main_button" />

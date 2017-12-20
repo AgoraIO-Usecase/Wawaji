@@ -12,4 +12,5 @@
     <string name="main_input_bitrate">bitrate</string>
     <string name="main_input_fps">fps</string>
     <string name="main_button">Join Room</string>
+    <string name="main_push_flow">Open bypass</string>
 </resources>
