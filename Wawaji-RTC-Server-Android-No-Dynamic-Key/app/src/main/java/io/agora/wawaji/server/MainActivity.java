@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
         channelName = textRoomName.getText().toString();
         appid = textRoomAppid.getText().toString();
         rtmpUrl = textRoomUrl.getText().toString();
-        rtmpUrl = "rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/yttest";
 
         if (!textRoomUid.getText().toString().isEmpty()) {
             uid = Integer.parseInt(textRoomUid.getText().toString());
