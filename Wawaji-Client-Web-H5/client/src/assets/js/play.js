@@ -86,78 +86,6 @@ $(function () {
         return deferred.promise();
     }
 
-    var getGateways = function (machine) {
-        var deferred = $.Deferred();
-        $.ajax({
-            url: "https://h5cs-1.agoraio.cn:7668/geth5gw/jsonp",
-            type: "POST",
-            headers: {
-                "Content-type": "application/json; charset=utf-8"
-            },
-            data: JSON.stringify({
-                key: machine.appid,
-                cname: machine.channel
-            })
-        }).done(function (domains) {
-            dbg("get gateway success")
-            deferred.resolve(domains);
-        }).fail(function () {
-            deferred.reject();
-        });
-
-        return deferred.promise();
-    }
-
-    var prepare_meta = function (machine, cb) {
-        var internal = getParameterByName("internal") === "true";
-        if (!internal) {
-            $.when(getKey(machine), getGateways(machine)).done(function (key, domains) {
-                var gateways = domains.gateway_addr || [];
-
-                if (gateways.length === 0) {
-                    alert("同时观看此机器的人数太多，请稍后再来")
-                } else {
-                    $.ajax({
-                        url: "https://" + domains.gateway_addr[0] + "/v1/machine",
-                        // url: "http://wawa1.agoraio.cn:4000/v1/machine",
-                        // url: "http://127.0.0.1:4000/v1/machine",
-                        type: "POST",
-                        data: {
-                            appid: machine.appid,
-                            channel: machine.channel,
-                            key: key,
-                            uid1: 1,
-                            uid2: 2
-                        }
-                    }).done(function (video_info) {
-                        dbg("get video info success")
-                        cb(video_info);
-                    }).fail(function (e) {
-                        console.log("err: failed to get machine info");
-                    });
-                }
-            })
-        } else {
-            getKey(machine).done(function (key) {
-                $.ajax({
-                    url: "https://123.155.153.85:4000/v1/machine",
-                    type: "POST",
-                    data: {
-                        appid: machine.appid,
-                        channel: machine.channel,
-                        key: key,
-                        uid1: 1,
-                        uid2: 2
-                    }
-                }).done(function (video_info) {
-                    dbg("get video info success")
-                    cb(video_info);
-                }).fail(function (e) {
-                    console.log("err: failed to get machine info");
-                });
-            });
-        }
-    }
 
 
     var Lobby = function (account, cb) {
@@ -277,7 +205,7 @@ $(function () {
             }
             this.control = function (data, pressed) {
                 var action = data;
-                if (!lobby.player.isUsingFrontCamera()) {
+                if (!video_client.isUsingFrontCamera()) {
                     //if is using side camera, update control
                     switch (data) {
                         case 'left':
@@ -300,131 +228,131 @@ $(function () {
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CATCH" }));
             }
         }
-        Lobby.VideoPlayer = function (info) {
-            var player = this;
-            var canvas = document.getElementById('jsmpeg-player');
-            var canvas2 = document.getElementById('jsmpeg-player2');
-            var doubleStream = getParameterByName("double-stream") === "true";
-            player.cameras = info.cameras || {};
-            player.camera = info.cameras.main;
-            player.player1 = null;
-            player.player2 = null;
-            player.switching = false;
+        // Lobby.VideoPlayer = function (info) {
+        //     var player = this;
+        //     var canvas = document.getElementById('jsmpeg-player');
+        //     var canvas2 = document.getElementById('jsmpeg-player2');
+        //     var doubleStream = getParameterByName("double-stream") === "true";
+        //     player.cameras = info.cameras || {};
+        //     player.camera = info.cameras.main;
+        //     player.player1 = null;
+        //     player.player2 = null;
+        //     player.switching = false;
 
-            var onConnectionEstablished = function () { dbg("socket open") };
-            var onFirstPacketReceived = function () { dbg("first packet received") };
-            var onWillDecodeFirstFrame = function () { dbg("will decode first frame") };
+        //     var onConnectionEstablished = function () { dbg("socket open") };
+        //     var onFirstPacketReceived = function () { dbg("first packet received") };
+        //     var onWillDecodeFirstFrame = function () { dbg("will decode first frame") };
 
-            if (lobby.machine.video_rotation === 90) {
-                $("#jsmpeg-player").addClass("rotation-90");
-                $("#jsmpeg-player2").addClass("rotation-90");
-            }
+        //     if (lobby.machine.video_rotation === 90) {
+        //         $("#jsmpeg-player").addClass("rotation-90");
+        //         $("#jsmpeg-player2").addClass("rotation-90");
+        //     }
 
-            player.isUsingFrontCamera = function () {
-                return player.cameras && player.camera === player.cameras.main;
-            }
+        //     player.isUsingFrontCamera = function () {
+        //         return player.cameras && player.camera === player.cameras.main;
+        //     }
 
-            player.fitScreen = function () {
-                if (lobby.machine.video_rotation === 90) {
-                    //do nothing
-                    var width = $(".wrapper").width();
-                    var video_width = parseFloat($("#jsmpeg-player").attr("width"));
-                    var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+        //     player.fitScreen = function () {
+        //         if (lobby.machine.video_rotation === 90) {
+        //             //do nothing
+        //             var width = $(".wrapper").width();
+        //             var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+        //             var video_height = parseFloat($("#jsmpeg-player").attr("height"));
 
-                    var scale = width / video_height;
-                    scale = scale > 1 ? 1 : scale;
-                    $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
-                    $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
-                } else {
-                    var width = $(".wrapper").width();
-                    var video_width = parseFloat($("#jsmpeg-player").attr("width"));
-                    var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+        //             var scale = width / video_height;
+        //             scale = scale > 1 ? 1 : scale;
+        //             $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+        //             $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+        //         } else {
+        //             var width = $(".wrapper").width();
+        //             var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+        //             var video_height = parseFloat($("#jsmpeg-player").attr("height"));
 
-                    var scale = width / video_width;
-                    scale = scale > 1 ? 1 : scale;
-                    $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
-                    $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
-                }
-            }
+        //             var scale = width / video_width;
+        //             scale = scale > 1 ? 1 : scale;
+        //             $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+        //             $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
+        //         }
+        //     }
 
 
-            player.play = function (url, position) {
-                player.switching = true;
-                if (position === 0) {
-                    //front
-                    player.player1 = new JSMpeg.Player(player.cameras.main, {
-                        canvas: canvas,
-                        audio: false,
-                        agora_id: 1,
-                        onDidDecodeFirstFrame: function () {
-                            dbg("play start.")
-                            player.fitScreen();
-                            $(canvas2).hide();
-                            $(canvas).show();
+        //     player.play = function (url, position) {
+        //         player.switching = true;
+        //         if (position === 0) {
+        //             //front
+        //             player.player1 = new JSMpeg.Player(player.cameras.main, {
+        //                 canvas: canvas,
+        //                 audio: false,
+        //                 agora_id: 1,
+        //                 onDidDecodeFirstFrame: function () {
+        //                     dbg("play start.")
+        //                     player.fitScreen();
+        //                     $(canvas2).hide();
+        //                     $(canvas).show();
 
-                            player.player2.destroy();
-                            player.player2 = null;
-                            player.switching = false;
-                        },
-                        onConnectionEstablished: onConnectionEstablished,
-                        onFirstPacketReceived: onFirstPacketReceived,
-                        onWillDecodeFirstFrame: onWillDecodeFirstFrame
-                    });
-                } else {
-                    //side
-                    player.player2 = new JSMpeg.Player(player.cameras.sub, {
-                        canvas: canvas2,
-                        audio: false,
-                        agora_id: 2,
-                        onDidDecodeFirstFrame: function () {
-                            dbg("play start.")
-                            player.fitScreen();
-                            $(canvas).hide();
-                            $(canvas2).show();
+        //                     player.player2.destroy();
+        //                     player.player2 = null;
+        //                     player.switching = false;
+        //                 },
+        //                 onConnectionEstablished: onConnectionEstablished,
+        //                 onFirstPacketReceived: onFirstPacketReceived,
+        //                 onWillDecodeFirstFrame: onWillDecodeFirstFrame
+        //             });
+        //         } else {
+        //             //side
+        //             player.player2 = new JSMpeg.Player(player.cameras.sub, {
+        //                 canvas: canvas2,
+        //                 audio: false,
+        //                 agora_id: 2,
+        //                 onDidDecodeFirstFrame: function () {
+        //                     dbg("play start.")
+        //                     player.fitScreen();
+        //                     $(canvas).hide();
+        //                     $(canvas2).show();
 
-                            player.player1.destroy();
-                            player.player1 = null;
-                            player.switching = false;
-                        },
-                        onConnectionEstablished: onConnectionEstablished,
-                        onFirstPacketReceived: onFirstPacketReceived,
-                        onWillDecodeFirstFrame: onWillDecodeFirstFrame
-                    });
-                }
-            }
-            player.switchCamera = function () {
-                if (player.switching) {
-                    console.log("switching..pls wait");
-                    return;
-                }
-                if (player.camera === player.cameras.main) {
-                    player.camera = player.cameras.sub;
-                    player.play(player.camera, 1);
-                } else {
-                    player.camera = player.cameras.main;
-                    player.play(player.camera, 0);
-                }
-            }
+        //                     player.player1.destroy();
+        //                     player.player1 = null;
+        //                     player.switching = false;
+        //                 },
+        //                 onConnectionEstablished: onConnectionEstablished,
+        //                 onFirstPacketReceived: onFirstPacketReceived,
+        //                 onWillDecodeFirstFrame: onWillDecodeFirstFrame
+        //             });
+        //         }
+        //     }
+        //     player.switchCamera = function () {
+        //         if (player.switching) {
+        //             console.log("switching..pls wait");
+        //             return;
+        //         }
+        //         if (player.camera === player.cameras.main) {
+        //             player.camera = player.cameras.sub;
+        //             player.play(player.camera, 1);
+        //         } else {
+        //             player.camera = player.cameras.main;
+        //             player.play(player.camera, 0);
+        //         }
+        //     }
 
-            dbg("setup jsmpeg player..")
-            player.player1 = new JSMpeg.Player(player.cameras.main, {
-                canvas: canvas,
-                audio: false,
-                autoplay: false,
-                decodeFirstFrame: true,
-                agora_id: 1,
-                onDidDecodeFirstFrame: function () {
-                    dbg("play start.")
-                    player.fitScreen();
-                    loading = false;
-                    updateViews();
-                },
-                onConnectionEstablished: onConnectionEstablished,
-                onFirstPacketReceived: onFirstPacketReceived,
-                onWillDecodeFirstFrame: onWillDecodeFirstFrame
-            });
+        //     dbg("setup jsmpeg player..")
+        //     player.player1 = new JSMpeg.Player(player.cameras.main, {
+        //         canvas: canvas,
+        //         audio: false,
+        //         autoplay: false,
+        //         decodeFirstFrame: true,
+        //         agora_id: 1,
+        //         onDidDecodeFirstFrame: function () {
+        //             dbg("play start.")
+        //             player.fitScreen();
+        //             loading = false;
+        //             updateViews();
+        //         },
+        //         onConnectionEstablished: onConnectionEstablished,
+        //         onFirstPacketReceived: onFirstPacketReceived,
+        //         onWillDecodeFirstFrame: onWillDecodeFirstFrame
+        //     });
 
-        }
+        // }
 
     };
 
@@ -441,13 +369,75 @@ $(function () {
             break;
         }
     }
-    prepare_meta(lobby.machine, function (video_info) {
-        meta_prepare.resolve({
-            info: video_info
-        });
+
+
+    function fitScreen(){
+        if (lobby.machine.video_rotation === 90) {
+            //do nothing
+            var width = $(".wrapper").width();
+            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+            var scale = width / video_height;
+            scale = scale > 1 ? 1 : scale;
+            $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+            $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+        } else {
+            var width = $(".wrapper").width();
+            var video_width = parseFloat($("#jsmpeg-player").attr("width"));
+            var video_height = parseFloat($("#jsmpeg-player").attr("height"));
+
+            var scale = width / video_width;
+            scale = scale > 1 ? 1 : scale;
+            $("#jsmpeg-player").css("transform", "scale(" + scale + "," + scale + ")");
+            $("#jsmpeg-player2").css("transform", "scale(" + scale + "," + scale + ")");
+        }
+    }
+
+    var video_client = AgoraCMH5SDK.createClient();
+
+    video_client.on("camera_switched", function (params) {
+        dbg("camera_switched");
     });
-    meta_prepare.done(function (meta) {
-        lobby.player = new Lobby.VideoPlayer(meta.info);
+
+    video_client.on("get_gateways", function (params) {
+        dbg("get gateways");
+    });
+
+    video_client.on("get_video_info", function (params) {
+        dbg("get video info");
+    });
+
+    video_client.on("connection_established", function (params) {
+        dbg("connection established");
+    });
+
+    video_client.on("first_packet_received", function (params) {
+        dbg("first packet received");
+    });
+
+    video_client.on("will_decode_first_frame", function (params) {
+        dbg("will decode first frame");
+    });
+
+    video_client.on("ready", function (params) {
+        fitScreen();
+    });
+
+    getKey(lobby.machine).done(function (key) {
+        video_client.init(lobby.machine.appid, lobby.machine.channel, {
+            key: key
+        }, function () {
+            video_client.play({
+                canvas1: "jsmpeg-player",
+                canvas2: "jsmpeg-player2"
+            }, function () {
+                dbg("play start.")
+                fitScreen();
+                loading = false;
+                updateViews();
+            });
+        });
     });
 
 
@@ -495,7 +485,7 @@ $(function () {
     });
 
     $(".control-camera").off("click").on("click", function () {
-        lobby.player.switchCamera();
+        video_client.switchCamera();
     });
 
     $("body").on(start_event, ".control-left", function () {
@@ -542,7 +532,7 @@ $(function () {
         if (loading) {
             $(".loading").show();
         } else {
-            if(control_ready){
+            if (control_ready) {
                 $(".disabled").removeClass("disabled");
             }
             $(".loading").hide();

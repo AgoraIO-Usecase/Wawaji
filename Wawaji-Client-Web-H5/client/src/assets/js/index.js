@@ -89,6 +89,14 @@ $(function () {
                 image: "IMG_5468.png",
                 internal: true,
                 available: true
+            },{
+                id: "wawaji_machine_kalaku_internal",
+                name: "wawaji_machine_kalaku",
+                appid: "a167bd9b8e494dc7b07e6437ec58d136",
+                channel: "100000",
+                dynamicKeyEnabled: false,
+                image: "IMG_5468.png",
+                available: true
             }];
             for(var i = 0; i < machines.length; i++){
                 machines[i].room_name = "room_" + machines[i].name;
