@@ -1019,6 +1019,7 @@ bool CAgoraObject::enablePublish(bool enable /*= true*/)
 		publishparam.bitrate = m_publishParam.bitrate;
 		publishparam.rawStreamUrl = m_publishParam.rtmpUrl.data();
 		publishparam.extraInfo = "{\"lowDelay\":true}";
+		publishparam.lifecycle = RTMP_STREAM_LIFE_CYCLE_BIND2OWNER;
 
 		m_lpAgoraEngine->configPublisher(publishparam);
 	}

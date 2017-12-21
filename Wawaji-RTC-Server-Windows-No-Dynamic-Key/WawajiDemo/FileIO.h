@@ -96,6 +96,14 @@ protected:
 #define INI_DeviceInfo_CameraCOMID	"CameraComID"
 #define INI_DeviceInfo_State					"DeviceState"
 #define INI_DeviceInfo_Choose				"DeviceChoose"
+#define INI_DeviceInfo_ResolutionSave	"ResolutionSave"
+#define INI_DeviceInfo_ResolutionIndex "ResolutionIndex"
+#define INI_DeviceInfo_RtmpSave			"RtmpSave"
+#define INI_DeviceInfo_RtmpUrl				"RtmpUrl"
+#define INI_DeviceInfo_RtmpWidth			"RtmpWidth"
+#define INI_DeviceInfo_RtmpHeight		"RtmpHeight"
+#define INI_DeviceInfo_RtmpFps			"RtmpFps"
+#define INI_DeviceInfo_RtmpBitrate		"RtmpBitrate"
 
 class CConfigWawaji:public CIniBase
 {
@@ -120,6 +128,15 @@ public:
 	__DECLARE_INICONFIG_SIMILAR_FUN(CameraComID)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceState)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceChoose)
+
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionSave)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionIndex)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpSave)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpUrl)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpWidth)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpHeight)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpFps)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpBitrate)
 
 private:
 

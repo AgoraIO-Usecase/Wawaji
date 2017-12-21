@@ -6,6 +6,7 @@
 #include "SetupDlg.h"
 #include "afxdialogex.h"
 #include "commonFun.h"
+#include "InfoManager.h"
 
 // CSetupDlg 对话框
 
@@ -67,13 +68,9 @@ BOOL CSetupDlg::OnInitDialog()
 	m_penFrame.CreatePen(PS_SOLID, 1, RGB(0xD8, 0xD8, 0xD8));
 	m_cbxVideoProfile.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, CRect(0, 0, 300, 40), this, IDC_CMBVDOPRF_SETUP);
 	SetBackgroundColor(RGB(0xFF, 0xFF, 0xFF), TRUE);
+
     InitData();
     InitCtrls();
-
-	if (m_agConfig.IsAutoSaveEnabled())
-		m_ckSaveSettings.SetCheck(TRUE);
-	else
-		m_ckSaveSettings.SetCheck(FALSE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -135,12 +132,19 @@ void CSetupDlg::InitCtrls()
 	m_btnConfirm.SetTextColor(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0xC8, 0x64), RGB(0xFF, 0xC8, 0x64), RGB(0xCC, 0xCC, 0xCC));
 	m_btnConfirm.SetWindowText(LANG_STR("IDS_SET_BTCONFIRM"));
 
-    if (m_agConfig.IsAutoSaveEnabled())
-        nResolutionIndex = m_agConfig.GetSolution();
-    else
-        nResolutionIndex = 15;
-    
-    m_cbxVideoProfile.SetCurSel(nResolutionIndex);
+	std::string curSection = getInfoManager()->getCurSection();
+	std::string ResolutionSave = getInfoManager()->getConfig()->getResolutionSave(curSection);
+	nResolutionIndex = str2int(getInfoManager()->getConfig()->getResolutionIndex(curSection));
+	if ("1" == ResolutionSave)
+	{
+		m_ckSaveSettings.SetCheck(TRUE);
+	}
+	else
+	{
+		m_ckSaveSettings.SetCheck(FALSE);
+		nResolutionIndex = 15;
+	}
+	m_cbxVideoProfile.SetCurSel(nResolutionIndex);
 }
 
 void CSetupDlg::InitData()
@@ -261,13 +265,16 @@ void CSetupDlg::OnBnClickedBtnconfirmSetup()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	GetParent()->SendMessage(WM_GOBACK, 0, 0);
-
+	
+	std::string curSection = getInfoManager()->getCurSection();
 	if (m_ckSaveSettings.GetCheck() == TRUE) {
-		m_agConfig.EnableAutoSave(TRUE);
-        m_agConfig.SetSolution(m_cbxVideoProfile.GetCurSel());
+		getInfoManager()->getConfig()->setResolutionSave(curSection, "1");
+		getInfoManager()->getConfig()->setResolutionIndex(curSection, int2str(m_cbxVideoProfile.GetCurSel()));
 	}
 	else
-		m_agConfig.EnableAutoSave(FALSE);
+	{
+		getInfoManager()->getConfig()->setResolutionSave(curSection, "0");
+	}
 
 	BOOL bFullBand = m_ckFullBand.GetCheck();
 	BOOL bStereo = m_ckStereo.GetCheck();
@@ -322,18 +329,44 @@ CString CSetupDlg::GetVideoSolutionDes()
 
 int CSetupDlg::getSolutionWidth()
 {
-	CString sWidth;
-	m_edWidth.GetWindowText(sWidth);
+	if (!m_ckVideoExt.GetCheck())
+	{
+		int indexSrc = m_cbxVideoProfile.GetCurSel();
+		CString videoProfileDesc = m_szProfileDes[indexSrc];
 
-	return str2int(cs2s(sWidth));
+		int spaceIndex = videoProfileDesc.Find(_T("x"), 0);
+		CString widthStr = videoProfileDesc.Mid(0, spaceIndex);
+		return str2int(cs2s(widthStr));
+	}
+	else
+	{
+		CString sWidth;
+		m_edWidth.GetWindowText(sWidth);
+
+		return str2int(cs2s(sWidth));
+
+	}
 }
 
 int CSetupDlg::getSolutionHeight()
 {
-	CString sHeight;
-	m_edHeight.GetWindowTextW(sHeight);
+	if (m_ckVideoExt.GetCheck())
+	{
+		CString sHeight;
+		m_edHeight.GetWindowTextW(sHeight);
 
-	return str2int(cs2s(sHeight));
+		return str2int(cs2s(sHeight));
+	}
+	else
+	{
+		int indexSrc = m_cbxVideoProfile.GetCurSel();
+		CString videoProfileDesc = m_szProfileDes[indexSrc];
+
+		int spaceInex = videoProfileDesc.Find(_T(" "), 0);
+		int xindex = videoProfileDesc.Find(_T("x"),0);
+		CString widthStr = videoProfileDesc.Mid(xindex+1, spaceInex - xindex);
+		return str2int(cs2s(widthStr));
+	}
 }
 
 void CSetupDlg::SetVideoProfile()
