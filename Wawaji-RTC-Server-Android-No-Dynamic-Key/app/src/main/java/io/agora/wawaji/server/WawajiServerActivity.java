@@ -40,7 +40,7 @@ public class WawajiServerActivity extends Activity {
     private int height = 0;
     private int bitrate = 0;
     private int fps = 0;
-    private boolean openBypass = false;
+    private boolean openRtmpStream = false;
 
     private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
@@ -148,9 +148,9 @@ public class WawajiServerActivity extends Activity {
 
         appid = intent.getStringExtra(Constant.CHANNEL_APPID);
         uid = intent.getIntExtra(Constant.CHANNEL_UID, 0);
-        openBypass = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE, false);
+        openRtmpStream = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE, false);
 
-        if (openBypass) {
+        if (openRtmpStream) {
             rtmpUrl = intent.getStringExtra(Constant.CHANNEL_URL);
             width = intent.getIntExtra(Constant.CHANNEL_URL_W, 0);
             height = intent.getIntExtra(Constant.CHANNEL_URL_H, 0);
@@ -185,7 +185,7 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
 
-        if (openBypass && !rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
+        if (openRtmpStream && !rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
             PublisherConfiguration config = new PublisherConfiguration.Builder()
                     .owner(true)
                     .size(width, height)

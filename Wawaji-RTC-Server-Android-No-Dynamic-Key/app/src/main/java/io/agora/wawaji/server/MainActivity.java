@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private int height = 0;
     private int bitrate = 0;
     private int fps = 0;
-    private boolean openBypass = false;
+    private boolean openRtmpStream = false;
 
     private EditText textRoomName;
     private EditText textRoomAppid;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText textBitrate;
     private EditText textFps;
     private CheckBox checkBoxPushFlow;
-    private RelativeLayout layoutBypass;
+    private RelativeLayout layoutRtmp;
 
 
     @Override
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         textHeight = (EditText) findViewById(R.id.room_url_height);
         textBitrate = (EditText) findViewById(R.id.room_url_bitrate);
         textFps = (EditText) findViewById(R.id.room_url_fps);
-        layoutBypass = (RelativeLayout) findViewById(R.id.room_layout_bypass);
+        layoutRtmp = (RelativeLayout) findViewById(R.id.room_layout_rtmp);
         checkBoxPushFlow = (CheckBox) findViewById(R.id.room_push_flow);
         checkBoxPushFlow.setOnCheckedChangeListener(onCheckedChangeListener);
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         height = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_H, 0);
         bitrate = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_BITRATE, 0);
         fps = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_FPS, 0);
-        openBypass = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE, false);
+        openRtmpStream = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE, false);
 
         if (!channelName.equals("")) {
             textRoomName.setText(channelName);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 textFps.setText("" + fps);
             }
 
-            checkBoxPushFlow.setChecked(openBypass);
+            checkBoxPushFlow.setChecked(openRtmpStream);
 
             startActivity();
         }
@@ -199,9 +199,9 @@ public class MainActivity extends AppCompatActivity {
         WawajiApplication.the().setSetting(Constant.CHANNEL_NAME, channelName);
         WawajiApplication.the().setSetting(Constant.CHANNEL_APPID, appid);
         WawajiApplication.the().setSetting(Constant.CHANNEL_UID, uid);
-        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_STATE, openBypass);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_STATE, openRtmpStream);
 
-        if (openBypass) {
+        if (openRtmpStream) {
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL, rtmpUrl);
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL_W, width);
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL_H, height);
@@ -218,9 +218,9 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra(Constant.CHANNEL_NAME, channelName);
         i.putExtra(Constant.CHANNEL_APPID, appid);
         i.putExtra(Constant.CHANNEL_UID, uid);
-        i.putExtra(Constant.CHANNEL_URL_STATE, openBypass);
+        i.putExtra(Constant.CHANNEL_URL_STATE, openRtmpStream);
 
-        if (openBypass) {
+        if (openRtmpStream) {
             i.putExtra(Constant.CHANNEL_URL, rtmpUrl);
             i.putExtra(Constant.CHANNEL_URL_W, width);
             i.putExtra(Constant.CHANNEL_URL_H, height);
@@ -235,12 +235,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-            openBypass = isChecked;
+            openRtmpStream = isChecked;
 
             if (isChecked) {
-                layoutBypass.setVisibility(View.VISIBLE);
+                layoutRtmp.setVisibility(View.VISIBLE);
             } else {
-                layoutBypass.setVisibility(View.GONE);
+                layoutRtmp.setVisibility(View.GONE);
             }
         }
     };
