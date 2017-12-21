@@ -213,6 +213,7 @@ Wawaji.Server = function (serverid, io) {
                     machine.online = true;
                     machine.channel.channelClearAttr();
                     machine.updateAttrs();
+                    machine.channel && machine.channel.channelSetAttr("_auto_update_num", "1");
                 };
     
                 machine.channel.onChannelJoinFailed = function (ecode) {

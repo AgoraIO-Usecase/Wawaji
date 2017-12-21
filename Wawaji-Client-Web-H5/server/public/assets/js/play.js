@@ -380,8 +380,8 @@ $(function () {
 
             var scale = width / video_height;
             scale = scale > 1 ? 1 : scale;
-            $("#jsmpeg-player").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
-            $("#jsmpeg-player2").css("transform", "translateX(-50%) rotate(90deg) scale(" + scale + "," + scale + ")");
+            $("#jsmpeg-player").css("transform", "rotate(90deg) scale(" + scale + "," + scale + ")");
+            $("#jsmpeg-player2").css("transform", "rotate(90deg) scale(" + scale + "," + scale + ")");
         } else {
             var width = $(".wrapper").width();
             var video_width = parseFloat($("#jsmpeg-player").attr("width"));
@@ -426,7 +426,9 @@ $(function () {
 
     getKey(lobby.machine).done(function (key) {
         video_client.init(lobby.machine.appid, lobby.machine.channel, {
-            key: key
+            key: key,
+            uid1: 1,
+            uid2: 2
         }, function () {
             video_client.play({
                 canvas1: "jsmpeg-player",
@@ -439,7 +441,6 @@ $(function () {
             });
         });
     });
-
 
     (function layoutItems() {
         var width = $(document).innerWidth(), height = $(document).innerHeight();
