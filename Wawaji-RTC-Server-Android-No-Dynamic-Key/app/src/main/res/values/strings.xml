@@ -6,10 +6,11 @@
     <string name="main_input_name">Input name of the Live (Required)</string>
     <string name="main_input_appid">Input Aogra AppId (Optional)</string>
     <string name="main_input_uid">Input uid of the Live (Optional)</string>
-    <string name="main_input_url">Input Publisher Url (Optional)</string>
+    <string name="main_input_url">Input CDN RTMP Url (Optional)</string>
     <string name="main_input_width">width</string>
     <string name="main_input_height">height</string>
     <string name="main_input_bitrate">bitrate</string>
     <string name="main_input_fps">fps</string>
     <string name="main_button">Join Room</string>
+    <string name="main_push_flow">Open CDN RTMP streaming</string>
 </resources>

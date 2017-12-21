@@ -15,5 +15,6 @@
     <string name="main_input_bitrate">比特率</string>
     <string name="main_input_fps">帧率</string>
     <string name="main_button">进入直播间</string>
+    <string name="main_push_flow">开启旁路推流</string>
 
 </resources>
