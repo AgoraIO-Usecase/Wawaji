@@ -119,7 +119,7 @@ void CEnterChannelDlg::InitCtrls()
 	m_ctrAppId.MoveWindow(160, 33, 240, 22, TRUE);
 	m_ctrAppId.SetFont(&m_ftDesc);
 	m_ctrAppId.SetCaretPos(CPoint(12, 148));
-	m_ctrAppId.ShowCaret();;
+	m_ctrAppId.ShowCaret();
 	m_ctrAppId.SetTip(s2cs(appId));
 	//m_ctrAppId.SetTip(_T("f4637604af81440596a54254d53ade20"));
 	m_ctrAppId.SetFocus();
