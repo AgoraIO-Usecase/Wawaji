@@ -132,35 +132,57 @@ void CEnterChannelDlg::InitCtrls()
 	//m_ctrChannel.SetTip(_T("wawaji_demo")); 
 	m_ctrChannel.SetFocus();
     
-//  m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
-// 	m_ctrPassword.SetFont(&m_ftDesc);
-// 	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
-// 	m_ctrPassword.SetFocus();
-
 	m_ctrUid.MoveWindow(120, 131, 90, 22, TRUE);
 	m_ctrUid.SetFont(&m_ftDesc);
 	//m_ctrUid.SetTip(_T("1"));
 	m_ctrUid.SetTip(s2cs(uid));
 	m_ctrUid.SetFocus();
 
-	m_edPublishWidth.SetFont(&m_ftDesc);
+	std::string curSection = getInfoManager()->getCurSection();
+	std::string rtmpSave = getInfoManager()->getConfig()->getRtmpSave(curSection);
+	std::string rtmpWidth = getInfoManager()->getConfig()->getRtmpWidth(curSection);
+	std::string rtmpHeight = getInfoManager()->getConfig()->getRtmpHeight(curSection);
+	std::string rtmpfps = getInfoManager()->getConfig()->getRtmpFps(curSection);
+	std::string rtmpbitrate = getInfoManager()->getConfig()->getRtmpBitrate(curSection);
+	std::string rtmpUrl = getInfoManager()->getConfig()->getRtmpUrl(curSection);
+
+	if ("1" == rtmpSave){
+
+		((CButton*)GetDlgItem(IDC_CHECK_RTMP))->SetCheck(TRUE);
+	}
+	else {
+
+		((CButton*)GetDlgItem(IDC_CHECK_RTMP))->SetCheck(FALSE);
+	}
+
+	m_edPublishWidth.SetFont(&m_ftBtn);
 	m_edPublishWidth.SetTip(_T("width"));
+	if ("" != rtmpWidth)
+	m_edPublishWidth.SetTip(s2cs(rtmpWidth));
 	m_edPublishWidth.SetFocus();
 
-	m_edPublishHeight.SetFont(&m_ftDesc);
+	m_edPublishHeight.SetFont(&m_ftBtn);
 	m_edPublishHeight.SetTip(_T("height"));
+	if ("" != rtmpHeight)
+	m_edPublishHeight.SetTip(s2cs(rtmpHeight));
 	m_edPublishHeight.SetFocus();
 
-	m_edPublishFps.SetFont(&m_ftDesc);
+	m_edPublishFps.SetFont(&m_ftBtn);
 	m_edPublishFps.SetTip(_T("fps"));
+	if ("" != rtmpfps)
+	m_edPublishFps.SetTip(s2cs(rtmpfps));
 	m_edPublishFps.SetFocus();
 
-	m_edPublishBitrate.SetFont(&m_ftDesc);
+	m_edPublishBitrate.SetFont(&m_ftBtn);
 	m_edPublishBitrate.SetTip(_T("bitrate"));
+	if ("" != rtmpbitrate)
+	m_edPublishBitrate.SetTip(s2cs(rtmpbitrate));
 	m_edPublishBitrate.SetFocus();
 
-	m_edPublishRtmpUrl.SetFont(&m_ftDesc);
+	m_edPublishRtmpUrl.SetFont(&m_ftBtn);
 	m_edPublishRtmpUrl.SetTip(_T("RtmpUrl"));
+	if ("" != rtmpUrl)
+	m_edPublishRtmpUrl.SetTip(s2cs(rtmpUrl));
 	m_edPublishRtmpUrl.SetFocus();
 
 	GetDlgItem(IDC_CHECK_FRONT)->MoveWindow(160, 280, 80, 22, TRUE);
@@ -317,19 +339,27 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 		return;
 	}
 
+	std::string curSection = getInfoManager()->getCurSection();
+	BOOL res = ((CButton*)(GetDlgItem(IDC_CHECK_RTMP)))->GetCheck();
+	getInfoManager()->getConfig()->setRtmpSave(curSection, int2str(res));
 	AGE_PUBLISH_PARAM publishParam;
 	m_edPublishWidth.GetWindowText(param);
 	publishParam.width = str2int(cs2s(param));
+	getInfoManager()->getConfig()->setRtmpWidth(curSection,cs2s(param));
 	m_edPublishHeight.GetWindowText(param);
 	publishParam.height = str2int(cs2s(param));
+	getInfoManager()->getConfig()->setRtmpHeight(curSection,cs2s(param));
 	m_edPublishFps.GetWindowText(param);
 	publishParam.fps = str2int(cs2s(param));
+	getInfoManager()->getConfig()->setRtmpFps(curSection,cs2s(param));
 	m_edPublishBitrate.GetWindowText(param);
 	publishParam.bitrate = str2int(cs2s(param));
+	getInfoManager()->getConfig()->setRtmpBitrate(curSection,cs2s(param));
 	m_edPublishRtmpUrl.GetWindowText(param);
 	publishParam.rtmpUrl = cs2s(param);
+	getInfoManager()->getConfig()->setRtmpUrl(curSection,cs2s(param));
 	CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
-	CAgoraObject::GetAgoraObject()->enablePublish(true);
+	CAgoraObject::GetAgoraObject()->enablePublish(res);
 
 	//m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
 

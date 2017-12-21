@@ -12,6 +12,9 @@
 - 3.自定义摄像头采集参数,提前为每个摄像头对应的进程分配摄像头.用户需要确保每个进程选择的摄像头不同相互占用.
 - 4.加入配置文件 wawaji.ini，用户只需要配置 AppId，ChannelName，LoginUid，LoginUid;
 - 5.用户配置好参数后，启动指定进程加载提前分配好的摄像头.
+- 6.增加新的 INI 配置项:ResolutionIndex(VideoProfile 对应的索引号),ResolutionSave (是否保存当前选择的 videoProfile 参数)
+- 7.增加新的 INI 配置项:RtmpSave(是否保存当前填写的推流参数)，RtmpWidth,RtmpHeight,RtmpFps,RtmpBitrate,RtmpUrl
+
 那么出现不出图的情形
 - 6.增加守护进程，主要包含以下几个功能：
 - 开启自启动
