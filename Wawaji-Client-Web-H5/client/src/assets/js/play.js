@@ -405,7 +405,7 @@ $(function () {
     });
 
     video_client.on("get_video_info", function (params) {
-        dbg("get video info");
+        dbg("get video info: " + params.gw);
     });
 
     video_client.on("connection_established", function (params) {
