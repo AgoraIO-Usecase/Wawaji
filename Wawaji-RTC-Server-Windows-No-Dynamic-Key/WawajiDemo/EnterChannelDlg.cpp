@@ -461,10 +461,10 @@ void CEnterChannelDlg::OnBnClickedCheckBack()
 		}
 	}
 	else{
-		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoBack)){
+		if ("1" == getInfoManager()->getConfig()->getDeviceChoose(INI_DeviceInfoFront)){
 			AfxMessageBox(_T("前置摄像头对应进程已经启动.."));
-			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(FALSE);
-			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(TRUE);
+			((CButton*)(GetDlgItem(IDC_CHECK_BACK)))->SetCheck(TRUE);
+			((CButton*)(GetDlgItem(IDC_CHECK_FRONT)))->SetCheck(FALSE);
 			return;
 		}
 	}

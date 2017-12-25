@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AgoraObject.h"
 #include "AGResourceVisitor.h"
+#include "commonFun.h"
 
 #include <stdio.h>
 
@@ -247,7 +248,12 @@ BOOL CAgoraObject::SetLogFilePath(LPCTSTR lpLogPath)
 		return ret == 0 ? TRUE : FALSE;
 	}
 	else{
-		ret = rep.setLogFile(CStringA(lpLogPath).GetBuffer());
+#ifdef UNICODE
+		::WideCharToMultiByte(CP_UTF8, 0, lpLogPath, -1, szLogPathA, MAX_PATH, NULL, NULL);
+#else
+		::MultiByteToWideChar(CP_UTF8, 0, lpLogPath, -1, (WCHAR *)szLogPathA, MAX_PATH, NULL, NULL);
+#endif
+		ret = rep.setLogFile(szLogPathA);
 		return ret == 0 ? TRUE : FALSE;
 	}
 }
