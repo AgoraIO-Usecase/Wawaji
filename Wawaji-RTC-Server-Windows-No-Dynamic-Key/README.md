@@ -23,11 +23,12 @@
 - 1.登录房间参数配置在 EnterDlg.cpp 文件中的 InitCtrl() 部分修改
 - 2.推流参数在 DeviceDlg.cpp 的 InitCtrl() 中修改
 - 3.最后用 Visual Studio 打开该项目，编译并运行。
-- 4.在本项目根目录下有 wawaji.ini 文件，需要拷贝到 debug，或者 release 文件夹下.
-- 5.在配置文件中 devicechoose 表示对应进程已经启动不能启用相同进程(程序自动生成)
-- 6.在配置文件中 devicestatus 表示该摄像头已经配置占用，不能使用相同摄像头(程序自动生成)
-- 7.默认先启动的程序为前置程序，前置程序有抢占摄像头资源的优先权，后置程序只能选择其他空闲的摄像头。
-- 8.如果后置程序已经启动，那么再启动的只能是前置程序。
+- 3.自定义摄像头采集参数,提前为每个摄像头对应的进程分配摄像头.用户需要确保每个进程选择的摄像头不同相互占用.
+- 4.加入配置文件 wawaji.ini，用户只需要配置 AppId，ChannelName，LoginUid，LoginUid;
+- 5.用户配置好参数后，启动指定进程加载提前分配好的摄像头.
+- 6.增加新的 INI 配置项:ResolutionIndex(VideoProfile 对应的索引号),ResolutionSave (是否保存当前选择的 videoProfile 参数)
+- 7.增加新的 INI 配置项:RtmpSave(是否保存当前填写的推流参数)，RtmpWidth,RtmpHeight,RtmpFps,RtmpBitrate,RtmpUrl
+
 
 ## 执行说明
 - 1.SDK 环境 2.0.0
