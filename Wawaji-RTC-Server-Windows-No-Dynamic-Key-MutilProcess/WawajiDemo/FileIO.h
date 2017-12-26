@@ -78,27 +78,39 @@ protected:
 	CFileIni *pIniInstance_;
 };
 
-#define INI_LoginInfo									"LoginInfo"
-#define INI_LoginInfo_APPID					"AppId"
-#define INI_LoginInfo_ChannelName	"ChannelName"
-#define INI_LoginInfo_RestartTimeStatus "RestartTimerStatus"
-#define INI_LoginInfo_RestaTimer        "RestartTimer"
-#define INI_LoginInfo_VideoPreview     "VideoPreview"
+#define INI_LoginInfo															"LoginInfo"
+#define INI_LoginInfo_APPID											"AppId"
+#define INI_LoginInfo_ChannelName							"ChannelName"
+#define INI_LoginInfo_RestartTimeStatus						"RestartTimerStatus"
+#define INI_LoginInfo_RestaTimer									"RestartTimer"
+#define INI_LoginInfo_VideoPreview								"VideoPreview"
 
-#define INI_DeviceInfoFront						"DeviceInfoFront"
-#define INI_DeviceInfoBack						"DeviceInfoBack"
-#define INI_DeviceID							"DeviceID"
-#define INI_PROCESSID							"ProcessID"
-#define INI_PROCESSID_Enable					"ProcessEnable"
-#define INI_LoginInfo_UID						"LoginUid"
-#define INI_DeviceInfo_AudioInName	"AudioInName"
-#define INI_DeviceInfo_AudioInCOMID	"AudioInComID"
-#define INI_DeviceInfo_PlayOutName	"PlayOutName"
-#define INI_DeviceInfo_PlayOutCOMID	"PlayOutComID"
-#define INI_DeviceInfo_CameraName	"CameraName"
-#define INI_DeviceInfo_CameraCOMID	"CameraComID"
-#define INI_DeviceInfo_State					"DeviceState"
-#define INI_DeviceInfo_Choose				"DeviceChoose"
+#define INI_DeviceInfoFront												"DeviceInfoFront"
+#define INI_DeviceInfoBack												"DeviceInfoBack"
+#define INI_DeviceID															"DeviceID"
+#define INI_PROCESSID													"ProcessID"
+#define INI_PROCESSID_Enable									"ProcessEnable"
+#define INI_LoginInfo_UID												"LoginUid"
+#define INI_DeviceInfo_AudioInName							"AudioInName"
+#define INI_DeviceInfo_AudioInCOMID							"AudioInComID"
+#define INI_DeviceInfo_PlayOutName							"PlayOutName"
+#define INI_DeviceInfo_PlayOutCOMID							"PlayOutComID"
+#define INI_DeviceInfo_CameraName							"CameraName"
+#define INI_DeviceInfo_CameraCOMID							"CameraComID"
+#define INI_DeviceInfo_State											"DeviceState"
+#define INI_DeviceInfo_Choose										"DeviceChoose"
+#define INI_DeviceInfo_ResolutionSave						"ResolutionSave"
+#define INI_DeviceInfo_ResolutionIndex						"ResolutionIndex"
+#define INI_DeviceInfo_ResolutionWidth						"ResolutionWidth"
+#define INI_DeviceInfo_ResolutionHeight						"ResolutionHeight"
+#define INI_DeviceInfo_ResolutionFps							"ResolutionFps"
+#define INI_DeviceInfo_ResolutionBitrate						"ResolutionBitrate"
+#define INI_DeviceInfo_RtmpSave									"RtmpSave"
+#define INI_DeviceInfo_RtmpUrl										"RtmpUrl"
+#define INI_DeviceInfo_RtmpWidth									"RtmpWidth"
+#define INI_DeviceInfo_RtmpHeight								"RtmpHeight"
+#define INI_DeviceInfo_RtmpFps									"RtmpFps"
+#define INI_DeviceInfo_RtmpBitrate								"RtmpBitrate"
 
 class CConfigWawaji:public CIniBase
 {
@@ -124,6 +136,20 @@ public:
 	__DECLARE_INICONFIG_SIMILAR_FUN(CameraComID)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceState)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceChoose)
+
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionSave)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionIndex)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionWidth)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionHeight)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionFps)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionBitrate)
+
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpSave)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpUrl)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpWidth)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpHeight)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpFps)
+	__DECLARE_INICONFIG_SIMILAR_FUN(RtmpBitrate)
 
 private:
 

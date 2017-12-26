@@ -57,6 +57,9 @@
     <ClInclude Include="AGResourceVisitor.h">
       <Filter>AgoraObject</Filter>
     </ClInclude>
+    <ClInclude Include="AGEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WawajiRunner.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="AGResourceVisitor.cpp">
       <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AGEdit.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

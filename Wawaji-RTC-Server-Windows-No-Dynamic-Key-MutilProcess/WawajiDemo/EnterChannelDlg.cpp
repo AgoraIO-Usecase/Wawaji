@@ -120,35 +120,46 @@ void CEnterChannelDlg::InitCtrls()
 	//m_ctrChannel.SetTip(_T("wawaji_demo")); 
 	m_ctrChannel.SetFocus();
     
-//  m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
-// 	m_ctrPassword.SetFont(&m_ftDesc);
-// 	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
-// 	m_ctrPassword.SetFocus();
-
 	m_ctrUid.MoveWindow(120, 131, 90, 22, TRUE);
 	m_ctrUid.SetFont(&m_ftDesc);
 	//m_ctrUid.SetTip(_T("1"));
 	m_ctrUid.SetTip(s2cs(uid));
 	m_ctrUid.SetFocus();
 
+	std::string strSection = getInfoManager()->getCurSection();
+	std::string strParam = getInfoManager()->getConfig()->getRtmpWidth(strSection);
 	m_edPublishWidth.SetFont(&m_ftDesc);
 	m_edPublishWidth.SetTip(_T("width"));
+	if ("" != strParam)
+		m_edPublishWidth.SetTip(s2cs(strParam));
 	m_edPublishWidth.SetFocus();
 
+	strParam = getInfoManager()->getConfig()->getRtmpHeight(strSection);
 	m_edPublishHeight.SetFont(&m_ftDesc);
 	m_edPublishHeight.SetTip(_T("height"));
+	if ("" != strParam)
+		m_edPublishHeight.SetTip(s2cs(strParam));
 	m_edPublishHeight.SetFocus();
 
+	strParam = getInfoManager()->getConfig()->getRtmpFps(strSection);
 	m_edPublishFps.SetFont(&m_ftDesc);
 	m_edPublishFps.SetTip(_T("fps"));
+	if ("" != strParam)
+		m_edPublishFps.SetTip(s2cs(strParam));
 	m_edPublishFps.SetFocus();
 
+	strParam = getInfoManager()->getConfig()->getRtmpBitrate(strSection);
 	m_edPublishBitrate.SetFont(&m_ftDesc);
 	m_edPublishBitrate.SetTip(_T("bitrate"));
+	if ("" != strParam)
+		m_edPublishBitrate.SetTip(s2cs(strParam));
 	m_edPublishBitrate.SetFocus();
 
+	strParam = getInfoManager()->getConfig()->getRtmpUrl(strSection);
 	m_edPublishRtmpUrl.SetFont(&m_ftDesc);
 	m_edPublishRtmpUrl.SetTip(_T("RtmpUrl"));
+	if ("" != strParam)
+		m_edPublishRtmpUrl.SetTip(s2cs(strParam));
 	m_edPublishRtmpUrl.SetFocus();
 
 	GetDlgItem(IDC_CHECK_FRONT)->MoveWindow(160, 280, 80, 22, TRUE);
@@ -200,7 +211,7 @@ void CEnterChannelDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (1 == nIDEvent){
 		KillTimer(nIDEvent);
-		OnBnClickedBtnjoinChannel();
+		//OnBnClickedBtnjoinChannel();
 	}
 }
 
@@ -318,7 +329,9 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	m_edPublishRtmpUrl.GetWindowText(param);
 	publishParam.rtmpUrl = cs2s(param);
 	CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
-	CAgoraObject::GetAgoraObject()->enablePublish(true);
+	std::string strSection = getInfoManager()->getCurSection();
+	bool bRtmp = str2int(getInfoManager()->getConfig()->getRtmpSave(strSection));
+	CAgoraObject::GetAgoraObject()->enablePublish(bRtmp);
 
 	//m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
 

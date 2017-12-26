@@ -1,5 +1,6 @@
 #pragma once
-
+#include "afxwin.h"
+#include "AGEdit.h"
 
 // CDlgVideoPreview ¶Ô»°¿ò
 
@@ -25,8 +26,10 @@ protected:
 
 	void initCtrl();
 	void uninitCtrl();
+	bool getVideoParam(CString sSrc, int &width, int &height, int &fps, int &bitrate);
 
 	DECLARE_MESSAGE_MAP()
+
 public:
 	afx_msg void OnBnClickedButtonChildApply();
 	afx_msg void OnBnClickedButtonVideopreview();
@@ -35,4 +38,13 @@ private:
 	CAgoraCameraManager *m_pAgoraCameraManager;
 	CString m_processIdName;
 	CString m_curDeviceID;
+
+	CAGEdit m_edtRtmpWidth;
+	CAGEdit m_edtRtmpHeight;
+	CAGEdit m_edtRtmpFps;
+	CAGEdit m_edtRtmpBitrate;
+	CAGEdit m_edtRtmpUrl;
+	CComboBox m_comVideoSolution;
+	CButton m_ckRtmp;
+	LPTSTR m_szProfileDes[32];
 };

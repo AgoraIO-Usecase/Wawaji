@@ -109,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="..\WawajiDemo\commonFun.h" />
     <ClInclude Include="..\WawajiDemo\FileIO.h" />
+    <ClInclude Include="AGEdit.h" />
     <ClInclude Include="AGEngineEventHandler.h" />
     <ClInclude Include="AgoraCameraManager.h" />
     <ClInclude Include="AgoraObject.h" />
@@ -123,6 +124,7 @@
   <ItemGroup>
     <ClCompile Include="..\WawajiDemo\commonFun.cpp" />
     <ClCompile Include="..\WawajiDemo\FileIO.cpp" />
+    <ClCompile Include="AGEdit.cpp" />
     <ClCompile Include="AGEngineEventHandler.cpp" />
     <ClCompile Include="AgoraCameraManager.cpp" />
     <ClCompile Include="AgoraObject.cpp" />
