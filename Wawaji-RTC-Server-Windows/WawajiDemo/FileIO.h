@@ -1,6 +1,7 @@
 #ifndef __FILEIO_H__
 #define __FILEIO_H__
 
+#include <iostream>
 class CFileIO
 {
 public:

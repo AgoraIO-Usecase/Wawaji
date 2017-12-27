@@ -332,13 +332,19 @@ LRESULT CAgoraWawajiDemoDlg::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	vc.renderMode = RENDER_MODE_TYPE::RENDER_MODE_FIT;
 
 	m_lpAgoraObject->EnableLastmileTest(FALSE);
+	m_lpAgoraObject->MuteAllRemoteAudio();
+	m_lpAgoraObject->MuteAllRemoteVideo();
 
 	m_dlgSetup.SetVideoProfile();
 	m_dlgVideo.SetWindowText(strChannelName);
 	m_lpRtcEngine->setupLocalVideo(vc);
 	m_lpRtcEngine->startPreview();
 
-	m_lpAgoraObject->JoinChannel(strChannelName);
+	CStringA channelKey = m_lpAgoraObject->GetDynChannelKey(strChannelName, m_lpAgoraObject->GetAppID(), m_lpAgoraObject->GetAppCert());
+
+	int uid = m_lpAgoraObject->GetSelfUID();
+
+	m_lpAgoraObject->JoinChannel(strChannelName,uid,channelKey);
     
 	return 0;
 }

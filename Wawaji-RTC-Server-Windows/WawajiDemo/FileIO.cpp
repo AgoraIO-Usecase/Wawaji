@@ -11,6 +11,7 @@ fileHandle_(nullptr)
 
 CFileIO::~CFileIO()
 {
+	close();
 	fileHandle_ = nullptr;
 	filelimitLine_ = 0;
 	isLog_ = false;
@@ -73,8 +74,11 @@ void CFileIO::openReadFile(const std::string &filePath)
 
 void CFileIO::close()
 {
-	CloseHandle(fileHandle_);
-	fileHandle_ = nullptr;
+	if (fileHandle_)
+	{
+		CloseHandle(fileHandle_);
+		fileHandle_ = nullptr;
+	}
 }
 
 int CFileIO::write(char *bufferIn, int bufferLen)

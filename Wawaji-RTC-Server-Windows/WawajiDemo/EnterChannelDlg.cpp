@@ -194,7 +194,6 @@ void CEnterChannelDlg::OnBnClickedBtntestChannel()
 		return;
 	}
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
-	m_lpAgoraObject->EnableWebSdkInteroperability(TRUE);
 	m_lpAgoraObject->SetLogFilePath(NULL);
 	m_lpAgoraObject->SetMsgHandlerWnd(GetSafeHwnd());
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
@@ -234,14 +233,13 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
 	m_lpAgoraObject->EnableVideo(TRUE);
 	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);
+	m_lpAgoraObject->SetSelfUID(0);
+	m_lpAgoraObject->SetAppCert(_T("164aa13965394ffbb5ebeb43c4c7ed5c"));
 
 	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);
 
     m_ctrChannel.GetWindowText(strChannelName);
     m_ctrPassword.GetWindowText(strKey);
-
-	//ExtCaptrue Video & Audio
-	//extCapture();
 
 	GetParent()->SendMessage(WM_JOINCHANNEL, 0, 0);
 }

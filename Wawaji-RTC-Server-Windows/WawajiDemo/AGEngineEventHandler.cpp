@@ -168,6 +168,13 @@ void CAGEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, int 
 
 }
 
+void CAGEngineEventHandler::onRequestChannelKey()
+{
+	if (nullptr != m_hMainWnd){
+		::PostMessage(m_hMainWnd, WM_MSGID(EID_REQUEST_CHANNELKEY), NULL, NULL);
+	}
+}
+
 void CAGEngineEventHandler::onLastmileQuality(int quality)
 {
 	LPAGE_LASTMILE_QUALITY lpData = new AGE_LASTMILE_QUALITY;
@@ -333,8 +340,8 @@ void CAGEngineEventHandler::onConnectionInterrupted()
 
 void CAGEngineEventHandler::onUserEnableVideo(uid_t uid, bool enabled)
 {
-//	if (m_hMainWnd != NULL)
-//		::PostMessage(m_hMainWnd, WM_MSGID(EID_CONNECTION_LOST), 0, 0);
+	//	if (m_hMainWnd != NULL)
+	//		::PostMessage(m_hMainWnd, WM_MSGID(EID_CONNECTION_LOST), 0, 0);
 
 }
 

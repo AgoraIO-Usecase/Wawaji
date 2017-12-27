@@ -76,20 +76,20 @@
     <ClCompile Include="SEIDlg.cpp">
       <Filter>UI\Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="commonFun.cpp">
-      <Filter>Single</Filter>
-    </ClCompile>
-    <ClCompile Include="FileIO.cpp">
-      <Filter>Single</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleWrap.cpp">
-      <Filter>Single</Filter>
-    </ClCompile>
     <ClCompile Include="AgoraWawajiDemoDlg.cpp">
       <Filter>UI\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="AgoraWawajiDemo.cpp">
       <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="AGDynamicKeyRequestor.cpp">
+      <Filter>Http</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpOperator.cpp">
+      <Filter>Http</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO.cpp">
+      <Filter>Headers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,26 +180,20 @@
     <ClInclude Include="SEIDlg.h">
       <Filter>UI\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="commonFun.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleWrap.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Single</Filter>
-    </ClInclude>
-    <ClInclude Include="generatorSignalToken.h">
-      <Filter>Single</Filter>
-    </ClInclude>
     <ClInclude Include="AgoraWawajiDemoDlg.h">
       <Filter>UI\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="AgoraWawajiDemo.h">
       <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="AGDynamicKeyRequestor.h">
+      <Filter>Http</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpOperator.h">
+      <Filter>Http</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,8 +416,8 @@
     <Filter Include="AgoraObject\MsgID">
       <UniqueIdentifier>{b5ee8826-ef61-405b-be39-ea16fbd13560}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Single">
-      <UniqueIdentifier>{1016eb37-6840-4313-878f-9a64d632b2d5}</UniqueIdentifier>
+    <Filter Include="Http">
+      <UniqueIdentifier>{4eb82d9c-4d92-4aa8-bc35-1043877bbd66}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

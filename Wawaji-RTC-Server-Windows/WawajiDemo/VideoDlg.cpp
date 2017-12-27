@@ -6,13 +6,7 @@
 #include "VideoDlg.h"
 #include "afxdialogex.h"
 #include "AGEventDef.h"
-
-#include "commonFun.h"
-#include "utils.h"
 #include "FileIO.h"
-#include "SingleWrap.h"
-#include "generatorSignalToken.h"
-#include <map>
 
 // CVideoDlg 对话框
 
@@ -29,11 +23,18 @@ CVideoDlg::CVideoDlg(CWnd* pParent /*=NULL*/)
 	m_nTimeCounter = 0;
 	m_lpBigShowed = NULL;
 
+	TCHAR path[MAXPATHLEN] = { 0 };
+	GetModuleFileName(nullptr, path, MAXPATHLEN);
+
+	std::string filePath = CStringA(path).GetBuffer();
+	std::string logPath= filePath.substr(0, filePath.rfind("\\") + 1);
+	m_fileLog.openLog(logPath + std::string("\\Native.log"));
 }
 
 CVideoDlg::~CVideoDlg()
 {
 	m_brHead.DeleteObject();
+	m_fileLog.close();
 }
 
 void CVideoDlg::DoDataExchange(CDataExchange* pDX)
@@ -91,45 +92,6 @@ BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	ON_BN_CLICKED(ID_IDR_SEIPUSH, &CVideoDlg::OnBnClickedBtSEIPush)
 
 	ON_CBN_SELCHANGE(IDC_CBXROLE_VIDEO, &CVideoDlg::OnCbnSelchangeCmbRole)
-
-	ON_MESSAGE(WM_Reconnecting,onSingleReconnecting)
-	ON_MESSAGE(WM_Reconnected,onSingleReconnected)
-	ON_MESSAGE(WM_LoginSuccess,onSingleLoginSuccess)
-	ON_MESSAGE(WM_LogOut,onSingleLogout)
-	ON_MESSAGE(WM_LoginFailed,onSingleLoginFailed)
-	ON_MESSAGE(WM_ChannelJoined,onSingleChannelJoined)
-	ON_MESSAGE(WM_ChannelJoinedFailed,onSingleChannelJoinFailed)
-	ON_MESSAGE(WM_ChannelLeaved,onSingleChannelUserLeaved)
-	ON_MESSAGE(WM_ChannelUserJoined,onSingleChannelJoined)
-	ON_MESSAGE(WM_ChannelUserLeaved,onSingleChannelUserLeaved)
-	ON_MESSAGE(WM_ChannelUserList,onSingleChannelUserList)
-	ON_MESSAGE(WM_ChannelQueryUserNumResult, onSingleChannelQueryUserNumResult)
-	ON_MESSAGE(WM_ChannelQueryUserIsIn,onSingleChannelQueryUserIsIn)
-	ON_MESSAGE(WM_ChannelAttrUpdated,onSingleChannelAttrUpdated)
-	ON_MESSAGE(WM_InviteReceived,onSingleInviteReceived)
-	ON_MESSAGE(WM_InviteReceivedByPeer, onSingleInviteReceivedByPeer)
-	ON_MESSAGE(WM_InviteAcceptedByPeer, onSingleInviteAcceptedByPeer)
-	ON_MESSAGE(WM_InviteRefusedByPeer, onSingleInviteRefusedByPeer)
-	ON_MESSAGE(WM_InviteFailed, onSingleInviteFailed)
-	ON_MESSAGE(WM_InviteEndByPeer, onSingleInviteEndByPeer)
-	ON_MESSAGE(WM_InviteEndByMyself, onSingleInviteEndByMyself)
-	ON_MESSAGE(WM_InviteMsg, onSingleInviteMsg)
-	ON_MESSAGE(WM_MessageSendError, onSingleMessageSendError)
-	ON_MESSAGE(WM_MessageSendProgress, onSingleMessageSendProgress)
-	ON_MESSAGE(WM_MessageSendSuccess, onSingleMessageSendSuccess)
-	ON_MESSAGE(WM_MessageAppReceived, onSingleMessageAppReceived)
-	ON_MESSAGE(WM_MessageInstantReceive, onSingleMessageInstantReceive)
-	ON_MESSAGE(WM_MessageChannelReceive, onSingleMessageChannelReceive)
-	ON_MESSAGE(WM_Log, onSingleLog)
-	ON_MESSAGE(WM_InvokeRet, onSingleInvokeRet)
-	ON_MESSAGE(WM_Msg, onSingleMsg)
-	ON_MESSAGE(WM_UserAttrResult, onSingleUserAttrResult)
-	ON_MESSAGE(WM_UserAttrAllResult, onSingleUserAttrAllResult)
-	ON_MESSAGE(WM_Error, onSingleError)
-	ON_MESSAGE(WM_QueryUserStatusResult, onSingleQueryUserStatusResult)
-	ON_MESSAGE(WM_Dbg, onSingleDbg)
-	ON_MESSAGE(WM_BCCall_result, onSingleBCCall_result)
-	ON_MESSAGE(WM_SingleInstanceSendMsg,onSingleSendInstanceMsg)
 
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
@@ -290,515 +252,6 @@ void CVideoDlg::AdjustSizeVideoMulti(int cx, int cy)
 	}
 }
 
-
-
-HRESULT CVideoDlg::onSingleReconnecting(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleReconnected(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleLoginSuccess(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	if (pSingleInstance_)
-	{
-		pSingleInstance_->channelJoin(gbk2utf8(channelName_).data(), gbk2utf8(channelName_).size());
-	}
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleLogout(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	if (pSingleInstance_)
-	{
-		ICallBack *pcallBack = pSingleInstance_->callbackGet();
-		pSingleInstance_->callbackSet(nullptr);
-		delete pcallBack;
-		pcallBack = nullptr;
-		pSingleInstance_ = nullptr;
-	}
-
-	if (isAppExit_)
-	{
-		PostQuitMessage(0);
-	}
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleLoginFailed(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	
-	pSingleInstance_ = nullptr;
-
-	if (isAppExit_)
-	{
-		PostQuitMessage(0);
-	}
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelJoined(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	isInChannel_ = true;
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelJoinFailed(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	isInChannel_ = false;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelLeaved(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	isInChannel_ = false;
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelUserJoined(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelUserLeaved(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelUserList(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog;
-	pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelQueryUserNumResult(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelQueryUserIsIn(WPARAM wParam, LPARAM lParam)
-{
-
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleChannelAttrUpdated(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteReceived(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	std::string *accountParam = (std::string*)lParam;
-	callRemoteAccount_ = *accountParam;
-	delete accountParam;
-	accountParam = nullptr;
-
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteReceivedByPeer(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteAcceptedByPeer(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteRefusedByPeer(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteFailed(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteEndByPeer(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteEndByMyself(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInviteMsg(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageSendError(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageSendProgress(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageSendSuccess(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageAppReceived(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageInstantReceive(WPARAM wParam, LPARAM lParam)
-{
-	std::string *pLog = (std::string*)wParam;
-	std::string MsgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-	
-	m_dlgChat.AddChatMessage(s2cs(int2str(lParam)).GetBuffer(), s2cs(MsgInfo).GetBuffer());
-	
-	switchCamera(MsgInfo);
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMessageChannelReceive(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleLog(WPARAM wParam, LPARAM lParam)
-{
-	char const* pLog = (char const*)wParam;
-
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleInvokeRet(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleMsg(WPARAM wParam, LPARAM lParam)
-{
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleUserAttrResult(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleUserAttrAllResult(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleError(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-
-HRESULT CVideoDlg::onSingleQueryUserStatusResult(WPARAM wParam, LPARAM lParam)
-{
-	std::string* pLog = (std::string*)wParam;
-	std::string msgInfo = *pLog;
-	delete pLog; pLog = nullptr;
-
-	
-
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleDbg(WPARAM wParam, LPARAM lParam)
-{
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleBCCall_result(WPARAM wParam, LPARAM lParam)
-{
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleSendInstanceMsg(WPARAM wParam, LPARAM lParam)
-{
-	if (pSingleInstance_)
-	{
-		//pSingleInstance_->messageInstantSend(gbk2utf8().data(), gbk2utf8(userAccount).size(), 0, gbk2utf8(sendMsg).data(), gbk2utf8(sendMsg).size(), gbk2utf8(msgId).data(), gbk2utf8(msgId).size());
-	}
-	return true;
-}
-
-HRESULT CVideoDlg::onSingleSwitchCamera(WPARAM wParam, LPARAM lParam)
-{
-	
-	return true;
-}
-
-IAgoraAPI* CVideoDlg::getAgoraInstance()
-{
-	return pSingleInstance_;
-}
-
-
-void CVideoDlg::startSingle(const std::string &appID, const std::string &channelName,const std::string &account)
-{
-	std::string CurrentAccount = account;
-	appId_ = appID;
-	channelName_ = channelName;
-	appId_ = "YOUR SIGNALING APP ID";
-	appCertificateId_ = "YOUR SIGNALING APP CERTIFICATE";
-
-	int retryTime = 3;
-	int retryCount = 30;
-
-	pSingleInstance_ = getAgoraSDKInstanceWin(gbk2utf8(appId_).data(), gbk2utf8(appId_).size());
-	pSingleInstance_->callbackSet(new CSingleCallBack(m_hWnd));
-	ICallBack* cb = pSingleInstance_->callbackGet();
-
-	time_t ltime;
-	time(&ltime);
-	int expiredSecond = ltime + 3600;
-	tokenId_ = CGeneSignalToken::generateSignallingToken((CurrentAccount), appId_, appCertificateId_, expiredSecond);
-
-	pSingleInstance_->login2(gbk2utf8(appId_.data()).data(), gbk2utf8(appId_.data()).size(), gbk2utf8(CurrentAccount.data()).data(), (gbk2utf8(CurrentAccount)).size(), gbk2utf8(tokenId_).data(), gbk2utf8(tokenId_).size(), 0, "", 0, retryTime, retryCount);
-	threadStartHandle_ = CreateThread(nullptr, 0, ThreadStartRunning, this, 0, nullptr);
-}
-
-DWORD WINAPI CVideoDlg::ThreadStartRunning(LPVOID lpParam)
-{
-	CVideoDlg *pObj = (CVideoDlg*)lpParam;
-	pObj->getAgoraInstance()->start();
-
-	return true;
-}
-
-void CVideoDlg::switchCamera(const std::string &msg)
-{
-	rapidjson::Document document;
-	if (document.Parse<0>(msg.c_str()).HasParseError()){
-		return;
-	}
-
-	std::string uid;
-	int opeType;
-	std::string opeAttr;
-	try
-	{
-		if (document["uid"].IsString()){
-
-			uid = document["uid"].GetString();
-		}
-		if (document["opeType"].IsInt()){
-
-			opeType = document["opeType"].GetInt();
-		}
-		if (document["opeAttr"].IsString()){
-
-			opeAttr = document["opeAttr"].GetString();
-		}
-	}
-	catch (CMemoryException* e)
-	{
-		int i = 0;
-	}
-	catch (CFileException* e)
-	{
-		int  i = 0;
-	}
-	catch (CException* e)
-	{
-		int i = 0;
-	}
-
-	ASSERT(0x01 == opeType);
-	{//切换摄像头
-		CString strDeviceName;
-		CString strDeviceID;
-		CString strCurID;
-
-		IRtcEngine* pRtcEngine = CAgoraObject::GetEngine();
-		CAgoraCameraManager pCameraManager;
-		pCameraManager.Create(pRtcEngine);
-
-		strCurID = pCameraManager.GetCurDeviceID();
-		std::map<CString, CString > mapCameraDevice;
-
-		static int curSel = 0;
-		if (!curSel){
-			
-			curSel = 1;
-			pCameraManager.GetDevice(curSel, strDeviceName, strDeviceID);
-			pCameraManager.SetCurDevice(strDeviceID);
-		}
-		else{
-
-			curSel = 0;
-			pCameraManager.GetDevice(curSel, strDeviceName, strDeviceID);
-			pCameraManager.SetCurDevice(strDeviceID);
-		}
-		
-		pCameraManager.Close();
-	}
-}
 
 void CVideoDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -1246,13 +699,15 @@ LRESULT CVideoDlg::OnEIDJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	lpAgoraObject->RemoveSEIInfo(0);
 	lpAgoraObject->SetSEIInfo(lpAgoraObject->GetSelfUID(), &seiInfo);
 
-	delete lpData;
+	//fix title
+	CString titleVideo;
+	GetWindowText(titleVideo);
+	CString newTitle;
+	newTitle.Format(_T("[uid: %d] %s"), lpData->uid, titleVideo);
+	SetWindowText(newTitle);
+	Invalidate();
 
-	//使用UID作为account 登录agoraSDK Single
-	std::string appid = cs2s(lpAgoraObject->GetAppID());
-	std::string channelname = cs2s(lpAgoraObject->GetChanelName());
-	std::string account = "meixi";//uid
-	startSingle(appid, channelname, account);
+	delete lpData;
 
 	return 0;
 }
@@ -1265,6 +720,21 @@ LRESULT CVideoDlg::OnEIDReJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	delete lpData;
 
 	return 0;
+}
+
+LRESULT CVideoDlg::OnEIDRequestChannelKey(WPARAM wParam, LPARAM lParam)
+{
+	m_fileLog.write("OnEIDRequestChannelKey");
+	IRtcEngine* lpRtcEngine = CAgoraObject::GetEngine();
+	if (lpRtcEngine){
+		CString strChannelKey = CAgoraObject::GetAgoraObject()->getChannelKey();
+		int res = lpRtcEngine->renewChannelKey(CStringA(strChannelKey.GetBuffer()));
+		if (!res){
+			TRACE("RenewChannelKey success .\n");
+		}
+	}
+
+	return TRUE;
 }
 
 LRESULT CVideoDlg::OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam)
@@ -1292,7 +762,6 @@ LRESULT CVideoDlg::OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam)
 
 LRESULT CVideoDlg::OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam)
 {
-	return true;
 	LPAGE_FIRST_REMOTE_VIDEO_DECODED lpData = (LPAGE_FIRST_REMOTE_VIDEO_DECODED)wParam;
 	BOOL bFound = FALSE;
 	SEI_INFO seiInfo;
@@ -1316,7 +785,7 @@ LRESULT CVideoDlg::OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam)
 		m_listWndInfo.AddTail(agvWndInfo);
 	}
 
-	RebindVideoWnd();
+	//RebindVideoWnd();
 
 	memset(&seiInfo, 0, sizeof(SEI_INFO));
 
@@ -1377,7 +846,7 @@ LRESULT CVideoDlg::OnEIDUserOffline(WPARAM wParam, LPARAM lParam)
 	while (pos != NULL){
 		if (m_listWndInfo.GetAt(pos).nUID == lpData->uid) {
 			m_listWndInfo.RemoveAt(pos);
-			RebindVideoWnd();
+			//RebindVideoWnd();
 			break;
 		}
 
@@ -1423,6 +892,32 @@ LRESULT CVideoDlg::OnRemoteVideoStat(WPARAM wParam, LPARAM lParam)
 	delete lpData;
 
 	return 0;
+}
+
+LRESULT CVideoDlg::onError(WPARAM wParam, LPARAM lParam)
+{
+	LPAGE_ERROR lpData = (LPAGE_ERROR)wParam;
+	
+	m_fileLog.write(lpData->msg);
+	if (lpData->err == ERR_INVALID_CHANNEL_KEY ||
+		ERR_CHANNEL_KEY_EXPIRED == lpData->err){
+	
+		IRtcEngine* lpRtcEngine = CAgoraObject::GetEngine();
+		if (lpRtcEngine){
+			CString strOldChannelKey = CAgoraObject::GetAgoraObject()->getChannelKey();
+			int res = lpRtcEngine->renewChannelKey(CStringA(strOldChannelKey.GetBuffer()));
+			strOldChannelKey.ReleaseBuffer();
+			if (!res){
+				TRACE("RenewChannelKey success..\n");
+			}
+		}
+	}
+
+	delete lpData->msg;
+	lpData->msg = nullptr;
+	delete lpData; lpData = nullptr;
+
+	return TRUE;
 }
 
 LRESULT CVideoDlg::OnStartRecordingService(WPARAM wParam, LPARAM lParam)
@@ -1692,6 +1187,7 @@ HWND CVideoDlg::GetRemoteVideoWnd(int nIndex)
 
 void CVideoDlg::RebindVideoWnd()
 {
+	return;
 	if (m_wndVideo[0].GetSafeHwnd() == NULL || m_wndLocal.GetSafeHwnd() == NULL)
 		return;
 
