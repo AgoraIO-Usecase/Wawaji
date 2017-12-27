@@ -211,7 +211,7 @@ void CEnterChannelDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (1 == nIDEvent){
 		KillTimer(nIDEvent);
-		//OnBnClickedBtnjoinChannel();
+		OnBnClickedBtnjoinChannel();
 	}
 }
 

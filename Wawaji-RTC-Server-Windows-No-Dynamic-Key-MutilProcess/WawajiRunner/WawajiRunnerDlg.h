@@ -28,6 +28,7 @@ protected:
 	void getTimerStartIni(SYSTEMTIME &st,const std::string &timeStr);
 	void initAgora();
 	void uninitAgora();
+	void getInvalidFileList(std::vector<CString> &vecFileList, const CString&strFilePath,int IntervalTime);
 
 // й╣ож
 protected:

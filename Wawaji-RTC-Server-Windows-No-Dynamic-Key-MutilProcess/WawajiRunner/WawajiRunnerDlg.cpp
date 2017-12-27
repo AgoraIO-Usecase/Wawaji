@@ -20,9 +20,10 @@
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 #define TIMER_IDEVENT_RESTARTTIMER 1
 #define TIMER_IDEVENT_RECHECK 2
+#define TIMER_IDEVENT_LOGCLEAR 3
 #define TIMER_INTERVAL_RESTARTTIMER 1000
 #define TIMER_INTERVAL_RECHECK 5000
-
+#define TIMER_INTERVAL_LOGCLEAR 100000
 
 class CAboutDlg : public CDialogEx
 {
@@ -124,8 +125,8 @@ BOOL CWawajiRunnerDlg::OnInitDialog()
 	initCtrl();
 	
 	SetTimer(TIMER_IDEVENT_RECHECK, TIMER_INTERVAL_RECHECK, nullptr);
+	SetTimer(TIMER_IDEVENT_LOGCLEAR, TIMER_INTERVAL_LOGCLEAR, nullptr);
 	//WinExec("WawajiDemo.exe", SW_HIDE);
-	
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -175,7 +176,10 @@ void CWawajiRunnerDlg::OnPaint()
 void CWawajiRunnerDlg::OnClose()
 {
 	uninitCtrl();
-	
+	KillTimer(TIMER_IDEVENT_LOGCLEAR);
+	KillTimer(TIMER_IDEVENT_RECHECK);
+	KillTimer(TIMER_IDEVENT_RESTARTTIMER);
+
 	CDialogEx::OnCancel();
 }
 
@@ -227,6 +231,27 @@ void CWawajiRunnerDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 	}
+
+	if (TIMER_IDEVENT_LOGCLEAR == nIDEvent)
+	{
+		CString strEditParam;
+		GetDlgItem(IDC_EDIT_CLEARLOG)->GetWindowTextW(strEditParam);
+		if (_T("") == strEditParam){
+			return;
+		}
+
+		int nIntervalTime = str2int(cs2s(strEditParam));
+		std::vector<CString> vecFileList;
+		std::string logPath = getAbsoluteDir() + "logger\\";
+		getInvalidFileList(vecFileList, s2cs(logPath), nIntervalTime);
+
+		for (std::vector<CString>::iterator it = vecFileList.begin(); vecFileList.end() != it; it++){
+			if (DeleteFile(*it)){
+
+				TRACE(_T("delete file %s\n"),(*it));
+			}
+		}
+	}
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
@@ -271,8 +296,8 @@ void CWawajiRunnerDlg::initCtrl()
 
 	((CButton*)(GetDlgItem(IDC_CHECK_VideoPreview)))->SetCheck(str2int(strVideoPreview));
 
-	//if ("1" == restartTimerStatus)
-	//SetTimer(TIMER_IDEVENT_RESTARTTIMER, TIMER_INTERVAL_RESTARTTIMER, nullptr);
+	if ("1" == restartTimerStatus)
+	SetTimer(TIMER_IDEVENT_RESTARTTIMER, TIMER_INTERVAL_RESTARTTIMER, nullptr);
 	
 	int cameraCount = m_AgoraCameraManager.GetDeviceCount();
 	ASSERT(cameraCount);
@@ -363,6 +388,38 @@ void CWawajiRunnerDlg::uninitAgora()
 		m_pAgoraObject->EnableWebSdkInteroperability(FALSE);
 		delete m_pAgoraObject;
 		m_pAgoraObject = nullptr;
+	}
+}
+
+void CWawajiRunnerDlg::getInvalidFileList(std::vector<CString> &vecFileList, const CString &strFilePath,int IntervalTime)
+{
+	DWORD dwAttr = GetFileAttributes(strFilePath);
+	if (INVALID_FILE_ATTRIBUTES == dwAttr){
+		return;
+	}
+
+	CFileFind findHandle;
+	CString strDestDir = strFilePath + _T("*.*");
+	bool isNotEmpty = findHandle.FindFile(strDestDir);
+	while (isNotEmpty){
+
+		isNotEmpty = findHandle.FindNextFileW();
+		CString fileName = findHandle.GetFileName();
+		if (!findHandle.IsDirectory() && !findHandle.IsDots()){
+			CTime timeLastWrite;
+			if (findHandle.GetLastWriteTime(timeLastWrite)){
+
+				CTime timeNow =CTime::GetCurrentTime();
+				CTimeSpan  timeTemp = timeNow - timeLastWrite;
+				if (timeTemp.GetDays() > IntervalTime){
+					vecFileList.push_back(strFilePath + fileName);
+				}
+			}
+		}
+		else if(L"." != fileName && L".." != fileName){
+
+			getInvalidFileList(vecFileList, strFilePath + (fileName + _T("\\")), IntervalTime);
+		}
 	}
 }
 
