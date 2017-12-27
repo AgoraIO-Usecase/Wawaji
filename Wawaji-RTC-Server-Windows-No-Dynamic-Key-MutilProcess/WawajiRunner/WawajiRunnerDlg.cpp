@@ -293,7 +293,6 @@ void CWawajiRunnerDlg::initCtrl()
 		strVideoPreview = "1";
 		gWawajiConfig.setVideoPreview(strVideoPreview);
 	}
-
 	((CButton*)(GetDlgItem(IDC_CHECK_VideoPreview)))->SetCheck(str2int(strVideoPreview));
 
 	if ("1" == restartTimerStatus)

@@ -111,6 +111,7 @@ protected:
 #define INI_DeviceInfo_RtmpHeight								"RtmpHeight"
 #define INI_DeviceInfo_RtmpFps									"RtmpFps"
 #define INI_DeviceInfo_RtmpBitrate								"RtmpBitrate"
+#define INI_DeviceInfo_LeftRotate90								"LeftRotate90"
 
 class CConfigWawaji:public CIniBase
 {
@@ -136,6 +137,7 @@ public:
 	__DECLARE_INICONFIG_SIMILAR_FUN(CameraComID)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceState)
 	__DECLARE_INICONFIG_SIMILAR_FUN(DeviceChoose)
+	__DECLARE_INICONFIG_SIMILAR_FUN(LeftRotate90)
 
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionSave)
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionIndex)
