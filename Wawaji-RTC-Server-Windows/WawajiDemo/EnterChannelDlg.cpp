@@ -105,7 +105,7 @@ void CEnterChannelDlg::InitCtrls()
     
     m_ctrPassword.MoveWindow(90, 131, 120, 22, TRUE);
 	m_ctrPassword.SetFont(&m_ftDesc);
-	m_ctrPassword.SetTip(LANG_STR("IDS_CHN_ROOMPASSWORD"));
+	m_ctrPassword.SetTip(_T("UID"));
 	m_ctrPassword.SetFocus();
 
 	m_ctrRole.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE, CRect(ClientRect.Width() / 2 + 1, 168, 180, 32), this, IDC_CMBROLE_CHANNEL);
@@ -223,9 +223,15 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 		MessageBox(_T("前先填写APPID."), _T("提示"), MB_ICONINFORMATION);
 		return;
 	}
+	
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
 	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
-	
+
+	m_ctrPassword.GetWindowTextW(strAppId);
+	CStringA strUid = CStringA(strAppId.GetBuffer());
+	m_lpAgoraObject->SetSelfUID(atoi(CStringA(strAppId.GetBuffer()).GetBuffer()));
+	strAppId.ReleaseBuffer();
+
 	RtcEngineParameters rep(pRtcEngine);
 	rep.enableWebSdkInteroperability(true);
 	m_lpAgoraObject->SetLogFilePath(NULL);
@@ -233,7 +239,6 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CAgoraObject::GetEngine()->setChannelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING);
 	m_lpAgoraObject->EnableVideo(TRUE);
 	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_BROADCASTER);
-	m_lpAgoraObject->SetSelfUID(0);
 	m_lpAgoraObject->SetAppCert(_T("164aa13965394ffbb5ebeb43c4c7ed5c"));
 
 	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);

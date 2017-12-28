@@ -111,7 +111,13 @@ int CFileIO::write(std::string bufferStr)
 		filelimitLine_ = 0;
 	}
 
-	return write((char*)bufferStr.c_str(), bufferStr.length());
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	char logDesc[1024] = { '\0' };
+	sprintf_s(logDesc, "%d%02d%02d %02d%02d%02d;   %s", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond,bufferStr.data());
+
+	//return write((char*)bufferStr.c_str(), bufferStr.length());
+	return write(logDesc, strlen(logDesc));
 }
 
 int CFileIO::read(char *bufferOut, int bufferLen)

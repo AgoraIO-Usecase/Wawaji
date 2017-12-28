@@ -29,6 +29,7 @@ CVideoDlg::CVideoDlg(CWnd* pParent /*=NULL*/)
 	std::string filePath = CStringA(path).GetBuffer();
 	std::string logPath= filePath.substr(0, filePath.rfind("\\") + 1);
 	m_fileLog.openLog(logPath + std::string("\\Native.log"));
+	m_fileLog.write(">>>>>>>>>>>>>>>>>>>>Local build");
 }
 
 CVideoDlg::~CVideoDlg()
