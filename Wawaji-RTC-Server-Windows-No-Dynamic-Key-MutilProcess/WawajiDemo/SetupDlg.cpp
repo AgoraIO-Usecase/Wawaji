@@ -145,6 +145,13 @@ void CSetupDlg::InitCtrls()
 		nResolutionIndex = 15;
 	}
 	m_cbxVideoProfile.SetCurSel(nResolutionIndex);
+
+	if ("1" == getInfoManager()->getConfig()->getLeftRotate90(curSection)){
+		m_ckSwapWH.SetCheck(TRUE);
+	}
+	else{
+		m_ckSwapWH.SetCheck(FALSE);
+	}
 }
 
 void CSetupDlg::InitData()
