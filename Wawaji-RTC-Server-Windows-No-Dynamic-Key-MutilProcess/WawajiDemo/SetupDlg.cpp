@@ -93,17 +93,26 @@ void CSetupDlg::InitCtrls()
 	m_cbxVideoProfile.SetFaceColor(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0xFF, 0xFF));
 	m_cbxVideoProfile.SetListMaxHeight(600);
 
+	std::string strSection = getInfoManager()->getCurSection();
+	std::string strParam = getInfoManager()->getConfig()->getResolutionWidth(strSection);
 	m_edWidth.SetFont(&m_ftDes);
 	m_edWidth.SetWindowText(_T("640"));
+	m_edWidth.SetWindowTextW(s2cs(strParam));
 	m_edWidth.MoveWindow(80, 150, 80, 24, TRUE);
+	strParam = getInfoManager()->getConfig()->getResolutionHeight(strSection);
 	m_edHeight.SetFont(&m_ftDes);
 	m_edHeight.SetWindowText(_T("480"));
+	m_edHeight.SetWindowTextW(s2cs(strParam));
 	m_edHeight.MoveWindow(165, 150, 80, 24, TRUE);
+	strParam = getInfoManager()->getConfig()->getResolutionFps(strSection);
 	m_edFrame.SetFont(&m_ftDes);
 	m_edFrame.SetWindowText(_T("10"));
+	m_edFrame.SetWindowTextW(s2cs(strParam));
 	m_edFrame.MoveWindow(250, 150, 80, 24, TRUE);
+	strParam = getInfoManager()->getConfig()->getRtmpBitrate(strSection);
 	m_edBitrate.SetFont(&m_ftDes);
 	m_edBitrate.SetWindowText(_T("300"));
+	m_edBitrate.SetWindowTextW(s2cs(strParam));
 	m_edBitrate.MoveWindow(335, 150, 80, 24, TRUE);
 
 	m_ckVideoExt.MoveWindow(80, 180, 200, 20, TRUE);
@@ -135,23 +144,19 @@ void CSetupDlg::InitCtrls()
 	std::string curSection = getInfoManager()->getCurSection();
 	std::string ResolutionSave = getInfoManager()->getConfig()->getResolutionSave(curSection);
 	nResolutionIndex = str2int(getInfoManager()->getConfig()->getResolutionIndex(curSection));
-	if ("1" == ResolutionSave)
+	std::string leftRotate90 = getInfoManager()->getConfig()->getLeftRotate90(strSection);
+	if ("1" == ResolutionSave && ("0" == leftRotate90 || "" == leftRotate90))
 	{
 		m_ckSaveSettings.SetCheck(TRUE);
+		m_ckVideoExt.SetCheck(FALSE);
 	}
-	else
+	else if ("1" == leftRotate90)
 	{
+		m_ckVideoExt.SetCheck(TRUE);
 		m_ckSaveSettings.SetCheck(FALSE);
 		nResolutionIndex = 15;
 	}
 	m_cbxVideoProfile.SetCurSel(nResolutionIndex);
-
-	if ("1" == getInfoManager()->getConfig()->getLeftRotate90(curSection)){
-		m_ckSwapWH.SetCheck(TRUE);
-	}
-	else{
-		m_ckSwapWH.SetCheck(FALSE);
-	}
 }
 
 void CSetupDlg::InitData()

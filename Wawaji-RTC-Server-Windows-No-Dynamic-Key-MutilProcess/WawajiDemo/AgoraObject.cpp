@@ -683,8 +683,9 @@ BOOL CAgoraObject::EnableLocalPublishLeftRotate90(BOOL bEnable)
 
 	AParameter apm(*m_lpAgoraEngine);
 
-	if (bEnable)
+	if (bEnable){
 		nRet = apm->setParameters("{\"che.video.capture.rotate\":90}");
+	}
 
 	return nRet;
 }

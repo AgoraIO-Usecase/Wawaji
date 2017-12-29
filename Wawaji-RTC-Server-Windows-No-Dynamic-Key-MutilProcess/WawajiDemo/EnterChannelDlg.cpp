@@ -298,6 +298,7 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	std::string strSection = getInfoManager()->getCurSection();
 	std::string leftRotate90 = getInfoManager()->getConfig()->getLeftRotate90(strSection);
 	m_lpAgoraObject->EnableLocalPublishLeftRotate90(str2int(leftRotate90));
+	m_lpAgoraObject->EnableLocalMirrorImage(!str2int(leftRotate90));
 
 	m_lpAgoraObject->EnableWebSdkInteroperability(TRUE);
 	CString logFile = s2cs(getInfoManager()->getSdkLogPath());
