@@ -46,5 +46,6 @@ private:
 	CAGEdit m_edtRtmpUrl;
 	CComboBox m_comVideoSolution;
 	CButton m_ckRtmp;
+	CButton m_ckLeftRotate90;
 	LPTSTR m_szProfileDes[32];
 };

@@ -334,6 +334,7 @@ __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, CameraName, INI_DeviceInfo_Came
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, CameraComID, INI_DeviceInfo_CameraCOMID)
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, DeviceState, INI_DeviceInfo_State)
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, DeviceChoose, INI_DeviceInfo_Choose)
+__IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, LeftRotate90, INI_DeviceInfo_LeftRotate90)
 
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, ResolutionSave, INI_DeviceInfo_ResolutionSave)
 __IMPLEMENT_INICONFIG_SIMILAR_FUN(CConfigWawaji, ResolutionIndex, INI_DeviceInfo_ResolutionIndex)

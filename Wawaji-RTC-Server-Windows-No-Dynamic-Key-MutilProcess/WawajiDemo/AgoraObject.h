@@ -123,6 +123,7 @@ public:
 	BOOL EnableLocalMirrorImage(BOOL bMirrorLocal);
 
 	BOOL EnableWebSdkInteroperability(BOOL bEnable);
+	BOOL EnableLocalPublishLeftRotate90(BOOL bEnable);
 
     int CreateMessageStream();
     BOOL SendChatMessage(int nStreamID, LPCTSTR lpChatMessage);

@@ -295,6 +295,10 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
 	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
 	
+	std::string strSection = getInfoManager()->getCurSection();
+	std::string leftRotate90 = getInfoManager()->getConfig()->getLeftRotate90(strSection);
+	m_lpAgoraObject->EnableLocalPublishLeftRotate90(str2int(leftRotate90));
+
 	m_lpAgoraObject->EnableWebSdkInteroperability(TRUE);
 	CString logFile = s2cs(getInfoManager()->getSdkLogPath());
  	m_lpAgoraObject->SetLogFilePath(logFile.GetBuffer());
@@ -329,7 +333,6 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	m_edPublishRtmpUrl.GetWindowText(param);
 	publishParam.rtmpUrl = cs2s(param);
 	CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
-	std::string strSection = getInfoManager()->getCurSection();
 	bool bRtmp = str2int(getInfoManager()->getConfig()->getRtmpSave(strSection));
 	CAgoraObject::GetAgoraObject()->enablePublish(bRtmp);
 

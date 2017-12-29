@@ -33,6 +33,7 @@ void CDlgVideoPreview::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_RTMPURL, m_edtRtmpUrl);
 	DDX_Control(pDX, IDC_COMBO_VIDEORESOLUTION, m_comVideoSolution);
 	DDX_Control(pDX, IDC_CHECK_RTMP, m_ckRtmp);
+	DDX_Control(pDX, IDC_CHECK_LEFTRotate90, m_ckLeftRotate90);
 }
 
 
@@ -217,6 +218,14 @@ void CDlgVideoPreview::setChildInfo(const CString processName, CAgoraCameraManag
 	m_edtRtmpBitrate.SetTip("" == configValue ? _T("BITRATE") : s2cs(configValue));
 	configValue = gWawajiConfig.getRtmpUrl(strSection);
 	m_edtRtmpUrl.SetTip("" == configValue ? _T("RTMPURL") : s2cs(configValue));
+
+	std::string strRemoteVideoRotate90 = gWawajiConfig.getLeftRotate90(strSection);
+	if ("" == strRemoteVideoRotate90 || "0" == strRemoteVideoRotate90){
+		m_ckLeftRotate90.SetCheck(FALSE);
+	}
+	else if("1" == strRemoteVideoRotate90){
+		m_ckLeftRotate90.SetCheck(TRUE);
+	}
 }
 
 void CDlgVideoPreview::showChildWnd(bool Enable /*= true*/)
@@ -285,6 +294,9 @@ void CDlgVideoPreview::saveConfig()
 	gWawajiConfig.setRtmpBitrate(strSection, cs2s(sParam));
 	m_edtRtmpUrl.GetWindowTextW(sParam);
 	gWawajiConfig.setRtmpUrl(strSection, cs2s(sParam));
+
+	res = m_ckLeftRotate90.GetCheck();
+	gWawajiConfig.setLeftRotate90(strSection, int2str(res));
 }
 
 bool CDlgVideoPreview::getVideoParam(CString sSrc, int &width, int &height, int &fps, int &bitrate)

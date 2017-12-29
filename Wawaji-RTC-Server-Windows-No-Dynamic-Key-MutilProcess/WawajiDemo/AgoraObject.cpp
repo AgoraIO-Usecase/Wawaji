@@ -677,6 +677,18 @@ BOOL CAgoraObject::EnableWebSdkInteroperability(BOOL bEnable)
 	return nRet == 0 ? TRUE : FALSE;
 }
 
+BOOL CAgoraObject::EnableLocalPublishLeftRotate90(BOOL bEnable)
+{
+	int nRet = 0;
+
+	AParameter apm(*m_lpAgoraEngine);
+
+	if (bEnable)
+		nRet = apm->setParameters("{\"che.video.capture.rotate\":90}");
+
+	return nRet;
+}
+
 int CAgoraObject::CreateMessageStream()
 {
     int nDataStream = 0;
