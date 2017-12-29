@@ -269,6 +269,9 @@ void CDlgVideoPreview::saveConfig()
 	gWawajiConfig.setLoginUid(strSection, cs2s(sParam));
 
 	//VideoSolution
+	bool res = m_ckLeftRotate90.GetCheck();
+	gWawajiConfig.setLeftRotate90(strSection, int2str(res));
+
 	int curSel = m_comVideoSolution.GetCurSel();
 	int width = 0, height = 0, fps = 0, bitrate = 0;
 	std::string bitrateUrl;
@@ -276,13 +279,13 @@ void CDlgVideoPreview::saveConfig()
 	gWawajiConfig.setResolutionSave(strSection,"1");
 	gWawajiConfig.setResolutionIndex(strSection, int2str(curSel));
 	getVideoParam(sParam, width, height, fps, bitrate);
-	gWawajiConfig.setResolutionWidth(strSection, int2str(width));
-	gWawajiConfig.setResolutionHeight(strSection, int2str(height));
+	gWawajiConfig.setResolutionWidth(strSection, int2str(res ? height : width));
+	gWawajiConfig.setResolutionHeight(strSection, int2str(res ? width : height));
 	gWawajiConfig.setResolutionFps(strSection,int2str(fps));
 	gWawajiConfig.setResolutionBitrate(strSection,int2str(bitrate));
 
 	//RTMP
-	bool res = m_ckRtmp.GetCheck();
+	res = m_ckRtmp.GetCheck();
 	gWawajiConfig.setRtmpSave(strSection, int2str(res));
 	m_edtRtmpWidth.GetWindowTextW(sParam);
 	gWawajiConfig.setRtmpWidth(strSection, cs2s(sParam));
@@ -294,9 +297,6 @@ void CDlgVideoPreview::saveConfig()
 	gWawajiConfig.setRtmpBitrate(strSection, cs2s(sParam));
 	m_edtRtmpUrl.GetWindowTextW(sParam);
 	gWawajiConfig.setRtmpUrl(strSection, cs2s(sParam));
-
-	res = m_ckLeftRotate90.GetCheck();
-	gWawajiConfig.setLeftRotate90(strSection, int2str(res));
 }
 
 bool CDlgVideoPreview::getVideoParam(CString sSrc, int &width, int &height, int &fps, int &bitrate)
