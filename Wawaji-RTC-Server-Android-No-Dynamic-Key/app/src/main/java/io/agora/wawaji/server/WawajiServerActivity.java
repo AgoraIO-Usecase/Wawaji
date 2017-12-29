@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +40,7 @@ public class WawajiServerActivity extends Activity {
     private int bitrate = 0;
     private int fps = 0;
     private boolean openRtmpStream = false;
+    private boolean useCaptureFormatNV21 = false;
 
     private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
@@ -148,6 +148,7 @@ public class WawajiServerActivity extends Activity {
 
         appid = intent.getStringExtra(Constant.CHANNEL_APPID);
         uid = intent.getIntExtra(Constant.CHANNEL_UID, 0);
+        useCaptureFormatNV21 = intent.getBooleanExtra(Constant.CHANNEL_SET_NV21, false);
         openRtmpStream = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE, false);
 
         if (openRtmpStream) {
@@ -184,6 +185,10 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
+        mRtcEngine.muteLocalAudioStream(true);
+        if (useCaptureFormatNV21){
+            mRtcEngine.setParameters("{\"che.video.captureFormatNV21\": true}");
+        }
 
         if (openRtmpStream && !rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
             PublisherConfiguration config = new PublisherConfiguration.Builder()
@@ -202,13 +207,9 @@ public class WawajiServerActivity extends Activity {
 
     // Step 4
     private void joinChannel() {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", uid); // if you do not specify the uid, we will generate the uid for you
-            }
-        }.start();
+
+        mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+
     }
 
     // Step 5

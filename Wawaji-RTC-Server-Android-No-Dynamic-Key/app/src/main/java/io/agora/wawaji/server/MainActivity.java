@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import io.agora.wawaji.utils.Constant;
 import io.agora.wawaji.utils.WawajiCrashHandler;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private int bitrate = 0;
     private int fps = 0;
     private boolean openRtmpStream = false;
+    private boolean useCaptureFormatNV21 = false;
 
     private EditText textRoomName;
     private EditText textRoomAppid;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText textBitrate;
     private EditText textFps;
     private CheckBox checkBoxPushFlow;
+    private CheckBox checkBoxSetNv21;
     private RelativeLayout layoutRtmp;
 
 
@@ -96,7 +99,9 @@ public class MainActivity extends AppCompatActivity {
         textFps = (EditText) findViewById(R.id.room_url_fps);
         layoutRtmp = (RelativeLayout) findViewById(R.id.room_layout_rtmp);
         checkBoxPushFlow = (CheckBox) findViewById(R.id.room_push_flow);
+        checkBoxSetNv21= (CheckBox) findViewById(R.id.room_check_nv21);
         checkBoxPushFlow.setOnCheckedChangeListener(onCheckedChangeListener);
+        checkBoxSetNv21.setOnCheckedChangeListener(onCheckedChangeListener);
 
         channelName = WawajiApplication.the().getSetting(Constant.CHANNEL_NAME, "");
         appid = WawajiApplication.the().getSetting(Constant.CHANNEL_APPID, "");
@@ -107,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         bitrate = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_BITRATE, 0);
         fps = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_FPS, 0);
         openRtmpStream = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE, false);
+        useCaptureFormatNV21 = WawajiApplication.the().getSetting(Constant.CHANNEL_SET_NV21, false);
 
         if (!channelName.equals("")) {
             textRoomName.setText(channelName);
@@ -135,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             checkBoxPushFlow.setChecked(openRtmpStream);
+            checkBoxSetNv21.setChecked(useCaptureFormatNV21);
 
             startActivity();
         }
@@ -199,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
         WawajiApplication.the().setSetting(Constant.CHANNEL_NAME, channelName);
         WawajiApplication.the().setSetting(Constant.CHANNEL_APPID, appid);
         WawajiApplication.the().setSetting(Constant.CHANNEL_UID, uid);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_SET_NV21, useCaptureFormatNV21);
         WawajiApplication.the().setSetting(Constant.CHANNEL_URL_STATE, openRtmpStream);
 
         if (openRtmpStream) {
@@ -219,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra(Constant.CHANNEL_APPID, appid);
         i.putExtra(Constant.CHANNEL_UID, uid);
         i.putExtra(Constant.CHANNEL_URL_STATE, openRtmpStream);
+        i.putExtra(Constant.CHANNEL_SET_NV21, useCaptureFormatNV21);
 
         if (openRtmpStream) {
             i.putExtra(Constant.CHANNEL_URL, rtmpUrl);
@@ -228,6 +237,11 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra(Constant.CHANNEL_URL_FPS, fps);
         }
 
+        if (appid.equals("") && getString(R.string.agora_app_id).equals("")){
+            Toast.makeText(this, "No AppId can use", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         startActivity(i);
     }
 
@@ -235,14 +249,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-            openRtmpStream = isChecked;
+            switch (buttonView.getId()){
+                case R.id.room_push_flow:
+                    openRtmpStream = isChecked;
 
-            if (isChecked) {
-                layoutRtmp.setVisibility(View.VISIBLE);
-            } else {
-                layoutRtmp.setVisibility(View.GONE);
+                    if (isChecked) {
+                        layoutRtmp.setVisibility(View.VISIBLE);
+                    } else {
+                        layoutRtmp.setVisibility(View.GONE);
+                    }
+                    break;
+                case R.id.room_check_nv21:
+
+                    useCaptureFormatNV21 = isChecked;
+                    break;
             }
+
+
         }
     };
+
 
 }

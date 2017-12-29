@@ -13,4 +13,5 @@
     <string name="main_input_fps">fps</string>
     <string name="main_button">Join Room</string>
     <string name="main_push_flow">Open CDN RTMP streaming</string>
+    <string name="main_set_nv21">Set CaptureFormat NV21</string>
 </resources>
