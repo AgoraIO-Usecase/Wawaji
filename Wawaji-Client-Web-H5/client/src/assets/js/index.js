@@ -63,7 +63,7 @@ $(function () {
                 dynamicKeyEnabled: false,
                 video_rotation: 90,
                 image: "IMG_5469.png",
-                available: true
+                available: false
             }, {
                 id: "wawaji_machine_kedie",
                 name: "wawaji_machine_kedie",
@@ -79,7 +79,7 @@ $(function () {
                 channel: "7008",
                 dynamicKeyEnabled: false,
                 image: "IMG_5467.png",
-                available: true
+                available: false
             },{
                 id: "wawaji_machine_leidi_internal",
                 name: "wawaji_machine_leidi",
