@@ -1529,8 +1529,6 @@ public:
 #if defined(_WIN32)
 	virtual int configPublisher(const PublisherConfiguration& config) = 0;
 #endif
-
-    virtual void onFatalError(void *pExp) = 0;
 };
 
 
