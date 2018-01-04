@@ -47,14 +47,14 @@ $(function () {
                 image: "IMG_5468.png",
                 available: true
             }, {
-                id: "wawaji_machine_leyaoyao",
-                name: "wawaji_machine_leyaoyao",
-                appid: "274acaf097b54d86acd6b21d0a753205",
-                channel: "10001",
+                id: "wawaji_machine_zinian",
+                name: "wawaji_machine_zinian",
+                appid: "a3b353ea71c34ea3851f2849a6301858",
+                channel: "agora_wawaji",
                 dynamicKeyEnabled: false,
-                video_rotation: 90,
+                video_rotation: 0,
                 image: "IMG_5467.png",
-                available: false
+                available: true
             }, {
                 id: "wawaji_machine_zhuazhua2",
                 name: "wawaji_machine_zhuazhua2",
@@ -68,10 +68,10 @@ $(function () {
                 id: "wawaji_machine_kedie",
                 name: "wawaji_machine_kedie",
                 appid: "9aa74fadb6594733a673f40fab8d933d",
-                channel: "03A3",
+                channel: "0338",
                 dynamicKeyEnabled: true,
                 image: "IMG_5470.png",
-                available: false
+                available: true
             }, {
                 id: "wawaji_machine_huizhi",
                 name: "wawaji_machine_huizhi",
