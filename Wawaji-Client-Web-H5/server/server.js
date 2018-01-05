@@ -16,6 +16,7 @@ var LeyaoyaoProfile = require('./modules/profiles/leyaoyao/profile');
 var QiyiguoProfile = require('./modules/profiles/qiyiguo/profile');
 var HuizhiProfile = require('./modules/profiles/huizhi/profile');
 var KedieProfile = require('./modules/profiles/kedie/profile');
+var ZiNianProfile = require('./modules/profiles/zinian/profile');
 var StreamMethod = require('./modules/constants').StreamMethod;
 var api  = require('./routes/api');
 
@@ -51,6 +52,7 @@ var leidi_profile = new LeiDiProfile(StreamMethod.JSMPEG);
 var leyaoyao_profile = new LeyaoyaoProfile(StreamMethod.JSMPEG);
 var huizhi_profile = new HuizhiProfile(StreamMethod.JSMPEG);
 var kedie_profile = new KedieProfile(StreamMethod.JSMPEG);
+var zinian_profile = new ZiNianProfile(StreamMethod.JSMPEG);
 //var qiyiguo_profile = new QiyiguoProfile(StreamMethod.JSMPEG);
 
 var unique = function(s){
@@ -74,6 +76,7 @@ manager.onStarted = function(){
     manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
     manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
+    manager.machines.add(new Wawaji.Machine(unique('machine_zinian'), zinian_profile));
     //manager.machines.add(unique('machine_qiyiguo'), qiyiguo_profile);
     // manager.machines.add(unique('machine_test'), test_profile);
 }
