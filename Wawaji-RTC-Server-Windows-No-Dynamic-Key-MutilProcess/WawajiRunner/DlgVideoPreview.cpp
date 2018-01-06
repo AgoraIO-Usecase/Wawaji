@@ -125,13 +125,14 @@ void CDlgVideoPreview::OnBnClickedButtonVideopreview()
 	// TODO:  在此添加控件通知处理程序代码
 	CString curDeviceName;
 	((CComboBox*)(GetDlgItem(IDC_COMBO_CameraList)))->GetWindowTextW(curDeviceName);
-	
+	int nCurDeviceIndex = ((CComboBox*)(GetDlgItem(IDC_COMBO_CameraList)))->GetCurSel();
+
 	int DeviceCount = m_pAgoraCameraManager->GetDeviceCount();
 	CString DeviceName, DeviceID;
 	for (int nDeviceId = 0; DeviceCount > nDeviceId; nDeviceId++)
 	{
 		m_pAgoraCameraManager->GetDevice(nDeviceId, DeviceName, DeviceID);
-		if (curDeviceName == DeviceName){
+		if (curDeviceName == DeviceName && nDeviceId == nCurDeviceIndex){
 			m_pAgoraCameraManager->SetCurDevice(DeviceID);
 			break;
 		}
@@ -169,15 +170,16 @@ void CDlgVideoPreview::setChildInfo(const CString processName, CAgoraCameraManag
 
 	//Camera
 	configValue = gWawajiConfig.getCameraName(strSection);
+	CString configValueDeviceId = s2cs(gWawajiConfig.getCameraComID(strSection));
 	int cameracount = m_pAgoraCameraManager->GetDeviceCount();
 	CString curDeviceName, curDeviceID;
-	CString defDeviceID = s2cs(configValue);
+	CString defDeviceName = s2cs(configValue);
 	int nCurSection = CB_ERR;
 	for (int DeviceId = 0; cameracount > DeviceId; DeviceId++)
 	{
 		m_pAgoraCameraManager->GetDevice(DeviceId,curDeviceName,curDeviceID);
 		((CComboBox*)(GetDlgItem(IDC_COMBO_CameraList)))->AddString(curDeviceName);
-		if (defDeviceID == curDeviceName){
+		if (defDeviceName == curDeviceName && configValueDeviceId == curDeviceID){
 			nCurSection = DeviceId;
 		}
 	}
@@ -246,13 +248,15 @@ void CDlgVideoPreview::saveConfig()
 	if (bres){
 
 		((CComboBox*)(GetDlgItem(IDC_COMBO_CameraList)))->GetWindowTextW(curDeviceName);
+		int nCurDeviceIndex = ((CComboBox*)(GetDlgItem(IDC_COMBO_CameraList)))->GetCurSel();
 
 		int DeviceCount = m_pAgoraCameraManager->GetDeviceCount();
 		CString DeviceName, DeviceID;
 		for (int nDeviceId = 0; DeviceCount > nDeviceId; nDeviceId++)
 		{
 			m_pAgoraCameraManager->GetDevice(nDeviceId, DeviceName, DeviceID);
-			if (curDeviceName == DeviceName){
+			if (curDeviceName == DeviceName && nCurDeviceIndex == nDeviceId){
+				AfxMessageBox(m_processIdName + s2cs(int2str(nDeviceId)));
 				m_curDeviceID = DeviceID;
 				break;
 			}
