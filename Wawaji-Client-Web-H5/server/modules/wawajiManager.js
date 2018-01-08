@@ -213,7 +213,7 @@ Wawaji.Server = function (serverid, io) {
                     machine.online = true;
                     machine.channel.channelClearAttr();
                     machine.updateAttrs();
-                    machine.channel && machine.channel.channelSetAttr("_auto_update_num", "1");
+                    // machine.channel && machine.channel.channelSetAttr("_auto_update_num", "1");
                 };
     
                 machine.channel.onChannelJoinFailed = function (ecode) {
@@ -437,8 +437,8 @@ Wawaji.Server = function (serverid, io) {
 
         this.processQueue = function () {
             //can process
-            machine.log.debug(`[DEBUG] process when status is ${machine.status} and machine.playing is ${machine.playing}`)
-            if ((machine.status === WawajiStatus.READY && machine.playing === null) || machine.status === WawajiStatus.WAITING) {
+            machine.log.debug(`[DEBUG] process when status is ${machine.status}`)
+            if (machine.status === WawajiStatus.WAITING) {
                 var player = machine.nextPlayer();
                 machine.updateAttrs();
                 machine.log.info("try to start next play: " + player);
@@ -461,8 +461,8 @@ Wawaji.Server = function (serverid, io) {
         profile.onError = function () {
             machine.session.messageInstantSend(machine.playing, JSON.stringify({ type: "ERROR", data: "UNKNOWN_ERR" }))
             machine.log.error(`[ERROR] Error occured for ${machine.name}, try to restore...`);
-            machine.setStatus(WawajiStatus.WAITING);
-            machine.processQueue();
+            // machine.setStatus(WawajiStatus.WAITING);
+            // machine.processQueue();
         }
 
         profile.onResult = function (result) {

@@ -148,17 +148,20 @@ $(function () {
 
             this.channel.onChannelAttrUpdated = function (type, k, v) {
                 dbg(`type: ${type}, k: ${k}, v: ${v}`);
-                var attrs = {}
+                var attrs = null;
                 if (k === "attrs" && (type === "update" || type === "set")) {
                     attrs = JSON.parse(v) || {};
                 }
                 if ((v === "update" || v === "set") && type === "attrs") {
                     attrs = JSON.parse(k) || {};
                 }
-                game.queue = attrs.queue || [];
-                game.playing = attrs.playing;
-                updateViews();
-                dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
+
+                if(attrs !== null){
+                    game.queue = attrs.queue || [];
+                    game.playing = attrs.playing;
+                    updateViews();
+                    dbg('machine attributes updated ' + type + ' ' + k + ' ' + v);
+                }
             };
 
             this.channel.onChannelUserList = function (users) {
