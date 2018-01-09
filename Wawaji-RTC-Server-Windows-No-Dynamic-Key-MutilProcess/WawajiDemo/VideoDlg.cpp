@@ -56,6 +56,7 @@ BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_LEAVE_CHANNEL),&CVideoDlg::OnEIDLeaveChannel)
 	ON_MESSAGE(WM_MSGID(EID_REJOINCHANNEL_SUCCESS), &CVideoDlg::OnEIDReJoinChannelSuccess)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_LOCAL_VIDEO_FRAME), &CVideoDlg::OnEIDFirstLocalFrame)
+	ON_MESSAGE(WM_MSGID(EID_REQUEST_CHANNELKEY), &CVideoDlg::onRequestChannelKey)
 
 	ON_MESSAGE(WM_MSGID(EID_FIRST_REMOTE_VIDEO_DECODED), &CVideoDlg::OnEIDFirstRemoteFrameDecoded)
 	ON_MESSAGE(WM_MSGID(EID_USER_JOINED),&CVideoDlg::OnEIDUserJoined)
@@ -63,9 +64,11 @@ BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	
 	ON_MESSAGE(WM_MSGID(EID_LOCAL_VIDEO_STAT),&CVideoDlg::OnEIDLocalVideoStat)
 	ON_MESSAGE(WM_MSGID(EID_REMOTE_VIDEO_STAT), &CVideoDlg::OnRemoteVideoStat)
+	ON_MESSAGE(WM_MSGID(EID_ERROR), &CVideoDlg::onEIDError)
 
 	ON_MESSAGE(WM_MSGID(EID_START_RCDSRV), &CVideoDlg::OnStartRecordingService)
 	ON_MESSAGE(WM_MSGID(EID_STOP_RCDSRV), &CVideoDlg::OnStopRecordingService)
+	ON_MESSAGE(WM_MSGID(EID_ERROR),&CVideoDlg::onEIDError)
 	
     ON_BN_CLICKED(IDC_BTNMIN_VIDEO, &CVideoDlg::OnBnClickedBtnmin)
 	ON_BN_CLICKED(IDC_BTNCLOSE_VIDEO, &CVideoDlg::OnBnClickedBtnclose)
@@ -727,6 +730,14 @@ LRESULT CVideoDlg::OnEIDReJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+LRESULT CVideoDlg::onRequestChannelKey(WPARAM wParam, LPARAM lParam)
+{
+	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
+	CString channelName = CAgoraObject::GetAgoraObject()->GetChanelName();
+	CStringA newChannelKey = CAgoraObject::GetAgoraObject()->getDynamicMediaChannelKey(channelName);
+	return pRtcEngine->renewChannelKey(newChannelKey);
+}
+
 LRESULT CVideoDlg::OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam)
 {
 	LPAGE_FIRST_LOCAL_VIDEO_FRAME lpData = (LPAGE_FIRST_LOCAL_VIDEO_FRAME)wParam;
@@ -896,6 +907,19 @@ LRESULT CVideoDlg::OnRemoteVideoStat(WPARAM wParam, LPARAM lParam)
 	delete lpData;
 
 	return 0;
+}
+
+LRESULT CVideoDlg::onEIDError(WPARAM wParam, LPARAM lParam)
+{
+	LPAGE_ERROR lpData = (LPAGE_ERROR)wParam;
+	if (ERR_CHANNEL_KEY_EXPIRED == lpData->err){
+		IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
+		CString channelName = CAgoraObject::GetAgoraObject()->GetChanelName();
+		CStringA newChannelKey = CAgoraObject::GetAgoraObject()->getDynamicMediaChannelKey(channelName);
+		return pRtcEngine->renewChannelKey(newChannelKey);
+	}
+
+	return TRUE;
 }
 
 LRESULT CVideoDlg::OnStartRecordingService(WPARAM wParam, LPARAM lParam)

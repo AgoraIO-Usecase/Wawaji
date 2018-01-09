@@ -73,6 +73,7 @@ protected:
 	afx_msg LRESULT OnEIDLeaveChannel(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDReJoinChannelSuccess(WPARAM wParam, LPARAM lParam);
 	
+	afx_msg LRESULT onRequestChannelKey(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDFirstLocalFrame(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDFirstRemoteFrameDecoded(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDUserJoined(WPARAM wParam, LPARAM lParam);
@@ -81,6 +82,7 @@ protected:
 	afx_msg LRESULT OnEIDVideoDeviceChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEIDLocalVideoStat(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnRemoteVideoStat(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onEIDError(WPARAM wParam, LPARAM lParam);
 
 	afx_msg LRESULT OnStartRecordingService(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnStopRecordingService(WPARAM wParam, LPARAM lParam);

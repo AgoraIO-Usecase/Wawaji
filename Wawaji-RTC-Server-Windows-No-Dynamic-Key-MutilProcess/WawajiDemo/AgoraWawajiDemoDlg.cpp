@@ -354,7 +354,16 @@ LRESULT CAgoraWawajiDemoDlg::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	m_lpRtcEngine->startPreview();
 
 	int uid = CAgoraObject::GetAgoraObject()->GetSelfUID();
-	m_lpAgoraObject->JoinChannel(strChannelName,uid);
+	bool bAppcertEnable = str2int(getInfoManager()->getConfig()->getAppCertEnable());
+	if (bAppcertEnable){
+
+		CStringA strMeidaChannelKey = m_lpAgoraObject->getDynamicMediaChannelKey(strChannelName);
+		m_lpAgoraObject->JoinChannel(strChannelName, uid, (LPCSTR)strMeidaChannelKey.GetBuffer());
+	}
+	else{
+
+		m_lpAgoraObject->JoinChannel(strChannelName, uid);
+	}
     
 	return 0;
 }

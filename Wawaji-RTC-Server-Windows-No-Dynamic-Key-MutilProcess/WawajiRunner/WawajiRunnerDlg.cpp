@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CWawajiRunnerDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_LASTMILE_QUALITY), &CWawajiRunnerDlg::onLastMileQuality)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_PROCESSID, &CWawajiRunnerDlg::OnNMDblclkTreeProcessid)
 	ON_BN_CLICKED(IDC_BUTTON_SAVEALL, &CWawajiRunnerDlg::OnBnClickedButtonSaveall)
+	ON_BN_CLICKED(IDC_CHECK_APPCERTIFICATED, &CWawajiRunnerDlg::OnBnClickedCheckAppcertificated)
 END_MESSAGE_MAP()
 
 
@@ -276,8 +277,14 @@ void CWawajiRunnerDlg::initCtrl()
 	std::string channelName = gWawajiConfig.getChannelName();
 	GetDlgItem(IDC_EDIT_ChannelName)->SetWindowText(s2cs(channelName));
 	GetDlgItem(IDC_EDIT_APPID)->SetWindowText(s2cs(m_appId));
+	std::string appCertEnable = gWawajiConfig.getAppCertEnable();
+	((CButton*)GetDlgItem(IDC_CHECK_APPCERTIFICATED))->SetCheck(str2int(appCertEnable));
+	std::string appCertificatId = gWawajiConfig.getAppCertificateId();
+	GetDlgItem(IDC_EDIT_APPCERTIFICATEID)->SetWindowText(s2cs(appCertificatId));
 	GetDlgItem(IDC_STATIC_TIMERSTATUS)->SetWindowTextW(_T("正在启动.."));
 	GetDlgItem(IDC_STATIC_TIMERSTATUS)->SetFocus();
+	std::string clearLogInterval = gWawajiConfig.getClearLogInterval();
+	GetDlgItem(IDC_EDIT_CLEARLOG)->SetWindowTextW(s2cs(clearLogInterval));
 
 	registerStartUp();
 
@@ -516,9 +523,14 @@ void CWawajiRunnerDlg::OnBnClickedButtonSaveall()
 	CString sParam;
 	GetDlgItem(IDC_EDIT_APPID)->GetWindowTextW(sParam);
 	gWawajiConfig.setAppId(cs2s(sParam));
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_APPCERTIFICATED)))->GetCheck();
+	gWawajiConfig.setAppCertEnable(int2str(res));
+	GetDlgItem(IDC_EDIT_APPCERTIFICATEID)->GetWindowText(sParam);
+	gWawajiConfig.setAppCertificateId(cs2s(sParam));
 	GetDlgItem(IDC_EDIT_ChannelName)->GetWindowTextW(sParam);
 	gWawajiConfig.setChannelName(cs2s(sParam));
-
+	GetDlgItem(IDC_EDIT_CLEARLOG)->GetWindowTextW(sParam);
+	gWawajiConfig.setClearLogInterval(cs2s(sParam));
 	
 	for (int i = 0; m_processCount > i; i++){
 		m_pDlgVideoPreview[i].saveConfig();
@@ -535,4 +547,15 @@ void CWawajiRunnerDlg::OnBnClickedButtonSaveall()
 		}
 	}
 	SetTimer(TIMER_IDEVENT_RECHECK, TIMER_INTERVAL_RECHECK, nullptr);
+}
+
+void CWawajiRunnerDlg::OnBnClickedCheckAppcertificated()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	bool res = ((CButton*)(GetDlgItem(IDC_CHECK_APPCERTIFICATED)))->GetCheck();
+	
+	gWawajiConfig.setAppCertEnable(int2str(res));
+	CString csParam;
+	GetDlgItem(IDC_EDIT_APPCERTIFICATEID)->GetWindowText(csParam);
+	gWawajiConfig.setAppCertificateId(cs2s(csParam));
 }

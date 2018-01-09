@@ -64,4 +64,5 @@ public:
 	int m_processCount;
 	afx_msg void OnBnClickedButtonSaveall();
 	std::map<std::string, DWORD > m_mapProcessId;
+	afx_msg void OnBnClickedCheckAppcertificated();
 };

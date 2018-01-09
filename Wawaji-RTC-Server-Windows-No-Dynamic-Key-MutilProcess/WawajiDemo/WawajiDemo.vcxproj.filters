@@ -201,6 +201,15 @@
     <ClInclude Include="MyCmdLineInfo.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicKey5.h">
+      <Filter>DynamicKey</Filter>
+    </ClInclude>
+    <ClInclude Include="Packer.h">
+      <Filter>DynamicKey</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>DynamicKey</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\IDB_BACKGROUND_VIDEO.bmp">
@@ -424,6 +433,9 @@
     </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{1016eb37-6840-4313-878f-9a64d632b2d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DynamicKey">
+      <UniqueIdentifier>{7b32b182-b19d-4805-a3f9-19e7c4ebb778}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

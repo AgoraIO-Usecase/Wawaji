@@ -3,7 +3,9 @@
 #include "AGResourceVisitor.h"
 #include "commonFun.h"
 #include <stdio.h>
-
+#include "DynamicKey5.h"
+#include "utils.h"
+using namespace agora::tools;
 
 CAgoraObject *CAgoraObject::m_lpAgoraObject = NULL;
 IRtcEngine	*CAgoraObject::m_lpAgoraEngine = NULL;
@@ -1042,4 +1044,32 @@ bool CAgoraObject::enablePublish(bool enable /*= true*/)
 	}
 
 	return true;
+}
+
+CStringA CAgoraObject::getDynamicMediaChannelKey(CString channelname)
+{
+	if (_T("") != channelname){
+		m_strChannelName = channelname;
+		
+		::srand(::time(NULL));
+
+		std::string appID = CStringA(m_strAppID.GetBuffer());
+		std::string  appCertificate = CStringA(m_strAppCert.GetBuffer());
+		std::string channelName = CStringA(channelname.GetBuffer());
+		m_strAppID.ReleaseBuffer();
+		m_strAppCert.ReleaseBuffer();
+		channelname.ReleaseBuffer();
+
+		auto  unixTs = ::time(NULL);
+		int randomInt = (::rand() % 256 << 24) + (::rand() % 256 << 16) + (::rand() % 256 << 8) + (::rand() % 256);
+		uint32_t uid = m_nSelfUID;
+		auto  expiredTs = 0;
+		std::string meidaChannelKey = DynamicKey5::generateMediaChannelKey(appID, appCertificate, channelName, unixTs, randomInt, uid, expiredTs);
+
+		m_strDynamicChannelKey = CString(meidaChannelKey.data());
+		return CStringA(m_strDynamicChannelKey.GetBuffer());
+	}
+	else{
+		return "";
+	}
 }

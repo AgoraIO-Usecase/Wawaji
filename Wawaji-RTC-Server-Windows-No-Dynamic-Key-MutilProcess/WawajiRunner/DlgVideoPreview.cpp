@@ -256,7 +256,7 @@ void CDlgVideoPreview::saveConfig()
 		{
 			m_pAgoraCameraManager->GetDevice(nDeviceId, DeviceName, DeviceID);
 			if (curDeviceName == DeviceName && nCurDeviceIndex == nDeviceId){
-				AfxMessageBox(m_processIdName + s2cs(int2str(nDeviceId)));
+				//AfxMessageBox(m_processIdName + s2cs(int2str(nDeviceId)));
 				m_curDeviceID = DeviceID;
 				break;
 			}

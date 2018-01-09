@@ -294,8 +294,10 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	getInfoManager()->getConfig()->setAppId(cs2s(strAppId));
 	CAgoraObject* m_lpAgoraObject = CAgoraObject::GetAgoraObject(strAppId);
 	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
-	
+
 	std::string strSection = getInfoManager()->getCurSection();
+	std::string appCertId = getInfoManager()->getConfig()->getAppCertificateId();
+	m_lpAgoraObject->SetAppCert(s2cs(appCertId));
 	std::string leftRotate90 = getInfoManager()->getConfig()->getLeftRotate90(strSection);
 	m_lpAgoraObject->EnableLocalPublishLeftRotate90(str2int(leftRotate90));
 	m_lpAgoraObject->EnableLocalMirrorImage(!str2int(leftRotate90));
@@ -339,7 +341,7 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 
 	//m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
 
-	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);
+	CAgoraObject::GetAgoraObject()->EnableLastmileTest(TRUE);	
 	
     m_ctrChannel.GetWindowText(strChannelName);
     m_ctrPassword.GetWindowText(strKey);
