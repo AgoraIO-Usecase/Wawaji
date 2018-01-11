@@ -180,7 +180,7 @@ public class WorkerThread extends Thread {
 
         if (cRole == Constants.CLIENT_ROLE_BROADCASTER) {
             mRtcEngine.setExternalVideoSource(true, false, true);
-//        mRtcEngine.useExternalAudioDevice();
+            mRtcEngine.useExternalAudioDevice();
             mRtcEngine.muteLocalVideoStream(true);
             mRtcEngine.muteLocalAudioStream(true);
 

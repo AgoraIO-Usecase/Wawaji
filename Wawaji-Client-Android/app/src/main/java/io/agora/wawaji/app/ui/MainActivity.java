@@ -1,15 +1,15 @@
 package io.agora.wawaji.app.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import io.agora.common.SoundPlayUtils;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.ConstantApp;
@@ -19,6 +19,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SoundPlayUtils.init(getApplicationContext());
     }
 
     @Override
