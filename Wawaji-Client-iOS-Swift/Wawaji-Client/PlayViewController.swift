@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 import AgoraRtcEngineKit
 
 class PlayViewController: UIViewController {
@@ -15,6 +16,9 @@ class PlayViewController: UIViewController {
     
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var controlView: UIView!
+    
+    var musicPlayer : AVAudioPlayer?
+    var effectPlayer : AVAudioPlayer?
     
     var mediaEngine : AgoraRtcEngineKit!
     var allStreamUids = [UInt]()
@@ -25,9 +29,27 @@ class PlayViewController: UIViewController {
         
         self.navigationItem.title = channel
         
+        playMusic()
         loadMediaEngine();
         
         print("--- connect to Wawaji if needed ---")
+    }
+    
+    func playMusic() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord, with: [.defaultToSpeaker])
+            try audioSession.setActive(true)
+            try audioSession.setMode(AVAudioSessionModeVideoChat)
+            
+            let url = Bundle.main.url(forResource: "music", withExtension: "mp3")
+            musicPlayer = try AVAudioPlayer(contentsOf: url!)
+            musicPlayer?.numberOfLoops = -1;
+            musicPlayer?.play()
+        }
+        catch {
+            print("\(error)")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -74,6 +96,10 @@ class PlayViewController: UIViewController {
     }
     
     @IBAction func cion(_ sender: Any) {
+        let url = Bundle.main.url(forResource: "start", withExtension: "m4a")
+        effectPlayer = try! AVAudioPlayer(contentsOf: url!)
+        effectPlayer?.play()
+        
         print("--- send cion command to wawaji ---")
         showAlert("Please add control module")
     }
@@ -126,9 +152,8 @@ class PlayViewController: UIViewController {
         mediaEngine.setClientRole(.clientRole_Broadcaster, withKey: nil)
         mediaEngine.enableVideo();
         mediaEngine.enableLocalVideo(false);
-        mediaEngine.enableAudio()
-        mediaEngine.muteLocalAudioStream(true);
-        mediaEngine.setParameters("{\"che.audio.external_capture\": true}");
+        mediaEngine.disableAudio()
+        mediaEngine.setParameters("{\"che.audio.external_device\": true}");
         
         let result = mediaEngine.joinChannel(byKey: nil, channelName: channel, info: nil, uid: 0, joinSuccess: nil)
         if result == 0 {
