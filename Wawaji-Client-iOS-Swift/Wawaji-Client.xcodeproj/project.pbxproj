@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7027AECB2007844200B22893 /* success.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEC72007844200B22893 /* success.mp3 */; };
+		7027AECC2007844200B22893 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEC82007844200B22893 /* music.mp3 */; };
+		7027AECD2007844200B22893 /* start.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEC92007844200B22893 /* start.m4a */; };
+		7027AECE2007844200B22893 /* failed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AECA2007844200B22893 /* failed.mp3 */; };
 		7044E1B01FDE78530080CF05 /* LeidiWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7044E1AF1FDE78530080CF05 /* LeidiWawajiController.swift */; };
 		706EFAAE1FD174B50014278F /* WawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAD1FD174B50014278F /* WawajiController.swift */; };
 		706EFAB01FD178300014278F /* ZinianWawajiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706EFAAF1FD178300014278F /* ZinianWawajiController.swift */; };
@@ -32,6 +36,10 @@
 
 /* Begin PBXFileReference section */
 		16640454FF95C8E5C33408CF /* Pods-Wawaji-Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client/Pods-Wawaji-Client.release.xcconfig"; sourceTree = "<group>"; };
+		7027AEC72007844200B22893 /* success.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = success.mp3; sourceTree = "<group>"; };
+		7027AEC82007844200B22893 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
+		7027AEC92007844200B22893 /* start.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = start.m4a; sourceTree = "<group>"; };
+		7027AECA2007844200B22893 /* failed.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failed.mp3; sourceTree = "<group>"; };
 		7044E1AF1FDE78530080CF05 /* LeidiWawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeidiWawajiController.swift; sourceTree = "<group>"; };
 		706EFAAD1FD174B50014278F /* WawajiController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WawajiController.swift; sourceTree = "<group>"; };
 		706EFAAF1FD178300014278F /* ZinianWawajiController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZinianWawajiController.swift; sourceTree = "<group>"; };
@@ -92,6 +100,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		7027AEC62007844200B22893 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				7027AEC72007844200B22893 /* success.mp3 */,
+				7027AEC82007844200B22893 /* music.mp3 */,
+				7027AEC92007844200B22893 /* start.m4a */,
+				7027AECA2007844200B22893 /* failed.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		7073365B1FC53AEA005844ED = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +132,7 @@
 		707336661FC53AEA005844ED /* Wawaji-Client */ = {
 			isa = PBXGroup;
 			children = (
+				7027AEC62007844200B22893 /* Audio */,
 				707336671FC53AEA005844ED /* AppDelegate.swift */,
 				707336691FC53AEA005844ED /* MainViewController.swift */,
 				707336791FC53C7C005844ED /* PlayViewController.swift */,
@@ -206,8 +226,12 @@
 			files = (
 				707336721FC53AEB005844ED /* LaunchScreen.storyboard in Resources */,
 				707336841FC54B06005844ED /* Localizable.strings in Resources */,
+				7027AECC2007844200B22893 /* music.mp3 in Resources */,
+				7027AECB2007844200B22893 /* success.mp3 in Resources */,
 				7073366F1FC53AEB005844ED /* Assets.xcassets in Resources */,
+				7027AECE2007844200B22893 /* failed.mp3 in Resources */,
 				7073366D1FC53AEA005844ED /* Main.storyboard in Resources */,
+				7027AECD2007844200B22893 /* start.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -23,6 +23,9 @@ static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeiDi;
     NSUInteger currentStreamUid;
 }
 
+@property (strong, nonatomic) AVAudioPlayer *musicPlayer;
+@property (strong, nonatomic) AVAudioPlayer *effectPlayer;
+
 @property (assign, nonatomic) uint32_t signalUid;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIView *controlView;
@@ -40,25 +43,49 @@ static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeiDi;
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
     
+    [self playMusic];
     [self loadMediaEngine];
     
     if (self.player) {
         wawajiController = [WawajiControllerCreator getWawajiController:kWawajiManufacturer];
         [wawajiController initialize];
         if ([wawajiController respondsToSelector:@selector(setFetchResultBlock:)]) {
+            __weak typeof(self) weakSelf = self;
+
             wawajiController.fetchResultBlock = ^(BOOL result) {
+                NSString *effectFileName;
                 if (result) {
                     [AlertUtil showAlert:NSLocalizedString(@"FetchSuccess", nil)];
+                    effectFileName = @"success";
                 }
                 else {
                     [AlertUtil showAlert:NSLocalizedString(@"FetchFailed", nil)];
+                    effectFileName = @"failed";
                 }
+                
+                if (weakSelf.effectPlayer) {
+                    [weakSelf.effectPlayer stop];
+                }
+                NSURL *url = [[NSBundle mainBundle] URLForResource:effectFileName withExtension:@"mp3"];
+                weakSelf.effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+                [weakSelf.effectPlayer play];
             };
         }
     }
     else {
         [self.controlView removeFromSuperview];
     }
+}
+
+- (void)playMusic {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVideoChat error:nil];
+    
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"music" withExtension:@"mp3"];
+    self.musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    self.musicPlayer.numberOfLoops = -1;
+    [self.musicPlayer play];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -108,6 +135,13 @@ static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeiDi;
 
 - (IBAction)cion:(id)sender {
     [wawajiController insertCion];
+    
+    if (self.effectPlayer) {
+        [self.effectPlayer stop];
+    }
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"start" withExtension:@"m4a"];
+    self.effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    [self.effectPlayer play];
 }
 
 - (IBAction)startMoveUp:(id)sender {
@@ -164,9 +198,8 @@ static const WawajiManufacturer kWawajiManufacturer = WawajiManufacturer_LeiDi;
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
     [mediaEngine enableLocalVideo:NO];
-    [mediaEngine enableAudio];
-    [mediaEngine muteLocalAudioStream:YES];
-    [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
+    [mediaEngine disableAudio];
+    [mediaEngine setParameters:@"{\"che.audio.external_device\": true}"];
     
     int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {

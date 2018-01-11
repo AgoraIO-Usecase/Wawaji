@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2798A66EE3FCE7CC3059190F /* libPods-Wawaji-Client-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B061C0C246E8B6A3DD7515DF /* libPods-Wawaji-Client-iOS.a */; };
+		7027AEB920075FF300B22893 /* success.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB520075FF300B22893 /* success.mp3 */; };
+		7027AEBA20075FF300B22893 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB620075FF300B22893 /* music.mp3 */; };
+		7027AEBB20075FF300B22893 /* start.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB720075FF300B22893 /* start.m4a */; };
+		7027AEBC20075FF300B22893 /* failed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB820075FF300B22893 /* failed.mp3 */; };
 		7044E1AC1FDE5A800080CF05 /* LeidiWawajiController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7044E1AB1FDE5A800080CF05 /* LeidiWawajiController.m */; };
 		707CB4A31FD2A5F700A9DAA6 /* ZinianWawajiController.m in Sources */ = {isa = PBXBuildFile; fileRef = 707CB4A21FD2A5F700A9DAA6 /* ZinianWawajiController.m */; };
 		707CB4A61FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m in Sources */ = {isa = PBXBuildFile; fileRef = 707CB4A51FD2A9FE00A9DAA6 /* LeyaoyaoWawajiController.m */; };
@@ -33,6 +37,10 @@
 
 /* Begin PBXFileReference section */
 		2431C93EDAF31FC7F6294502 /* Pods-Wawaji-Client-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wawaji-Client-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wawaji-Client-iOS/Pods-Wawaji-Client-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		7027AEB520075FF300B22893 /* success.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = success.mp3; sourceTree = "<group>"; };
+		7027AEB620075FF300B22893 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
+		7027AEB720075FF300B22893 /* start.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = start.m4a; sourceTree = "<group>"; };
+		7027AEB820075FF300B22893 /* failed.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failed.mp3; sourceTree = "<group>"; };
 		7044E1AA1FDE5A800080CF05 /* LeidiWawajiController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeidiWawajiController.h; sourceTree = "<group>"; };
 		7044E1AB1FDE5A800080CF05 /* LeidiWawajiController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LeidiWawajiController.m; sourceTree = "<group>"; };
 		707CB4A01FD2A13900A9DAA6 /* WawajiController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawajiController.h; sourceTree = "<group>"; };
@@ -89,6 +97,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7027AEB420075FF300B22893 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				7027AEB520075FF300B22893 /* success.mp3 */,
+				7027AEB620075FF300B22893 /* music.mp3 */,
+				7027AEB720075FF300B22893 /* start.m4a */,
+				7027AEB820075FF300B22893 /* failed.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		709016461FBD416100D18745 = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +130,7 @@
 		709016511FBD416100D18745 /* Wawaji-Client-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				7027AEB420075FF300B22893 /* Audio */,
 				709016521FBD416100D18745 /* AppDelegate.h */,
 				709016531FBD416100D18745 /* AppDelegate.m */,
 				709016551FBD416100D18745 /* MainViewController.h */,
@@ -234,8 +254,12 @@
 			files = (
 				7090165F1FBD416100D18745 /* LaunchScreen.storyboard in Resources */,
 				70840F031FC5AD0B00BCAB7D /* Localizable.strings in Resources */,
+				7027AEBA20075FF300B22893 /* music.mp3 in Resources */,
+				7027AEB920075FF300B22893 /* success.mp3 in Resources */,
 				7090165C1FBD416100D18745 /* Assets.xcassets in Resources */,
+				7027AEBC20075FF300B22893 /* failed.mp3 in Resources */,
 				7090165A1FBD416100D18745 /* Main.storyboard in Resources */,
+				7027AEBB20075FF300B22893 /* start.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
