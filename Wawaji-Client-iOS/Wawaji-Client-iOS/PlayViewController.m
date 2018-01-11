@@ -23,6 +23,9 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
 
 @interface PlayViewController () <AgoraRtcEngineDelegate>
 {
+    AVAudioPlayer *musicPlayer;
+    AVAudioPlayer *effectPlayer;
+    
     AgoraAPI *signalEngine;
     NSString *signalChannel;
     
@@ -34,10 +37,7 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     UIAlertAction *startAlertAction;
     NSTimer *timer;
     unsigned int countDown;
-    
-    PlayStatus status;
 }
-
 
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIView *watchView;
@@ -51,10 +51,12 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
 @property (weak, nonatomic) IBOutlet UILabel *userNumberLabel;
 
 @property (assign, nonatomic) NSUInteger userNumber;
+@property (assign, nonatomic) PlayStatus status;
 
 @end
 
 @implementation PlayViewController
+@synthesize status;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,17 +65,31 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
     
+    [self playMusic];
     [self loadMediaEngine];
     [self loadSignalEngine];
     [self joinSignalChannel];
     [self queueUserNum];
 }
 
+- (void)playMusic {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVideoChat error:nil];
+    
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"music" withExtension:@"mp3"];
+    musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    musicPlayer.numberOfLoops = -1;
+    [musicPlayer play];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
     [UIApplication sharedApplication].idleTimerDisabled = NO;
-    [mediaEngine leaveChannel:nil];
+    [mediaEngine leaveChannel:^(AgoraRtcStats *stat) {
+        [AgoraRtcEngineKit destroy];
+    }];
     mediaEngine = nil;
     
     if (signalChannel) {
@@ -121,6 +137,13 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     if (status == PlayStatus_Initial) {
         NSDictionary *msgDic = @{@"type" : @"PLAY"};
         [self sendChannelMessage:msgDic];
+        
+        if (effectPlayer) {
+            [effectPlayer stop];
+        }
+        NSURL *url = [[NSBundle mainBundle] URLForResource:@"start" withExtension:@"m4a"];
+        effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+        [effectPlayer play];
     }
     else if (status == PlayStatus_Ready) {
         NSDictionary *msgDic = @{@"type" : @"START"};
@@ -134,6 +157,13 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
         countDown = 30;
         NSString *title = [NSString stringWithFormat:@"(%d)", countDown];
         [self.fetchButton setTitle:title forState:UIControlStateNormal];
+        
+        if (effectPlayer) {
+            [effectPlayer stop];
+        }
+        NSURL *url = [[NSBundle mainBundle] URLForResource:@"start" withExtension:@"m4a"];
+        effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+        [effectPlayer play];
     }
     else if (status == PlayStatus_Finish) {
         self.promptBackgroundView.hidden = YES;
@@ -200,9 +230,8 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
     [mediaEngine enableLocalVideo:NO];
-    [mediaEngine enableAudio];
-    [mediaEngine muteLocalAudioStream:YES];
-    [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
+    [mediaEngine disableAudio];
+    [mediaEngine setParameters:@"{\"che.audio.external_device\":true}"];
     
     NSString *key = [KeyCenter generateMediaKey:self.wawaji.videoChannel uid:0 expiredTime:0];
     int result = [mediaEngine joinChannelByKey:key channelName:self.wawaji.videoChannel info:nil uid:0 joinSuccess:nil];
@@ -281,6 +310,10 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     };
     
     signalEngine.onMessageInstantReceive = ^(NSString *account, uint32_t uid, NSString *msg) {
+        if (![account isEqualToString:weakSelf.wawaji.name]) {
+            return;
+        }
+        
         NSLog(@"onMessageInstantReceive, msg: %@", msg);
         
         NSData *data = [msg dataUsingEncoding:NSUTF8StringEncoding];
@@ -289,6 +322,29 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
         if ([type isEqualToString:@"PREPARE"]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf startPlay];
+            });
+        }
+    };
+    
+    signalEngine.onMessageChannelReceive = ^(NSString* channelID, NSString* account, uint32_t uid, NSString* msg) {
+        if (![account isEqualToString:weakSelf.wawaji.name]) {
+            return;
+        }
+        
+        NSLog(@"onMessageChannelReceive, msg: %@", msg);
+        
+        if (weakSelf.status != PlayStatus_Playing) {
+            return;
+        }
+        
+        NSData *data = [msg dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *result = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSString *type = result[@"type"];
+        NSString *player = result[@"player"];
+        if ([type isEqualToString:@"RESULT"] && [player isEqualToString:weakSelf.account]) {
+            BOOL success = [result[@"data"] boolValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf finishPlay:success];
             });
         }
     };
@@ -362,25 +418,7 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
         }
     }
     else {
-        if (status == PlayStatus_Playing) {
-            self.controlView.hidden = YES;
-            self.watchView.hidden = NO;
-            
-            self.promptBackgroundView.hidden = NO;
-            self.promptView.hidden = NO;
-            self.promptLabel.text = NSLocalizedString(@"Finish", nil);
-            
-            self.queueLabel.hidden = YES;
-            
-            NSString *startTitle = NSLocalizedString(@"TryAgain", nil);
-            [self.startButton setTitle:startTitle forState:UIControlStateNormal];
-
-            status = PlayStatus_Finish;
-            
-            [timer invalidate];
-            timer = nil;
-        }
-        else if (status == PlayStatus_Ready) {
+        if (status == PlayStatus_Ready) {
             self.promptView.hidden = YES;
             status = PlayStatus_Initial;
             
@@ -389,7 +427,7 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
         }
         
         NSUInteger index = [queue indexOfObject:self.account];
-        if (index != NSNotFound) {
+        if (queue && index != NSNotFound) {
             self.queueLabel.text = [NSString stringWithFormat:NSLocalizedString(@"QueueInfo", nil), index + 1];
             
             if (status == PlayStatus_Initial) {
@@ -439,6 +477,47 @@ typedef NS_ENUM(NSInteger, PlayStatus) {
     [self.startButton setTitle:startTitle forState:UIControlStateNormal];
     
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countDownTimer) userInfo:nil repeats:YES];
+}
+
+- (void)finishPlay:(BOOL)success {
+    if (status != PlayStatus_Playing) {
+        return;
+    }
+    
+    [timer invalidate];
+    timer = nil;
+    
+    NSString *promptLabelTest;
+    NSString *effectFileName;
+    if (success) {
+        promptLabelTest = NSLocalizedString(@"Success", nil);
+        effectFileName = @"success";
+    }
+    else {
+        promptLabelTest = NSLocalizedString(@"Failed", nil);
+        effectFileName = @"failed";
+    }
+    
+    self.controlView.hidden = YES;
+    self.watchView.hidden = NO;
+    
+    self.promptBackgroundView.hidden = NO;
+    self.promptView.hidden = NO;
+    self.promptLabel.text = promptLabelTest;
+    
+    self.queueLabel.hidden = YES;
+    
+    NSString *startTitle = NSLocalizedString(@"TryAgain", nil);
+    [self.startButton setTitle:startTitle forState:UIControlStateNormal];
+    
+    if (effectPlayer) {
+        [effectPlayer stop];
+    }
+    NSURL *url = [[NSBundle mainBundle] URLForResource:effectFileName withExtension:@"mp3"];
+    effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    [effectPlayer play];
+    
+    status = PlayStatus_Finish;
 }
 
 - (void)countDownTimer {

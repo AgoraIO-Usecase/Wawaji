@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		70146F111FCC1E1A0055DC5D /* CALayer+LayerColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 70146F101FCC1E190055DC5D /* CALayer+LayerColor.m */; };
 		70146F171FCE65270055DC5D /* WawajiInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 70146F161FCE65270055DC5D /* WawajiInfo.m */; };
+		7027AEC22007603800B22893 /* success.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEBE2007603800B22893 /* success.mp3 */; };
+		7027AEC32007603800B22893 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEBF2007603800B22893 /* music.mp3 */; };
+		7027AEC42007603800B22893 /* start.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEC02007603800B22893 /* start.m4a */; };
+		7027AEC52007603800B22893 /* failed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEC12007603800B22893 /* failed.mp3 */; };
 		7056A46E1FC6987C00F1A43D /* KeyCenter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7056A46B1FC6987C00F1A43D /* KeyCenter.mm */; };
 		7056A48D1FC6A61A00F1A43D /* ListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7056A48C1FC6A61A00F1A43D /* ListViewController.m */; };
 		7056A48F1FC6AAE800F1A43D /* AgoraSignalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7056A48E1FC6AAE800F1A43D /* AgoraSignalKit.framework */; };
@@ -35,6 +39,10 @@
 		70146F101FCC1E190055DC5D /* CALayer+LayerColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+LayerColor.m"; sourceTree = "<group>"; };
 		70146F151FCE65270055DC5D /* WawajiInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawajiInfo.h; sourceTree = "<group>"; };
 		70146F161FCE65270055DC5D /* WawajiInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WawajiInfo.m; sourceTree = "<group>"; };
+		7027AEBE2007603800B22893 /* success.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = success.mp3; sourceTree = "<group>"; };
+		7027AEBF2007603800B22893 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
+		7027AEC02007603800B22893 /* start.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = start.m4a; sourceTree = "<group>"; };
+		7027AEC12007603800B22893 /* failed.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failed.mp3; sourceTree = "<group>"; };
 		7056A46B1FC6987C00F1A43D /* KeyCenter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyCenter.mm; sourceTree = "<group>"; };
 		7056A46C1FC6987C00F1A43D /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		7056A46D1FC6987C00F1A43D /* DynamicKey4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey4.h; sourceTree = "<group>"; };
@@ -85,6 +93,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7027AEBD2007603800B22893 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				7027AEBE2007603800B22893 /* success.mp3 */,
+				7027AEBF2007603800B22893 /* music.mp3 */,
+				7027AEC02007603800B22893 /* start.m4a */,
+				7027AEC12007603800B22893 /* failed.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		709016461FBD416100D18745 = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +125,7 @@
 		709016511FBD416100D18745 /* Wawaji-Client-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				7027AEBD2007603800B22893 /* Audio */,
 				709016521FBD416100D18745 /* AppDelegate.h */,
 				709016531FBD416100D18745 /* AppDelegate.m */,
 				7056A48B1FC6A61A00F1A43D /* ListViewController.h */,
@@ -216,8 +236,12 @@
 			files = (
 				7090165F1FBD416100D18745 /* LaunchScreen.storyboard in Resources */,
 				70840F031FC5AD0B00BCAB7D /* Localizable.strings in Resources */,
+				7027AEC32007603800B22893 /* music.mp3 in Resources */,
+				7027AEC22007603800B22893 /* success.mp3 in Resources */,
 				7090165C1FBD416100D18745 /* Assets.xcassets in Resources */,
+				7027AEC52007603800B22893 /* failed.mp3 in Resources */,
 				7090165A1FBD416100D18745 /* Main.storyboard in Resources */,
+				7027AEC42007603800B22893 /* start.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
