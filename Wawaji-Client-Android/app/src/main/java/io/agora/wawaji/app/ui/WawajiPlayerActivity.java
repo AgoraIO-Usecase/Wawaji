@@ -466,6 +466,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SoundPlayUtils.stopBackGround();
         doLeaveChannel();
     }
 
