@@ -43,6 +43,11 @@ public class Constant {
     public static final int Wawaji_Msg_FORCED_LOGOUT = 3;
     public static final int Wawaji_Msg_STARTCATCH= 4;
 
+    public static final int Wawaji_BG_SOUND = 1;
+    public static  int Wawaji_START_SOUND = 7;
+    public static  int Wawaji_SUCCESS_SOUND = 6;
+    public static  int Wawaji_FAILED_SOUND = 4;
+
     public enum DOLLMARKER{
         LEYAOYAO,
         LEIDI
