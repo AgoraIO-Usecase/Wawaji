@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7027AEB220074B0800B22893 /* start.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB020074B0800B22893 /* start.m4a */; };
+		7027AEB320074B0800B22893 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEB120074B0800B22893 /* music.mp3 */; };
 		707336681FC53AEA005844ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707336671FC53AEA005844ED /* AppDelegate.swift */; };
 		7073366A1FC53AEA005844ED /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707336691FC53AEA005844ED /* MainViewController.swift */; };
 		7073366D1FC53AEA005844ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7073366B1FC53AEA005844ED /* Main.storyboard */; };
@@ -25,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7027AEB020074B0800B22893 /* start.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = start.m4a; sourceTree = "<group>"; };
+		7027AEB120074B0800B22893 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
 		707336641FC53AEA005844ED /* Wawaji-Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		707336671FC53AEA005844ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		707336691FC53AEA005844ED /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -103,8 +107,10 @@
 				7073366B1FC53AEA005844ED /* Main.storyboard */,
 				7073366E1FC53AEB005844ED /* Assets.xcassets */,
 				707336701FC53AEB005844ED /* LaunchScreen.storyboard */,
-				707336731FC53AEB005844ED /* Info.plist */,
 				707336821FC54B06005844ED /* Localizable.strings */,
+				7027AEB120074B0800B22893 /* music.mp3 */,
+				7027AEB020074B0800B22893 /* start.m4a */,
+				707336731FC53AEB005844ED /* Info.plist */,
 			);
 			path = "Wawaji-Client";
 			sourceTree = "<group>";
@@ -169,7 +175,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7027AEB220074B0800B22893 /* start.m4a in Resources */,
 				707336721FC53AEB005844ED /* LaunchScreen.storyboard in Resources */,
+				7027AEB320074B0800B22893 /* music.mp3 in Resources */,
 				707336841FC54B06005844ED /* Localizable.strings in Resources */,
 				7073366F1FC53AEB005844ED /* Assets.xcassets in Resources */,
 				7073366D1FC53AEA005844ED /* Main.storyboard in Resources */,

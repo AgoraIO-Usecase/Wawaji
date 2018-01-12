@@ -13,6 +13,9 @@
 
 @interface PlayViewController () <AgoraRtcEngineDelegate>
 {
+    AVAudioPlayer *musicPlayer;
+    AVAudioPlayer *effectPlayer;
+    
     AgoraRtcEngineKit *mediaEngine;
     NSMutableArray *allStreamUids;
     NSUInteger currentStreamUid;
@@ -34,9 +37,21 @@
     allStreamUids = [[NSMutableArray alloc] initWithCapacity:2];
     currentStreamUid = 0;
     
+    [self playMusic];
     [self loadMediaEngine];
     
     NSLog(@"--- connect to Wawaji if needed ---");
+}
+
+- (void)playMusic {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVideoChat error:nil];
+    
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"music" withExtension:@"mp3"];
+    musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    musicPlayer.numberOfLoops = -1;
+    [musicPlayer play];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -84,6 +99,10 @@
 }
 
 - (IBAction)cion:(id)sender {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"start" withExtension:@"m4a"];
+    effectPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    [effectPlayer play];
+    
     NSLog(@"--- send cion command to wawaji ---");
     [AlertUtil showAlert:@"Please add control module"];
 }
@@ -138,9 +157,8 @@
     [mediaEngine setClientRole:AgoraRtc_ClientRole_Broadcaster withKey:nil];
     [mediaEngine enableVideo];
     [mediaEngine enableLocalVideo:NO];
-    [mediaEngine enableAudio];
-    [mediaEngine muteLocalAudioStream:YES];
-    [mediaEngine setParameters:@"{\"che.audio.external_capture\": true}"];
+    [mediaEngine disableAudio];
+    [mediaEngine setParameters:@"{\"che.audio.external_device\": true}"];
     
     int result = [mediaEngine joinChannelByKey:nil channelName:self.channel info:nil uid:0 joinSuccess:nil];
     if (result == 0) {

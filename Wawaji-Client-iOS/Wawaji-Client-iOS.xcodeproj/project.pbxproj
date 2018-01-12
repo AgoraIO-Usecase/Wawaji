@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7027AEAE2007492700B22893 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEAC2007492700B22893 /* music.mp3 */; };
+		7027AEAF2007492700B22893 /* start.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7027AEAD2007492700B22893 /* start.m4a */; };
 		70840F031FC5AD0B00BCAB7D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 70840F011FC5AD0B00BCAB7D /* Localizable.strings */; };
 		709016541FBD416100D18745 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016531FBD416100D18745 /* AppDelegate.m */; };
 		709016571FBD416100D18745 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709016561FBD416100D18745 /* MainViewController.m */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7027AEAC2007492700B22893 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
+		7027AEAD2007492700B22893 /* start.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = start.m4a; sourceTree = "<group>"; };
 		70840F021FC5AD0B00BCAB7D /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7090164F1FBD416100D18745 /* Wawaji-Client-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wawaji-Client-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		709016521FBD416100D18745 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -104,6 +108,8 @@
 				7090165B1FBD416100D18745 /* Assets.xcassets */,
 				7090165D1FBD416100D18745 /* LaunchScreen.storyboard */,
 				70840F011FC5AD0B00BCAB7D /* Localizable.strings */,
+				7027AEAC2007492700B22893 /* music.mp3 */,
+				7027AEAD2007492700B22893 /* start.m4a */,
 				709016601FBD416100D18745 /* Info.plist */,
 				709016611FBD416100D18745 /* main.m */,
 			);
@@ -191,6 +197,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7027AEAE2007492700B22893 /* music.mp3 in Resources */,
+				7027AEAF2007492700B22893 /* start.m4a in Resources */,
 				7090165F1FBD416100D18745 /* LaunchScreen.storyboard in Resources */,
 				70840F031FC5AD0B00BCAB7D /* Localizable.strings in Resources */,
 				7090165C1FBD416100D18745 /* Assets.xcassets in Resources */,
