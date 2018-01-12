@@ -14,4 +14,5 @@ public class Constant {
     public static final String CHANNEL_URL_BITRATE = "url_bitrate";
     public static final String CHANNEL_URL_FPS = "url_fps";
     public static final String CHANNEL_URL_STATE = "url_state";
+    public static final String CHANNEL_SET_NV21 = "capturenv21";
 }

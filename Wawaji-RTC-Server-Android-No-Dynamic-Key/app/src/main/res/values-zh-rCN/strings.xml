@@ -16,5 +16,6 @@
     <string name="main_input_fps">帧率</string>
     <string name="main_button">进入直播间</string>
     <string name="main_push_flow">开启旁路推流</string>
+    <string name="main_set_nv21">设置视频采集格式 NV21</string>
 
 </resources>
