@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import io.agora.common.Constant;
+import io.agora.common.SoundPlayUtils;
 import io.agora.common.ToastUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
@@ -76,6 +77,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
         TextView textRoomName = (TextView) findViewById(R.id.room_name);
         textRoomName.setText(roomName);
+
+        SoundPlayUtils.play(Constant.Wawaji_BG_SOUND);
     }
 
     private void doConfigEngine(int cRole) {
@@ -232,6 +235,16 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
         ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
+    public void onStartBtnClicked(View view) {
+        SoundPlayUtils.play(7);
+        if (!isBroadcaster()) {
+            showShortToast(getString(R.string.label_not_a_player));
+            return;
+        }
+
+        ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
+    }
+
 
     public void onSwitchCameraClicked(View view) {
 
@@ -258,5 +271,13 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         } else {
             showShortToast(getString(R.string.label_can_not_switch_cam));
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("onDestroy");
+        SoundPlayUtils.stopBackGround();
     }
 }

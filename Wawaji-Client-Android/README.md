@@ -9,9 +9,10 @@
 
 在这个示例项目中包含了以下功能：
 
-- 进入直播间；
-- 观看主播抓娃娃（自己操作娃娃机功能需要单独实现）；
+- 进入直播间
+- 观看主播抓娃娃（自己操作娃娃机功能需要单独实现）
 - 离开
+- 新增播放娃娃机背景音效，开始抓娃娃音效功能
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "app/src/main/res/values/strings_config.xml"

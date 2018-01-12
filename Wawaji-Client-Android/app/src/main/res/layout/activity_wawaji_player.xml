@@ -106,6 +106,16 @@
                       android:layout_alignParentBottom="true"
                       android:clickable="false" />
 
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/game_main_down"
+                    android:text="Start Game"
+                    android:textColor="#fff"
+                    android:onClick="onStartBtnClicked" />
+
                 <ImageView
                         android:layout_width="60dp"
                         android:layout_height="60dp"
