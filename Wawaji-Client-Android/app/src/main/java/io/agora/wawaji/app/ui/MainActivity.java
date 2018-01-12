@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import io.agora.common.Constant;
+import io.agora.common.SoundPlayUtils;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity implements AGEventHandler, RoomLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SoundPlayUtils.init(getApplicationContext());
     }
 
     @Override

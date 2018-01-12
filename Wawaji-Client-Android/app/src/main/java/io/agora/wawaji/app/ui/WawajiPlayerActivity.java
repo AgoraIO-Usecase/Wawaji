@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.ref.WeakReference;
 
 import io.agora.common.Constant;
+import io.agora.common.SoundPlayUtils;
 import io.agora.common.ToastUtils;
 import io.agora.common.Wawaji;
 import io.agora.rtc.Constants;
@@ -97,6 +98,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (cRole == 0) {
             throw new RuntimeException("Should not reach here");
         }
+        SoundPlayUtils.play(Constant.Wawaji_BG_SOUND);
 
         Wawaji wawaji = (Wawaji) i.getSerializableExtra(ConstantApp.ACTION_KEY_ROOM_WAWAJI);
         if (wawaji != null) {
@@ -283,8 +285,10 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             case Constant.Wawaji_Msg_RESULT:
                 boolv = (Boolean) data[0];
                 if (boolv) {
+                    SoundPlayUtils.play(Constant.Wawaji_SUCCESS_SOUND);
                     showLongToast("Congrats, lucky day");
                 } else {
+                    SoundPlayUtils.play(Constant.Wawaji_FAILED_SOUND);
                     showShortToast("Sorry oops");
                 }
                 finish();
@@ -354,6 +358,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                         if (mRlBottomCtrl.getVisibility() != View.VISIBLE) {
                             mRlBottomCtrl.setVisibility(View.VISIBLE);
                             mRlBottomOrder.setVisibility(View.GONE);
+                            SoundPlayUtils.play(Constant.Wawaji_START_SOUND);
                             ToastUtils.show(new WeakReference<Context>(WawajiPlayerActivity.this), getString(R.string.label_catch_to_you));
                         }
                     } else {
@@ -401,10 +406,12 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
                                 boolean catchResult = jData.getAsBoolean();
 
                                 if (catchResult) {
+                                    SoundPlayUtils.play(Constant.Wawaji_SUCCESS_SOUND);
                                     mTextCatchResult.setText(getString(R.string.label_catch_success));
                                     mImgCatchResult.setText(getString(R.string.label_catch_once_more));
 
                                 } else {
+                                    SoundPlayUtils.play(Constant.Wawaji_FAILED_SOUND);
                                     mTextCatchResult.setText(getString(R.string.label_regrettable));
                                     mImgCatchResult.setText(getString(R.string.label_not_convinced));
                                 }
@@ -566,6 +573,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SoundPlayUtils.stopBackGround();
         doLeaveChannel();
     }
 }
