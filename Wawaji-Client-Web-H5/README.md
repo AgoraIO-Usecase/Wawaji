@@ -1,7 +1,57 @@
 # Wawaji streaming client for Web(H5)
-- **为了方便客户体验，我们已经提供了线上部署好的环境，集成方法：**
+- **v1.2还可以继续使用，但独立集成不会包含声网对网络和视频的优化，推荐使用v1.3的方法集成**
 
-### v1.2
+### v1.3
+1. **引入h5的js sdk文件**
+注意如果您之前有使用v1.2的方案或是自己有引入jsmpeg播放器，由于本sdk中已经包含了声网的修改版，请确认移除之前的jsmpeg库的引用，防止代码冲突
+
+2. **在html文件中加入canvas代码**
+```html
+<div>
+    <canvas id="jsmpeg-player"></canvas>
+    <canvas id="jsmpeg-player2"></canvas>
+</div>
+```
+记录一下您这边使用的canvas id留用，jsmpeg-player与jsmpeg-player2分别对应正副摄像头
+
+3. **在js中使用一下代码初始化并播放h5视频**
+```javascript
+//创建client实例
+var client = AgoraCMH5SDK.createClient();
+初始化client
+client.init(appid, channel, {
+    //对应的动态key，如果没有请不需要传null，直接不带这个参数即可，可选
+    key: key,
+    //主摄像头uid，默认为1，可选
+    uid1: uid1,
+    //副摄像头uid，默认为2，可选
+    uid2: uid2
+}, function(){
+    //初始化成功
+    client.play({
+        //canvas 1 id
+        canvas1: "jsmpeg-player",
+        //canvas 2 id
+        canvas2: "jsmpeg-player2"
+    }, function(){
+        //视频开始播放的回调
+        console.log("started playing..");
+    });
+})
+```
+
+4. **切换摄像头**
+```javascrit
+client.switchCamera();
+```
+
+5. **销毁播放器**
+如果您的应用为多页面应用，则大多数时候不需要使用该方法，若您使用的是React等技术实现的单页面应用，在重复初始化播放器的时候，请先调用一下方法确认销毁之前的播放视频实例。
+```javascript
+client.destroy();
+```
+
+### v1.2 (已废弃)
 
 1. **获取节点服务器域名**
 ```javascript
@@ -52,7 +102,7 @@ https://github.com/AgoraIO/Wawaji/blob/rtc-only/Wawaji-Client-Web-H5/docs/api.ht
 
 
 
-### v1.1 (仍在线，推荐升级到v1.2)
+### v1.1 (已废弃)
 
 - [http://wawa1.agoraio.cn:4000/viewer.html](http://wawa1.agoraio.cn:4000/viewer.html)
 - [http://wawa2.agoraio.cn:4000/viewer.html](http://wawa2.agoraio.cn:4000/viewer.html)
