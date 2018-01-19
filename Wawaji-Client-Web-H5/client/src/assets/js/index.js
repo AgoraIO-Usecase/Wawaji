@@ -71,7 +71,7 @@ $(function () {
                 channel: "0338",
                 dynamicKeyEnabled: true,
                 image: "IMG_5470.png",
-                available: true
+                available: false
             }, {
                 id: "wawaji_machine_huizhi",
                 name: "wawaji_machine_huizhi",
