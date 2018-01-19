@@ -118,7 +118,8 @@ $(function () {
                         console.log(msg);
                         break;
                     case "ERROR":
-                        alert("错误");
+                        // alert("错误");
+                        console.log("错误");
                         break;
                     case "PREPARE":
                         console.log("receive prepare, sending start to " + lobby.machine.name);
