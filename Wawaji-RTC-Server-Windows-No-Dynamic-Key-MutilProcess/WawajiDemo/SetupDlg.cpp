@@ -157,6 +157,14 @@ void CSetupDlg::InitCtrls()
 		nResolutionIndex = 15;
 	}
 	m_cbxVideoProfile.SetCurSel(nResolutionIndex);
+	
+	std::string strSwitchWH = getInfoManager()->getConfig()->getSwitchWHEnable(strSection);
+	if ("1" == strSwitchWH){
+		m_ckSwapWH.SetCheck(TRUE);
+	}
+	else if ("0" == strSwitchWH || "" == strSwitchWH){
+		m_ckSwapWH.SetCheck(FALSE);
+	}
 }
 
 void CSetupDlg::InitData()

@@ -34,6 +34,7 @@ void CDlgVideoPreview::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_VIDEORESOLUTION, m_comVideoSolution);
 	DDX_Control(pDX, IDC_CHECK_RTMP, m_ckRtmp);
 	DDX_Control(pDX, IDC_CHECK_LEFTRotate90, m_ckLeftRotate90);
+	DDX_Control(pDX, IDC_CHECK_SwitchWH, m_ckSwitchWH);
 }
 
 
@@ -228,6 +229,14 @@ void CDlgVideoPreview::setChildInfo(const CString processName, CAgoraCameraManag
 	else if("1" == strRemoteVideoRotate90){
 		m_ckLeftRotate90.SetCheck(TRUE);
 	}
+
+	std::string strSwitchWH = gWawajiConfig.getSwitchWHEnable(strSection);
+	if ("" == strSwitchWH || "0" == strSwitchWH){
+		m_ckSwitchWH.SetCheck(FALSE);
+	}
+	else if ("1" == strSwitchWH){
+		m_ckSwitchWH.SetCheck(TRUE);
+	}
 }
 
 void CDlgVideoPreview::showChildWnd(bool Enable /*= true*/)
@@ -275,6 +284,8 @@ void CDlgVideoPreview::saveConfig()
 	//VideoSolution
 	bool res = m_ckLeftRotate90.GetCheck();
 	gWawajiConfig.setLeftRotate90(strSection, int2str(res));
+	res = m_ckSwitchWH.GetCheck();
+	gWawajiConfig.setSwitchWHEnable(strSection,int2str(res));
 
 	int curSel = m_comVideoSolution.GetCurSel();
 	int width = 0, height = 0, fps = 0, bitrate = 0;

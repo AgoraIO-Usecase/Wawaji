@@ -47,5 +47,6 @@ private:
 	CComboBox m_comVideoSolution;
 	CButton m_ckRtmp;
 	CButton m_ckLeftRotate90;
+	CButton m_ckSwitchWH;
 	LPTSTR m_szProfileDes[32];
 };

@@ -106,6 +106,7 @@ protected:
 #define INI_DeviceInfo_ResolutionIndex						"ResolutionIndex"
 #define INI_DeviceInfo_ResolutionWidth						"ResolutionWidth"
 #define INI_DeviceInfo_ResolutionHeight						"ResolutionHeight"
+#define INI_DeviceInfo_SwitchWHEnable						"SwitchWHEnable"
 #define INI_DeviceInfo_ResolutionFps							"ResolutionFps"
 #define INI_DeviceInfo_ResolutionBitrate						"ResolutionBitrate"
 #define INI_DeviceInfo_RtmpSave									"RtmpSave"
@@ -149,6 +150,7 @@ public:
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionIndex)
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionWidth)
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionHeight)
+	__DECLARE_INICONFIG_SIMILAR_FUN(SwitchWHEnable)
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionFps)
 	__DECLARE_INICONFIG_SIMILAR_FUN(ResolutionBitrate)
 
