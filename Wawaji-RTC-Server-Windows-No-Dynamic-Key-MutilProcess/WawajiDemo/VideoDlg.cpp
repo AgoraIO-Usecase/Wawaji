@@ -217,6 +217,7 @@ void CVideoDlg::AdjustSizeVideo1(int cx, int cy)
 
 void CVideoDlg::AdjustSizeVideo4(int cx, int cy)
 {
+	return;
 	m_wndVideo[0].MoveWindow(0, m_rcVideoArea.top, m_rcVideoArea.Width() / 2, m_rcVideoArea.Height() / 2, FALSE);
 	m_wndVideo[1].MoveWindow(m_rcVideoArea.Width() / 2, m_rcVideoArea.top, m_rcVideoArea.Width() / 2, m_rcVideoArea.Height() / 2, FALSE);
 	m_wndVideo[2].MoveWindow(0, m_rcVideoArea.top + m_rcVideoArea.Height() / 2, m_rcVideoArea.Width() / 2, m_rcVideoArea.Height() / 2, FALSE);
@@ -230,6 +231,7 @@ void CVideoDlg::AdjustSizeVideo4(int cx, int cy)
 
 void CVideoDlg::AdjustSizeVideoMulti(int cx, int cy)
 {
+	return;
 	int nLocalIndex = 0;
 
 	m_lpBigShowed->MoveWindow(&m_rcVideoArea, TRUE);
@@ -816,7 +818,7 @@ LRESULT CVideoDlg::OnEIDUserJoined(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	if (!bFound) {
+	if (!bFound && FALSE) {
 		AGVIDEO_WNDINFO agvWndInfo;
 		memset(&agvWndInfo, 0, sizeof(AGVIDEO_WNDINFO));
 		agvWndInfo.nUID = lpData->uid;
@@ -843,7 +845,7 @@ LRESULT CVideoDlg::OnEIDUserJoined(WPARAM wParam, LPARAM lParam)
 LRESULT CVideoDlg::OnEIDUserOffline(WPARAM wParam, LPARAM lParam)
 {
 	LPAGE_USER_OFFLINE lpData = (LPAGE_USER_OFFLINE)wParam;
-
+	
 	POSITION pos = m_listWndInfo.GetHeadPosition();
 	while (pos != NULL){
 		if (m_listWndInfo.GetAt(pos).nUID == lpData->uid) {
@@ -1079,6 +1081,7 @@ void CVideoDlg::ShowVideo1()
 
 void CVideoDlg::ShowVideo4()
 {
+	return;
 	m_wndLocal.ShowWindow(SW_HIDE);
 	m_wndLocal.SetBigShowFlag(FALSE);
 	for (int nIndex = 0; nIndex < 4; nIndex++) {
@@ -1112,6 +1115,7 @@ void CVideoDlg::ShowVideo4()
 
 void CVideoDlg::ShowMulti()
 {
+	return;
 	int nLocalIndex = 0;
 
 	m_wndLocal.ShowWindow(TRUE);
@@ -1252,6 +1256,7 @@ BOOL CVideoDlg::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CVideoDlg::OnShowModeChanged(WPARAM wParam, LPARAM lParam)
 {
+	return FALSE;
 	if (m_nScreenMode == SCREEN_VIDEOMULTI) {
 		if (m_listWndInfo.GetCount() <= 1)
 			ShowVideo1();
@@ -1268,6 +1273,7 @@ LRESULT CVideoDlg::OnShowModeChanged(WPARAM wParam, LPARAM lParam)
 
 LRESULT CVideoDlg::OnShowBig(WPARAM wParam, LPARAM lParam)
 {
+	return FALSE;
 	CRect rcNextBig;
 	CRect rcCurBig;
 

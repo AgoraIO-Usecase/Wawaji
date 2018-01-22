@@ -123,6 +123,10 @@ BOOL CWawajiRunnerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO:  在此添加额外的初始化代码
+
+	int num = 0;
+	closeProcess("WawajiDemo.exe", num);
+
 	initCtrl();
 	
 	SetTimer(TIMER_IDEVENT_RECHECK, TIMER_INTERVAL_RECHECK, nullptr);
