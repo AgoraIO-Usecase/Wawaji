@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 
 import io.agora.common.Constant;
 import io.agora.common.HttpTool;
+import io.agora.common.SoundPlayUtils;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
@@ -78,6 +79,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         if (cRole == 0) {
             throw new RuntimeException("Should not reach here");
         }
+
+        SoundPlayUtils.play(Constant.Wawaji_BG_SOUND);
 
         String roomName = i.getStringExtra(ConstantApp.ACTION_KEY_ROOM_NAME);
 
@@ -234,8 +237,10 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
             case Constant.Wawaji_Msg_RESULT:
                 boolv = (Boolean) data[0];
                 if (boolv) {
+                    SoundPlayUtils.play(Constant.Wawaji_SUCCESS_SOUND);
                     showLongToast("Congrats, lucky day");
                 } else {
+                    SoundPlayUtils.play(Constant.Wawaji_FAILED_SOUND);
                     showShortToast("Sorry oops");
                 }
                 if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
@@ -272,6 +277,8 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
 
     public void onStartBtnClicked(View view) {
         if (startBtnCanbeClick) {
+
+            SoundPlayUtils.play(Constant.Wawaji_START_SOUND);
             if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEYAOYAO) {
                 getWebSocket();
 
@@ -459,6 +466,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SoundPlayUtils.stopBackGround();
         doLeaveChannel();
     }
 

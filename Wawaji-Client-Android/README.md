@@ -12,6 +12,7 @@
 - 进入娃娃机；
 - 上机和抓娃娃；
 - 离开
+- 新增播放娃娃机背景音效，开始抓娃娃音效功能
 
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。将 AppID 填写进 "app/src/main/res/values/strings_config.xml"

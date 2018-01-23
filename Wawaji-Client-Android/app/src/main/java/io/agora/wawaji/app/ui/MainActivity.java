@@ -22,6 +22,7 @@ import io.agora.common.Constant;
 import io.agora.common.HttpTool;
 import io.agora.common.JsonUtil;
 import io.agora.common.LeyaoyaoRoom;
+import io.agora.common.SoundPlayUtils;
 import io.agora.rtc.Constants;
 import io.agora.wawaji.app.R;
 import io.agora.wawaji.app.model.ConstantApp;
@@ -41,6 +42,7 @@ public class MainActivity extends BaseActivity {
         } else if (Constant.DOLL_MARKER == Constant.DOLLMARKER.LEIDI) {
 
         }
+        SoundPlayUtils.init(getApplicationContext());
 
     }
 
