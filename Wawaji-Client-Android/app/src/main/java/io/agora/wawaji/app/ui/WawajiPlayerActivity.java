@@ -28,6 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * catch result:
+ * catch success can add : SoundPlayUtils.play(Constant.Wawaji_SUCCESS_SOUND);
+ * catch failed can dd : SoundPlayUtils.play(Constant.Wawaji_FAILED_SOUND);
+ */
 public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler {
 
     private final static Logger log = LoggerFactory.getLogger(WawajiPlayerActivity.class);
@@ -236,7 +241,7 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
         ToastUtils.show(new WeakReference<Context>(this), getString(R.string.label_add_control));
     }
     public void onStartBtnClicked(View view) {
-        SoundPlayUtils.play(7);
+        SoundPlayUtils.play(Constant.Wawaji_START_SOUND);
         if (!isBroadcaster()) {
             showShortToast(getString(R.string.label_not_a_player));
             return;
@@ -277,7 +282,6 @@ public class WawajiPlayerActivity extends BaseActivity implements AGEventHandler
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("onDestroy");
         SoundPlayUtils.stopBackGround();
     }
 }
