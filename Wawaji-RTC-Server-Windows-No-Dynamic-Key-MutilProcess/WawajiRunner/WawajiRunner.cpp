@@ -77,7 +77,7 @@ BOOL CWawajiRunnerApp::InitInstance()
 	CString strPath = szBufPath;
 	strPath.Replace(_T('\\'),_T('_'));
 
-	HANDLE hMutex = CreateMutex(NULL, TRUE, strPath);
+	HANDLE hMutex = CreateMutex(NULL, TRUE, _T("WawajiRunner"));
 	if (ERROR_ALREADY_EXISTS == GetLastError()){
 		AfxMessageBox(_T("不能启动多个守护进程"));
 		return FALSE;

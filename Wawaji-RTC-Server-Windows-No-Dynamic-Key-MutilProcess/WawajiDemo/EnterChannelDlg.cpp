@@ -98,9 +98,9 @@ void CEnterChannelDlg::InitCtrls()
 
 	GetClientRect(&ClientRect);
 
-
+	std::string strSection = getInfoManager()->getCurSection();
 	std::string appId = getInfoManager()->getConfig()->getAppId();
-	std::string channelName = getInfoManager()->getConfig()->getChannelName();
+	std::string channelName = getInfoManager()->getConfig()->getChannelName(strSection);
 	std::string uid;
 	uid = getInfoManager()->getConfig()->getLoginUid(getInfoManager()->getCurSection());
 
@@ -126,7 +126,6 @@ void CEnterChannelDlg::InitCtrls()
 	m_ctrUid.SetTip(s2cs(uid));
 	m_ctrUid.SetFocus();
 
-	std::string strSection = getInfoManager()->getCurSection();
 	std::string strParam = getInfoManager()->getConfig()->getRtmpWidth(strSection);
 	m_edPublishWidth.SetFont(&m_ftDesc);
 	m_edPublishWidth.SetTip(_T("width"));
@@ -314,10 +313,10 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	CString param;
 	m_ctrUid.GetWindowText(param);
 	m_lpAgoraObject->SetSelfUID(str2int(cs2s(param)));
-	getInfoManager()->getConfig()->setLoginUid(getInfoManager()->getCurSection(),cs2s(param));
+	getInfoManager()->getConfig()->setLoginUid(strSection,cs2s(param));
 
 	m_ctrChannel.GetWindowText(param);
-	getInfoManager()->getConfig()->setChannelName(cs2s(param));
+	getInfoManager()->getConfig()->setChannelName(strSection,cs2s(param));
 
 	if (!m_dlgDevice.DeviceInfoCheck()){
 		OnBnClickedBtntestChannel();
