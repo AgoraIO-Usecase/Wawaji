@@ -94,6 +94,7 @@ protected:
 #define INI_PROCESSID													"ProcessID"
 #define INI_PROCESSID_Enable									"ProcessEnable"
 #define INI_LoginInfo_UID												"LoginUid"
+#define INI_LoginInfo_ChannelName							"ChannelName"
 #define INI_DeviceInfo_AudioInName							"AudioInName"
 #define INI_DeviceInfo_AudioInCOMID							"AudioInComID"
 #define INI_DeviceInfo_PlayOutName							"PlayOutName"
@@ -128,7 +129,7 @@ public:
 	__DECLARE_INICONFIG_FUN(AppId)
 	__DECLARE_INICONFIG_FUN(AppCertEnable)
 	__DECLARE_INICONFIG_FUN(AppCertificateId)
-	__DECLARE_INICONFIG_FUN(ChannelName)
+	//__DECLARE_INICONFIG_FUN(ChannelName)
 	__DECLARE_INICONFIG_FUN(RestartTimerStatus)
 	__DECLARE_INICONFIG_FUN(RestartTimer)
 	__DECLARE_INICONFIG_FUN(VideoPreview)
@@ -136,6 +137,7 @@ public:
 
 	__DECLARE_INICONFIG_SIMILAR_FUN(ProcessEnable)
 	__DECLARE_INICONFIG_SIMILAR_FUN(LoginUid)
+	__DECLARE_INICONFIG_SIMILAR_FUN(ChannelName)
 	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInName)
 	__DECLARE_INICONFIG_SIMILAR_FUN(AudioInComID)
 	__DECLARE_INICONFIG_SIMILAR_FUN(PlayOutName)

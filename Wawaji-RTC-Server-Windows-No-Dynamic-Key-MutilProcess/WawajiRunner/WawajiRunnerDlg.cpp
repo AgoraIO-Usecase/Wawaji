@@ -125,7 +125,7 @@ BOOL CWawajiRunnerDlg::OnInitDialog()
 	// TODO:  在此添加额外的初始化代码
 
 	int num = 0;
-	closeProcess("WawajiDemo.exe", num);
+	//closeProcess("WawajiDemo.exe", num);
 
 	initCtrl();
 	
@@ -278,8 +278,8 @@ void CWawajiRunnerDlg::initCtrl()
 		initAgora();
 	}
 
-	std::string channelName = gWawajiConfig.getChannelName();
-	GetDlgItem(IDC_EDIT_ChannelName)->SetWindowText(s2cs(channelName));
+	//std::string channelName = gWawajiConfig.getChannelName();
+	//GetDlgItem(IDC_EDIT_ChannelName)->SetWindowText(s2cs(channelName));
 	GetDlgItem(IDC_EDIT_APPID)->SetWindowText(s2cs(m_appId));
 	std::string appCertEnable = gWawajiConfig.getAppCertEnable();
 	((CButton*)GetDlgItem(IDC_CHECK_APPCERTIFICATED))->SetCheck(str2int(appCertEnable));
@@ -532,7 +532,7 @@ void CWawajiRunnerDlg::OnBnClickedButtonSaveall()
 	GetDlgItem(IDC_EDIT_APPCERTIFICATEID)->GetWindowText(sParam);
 	gWawajiConfig.setAppCertificateId(cs2s(sParam));
 	GetDlgItem(IDC_EDIT_ChannelName)->GetWindowTextW(sParam);
-	gWawajiConfig.setChannelName(cs2s(sParam));
+	//gWawajiConfig.setChannelName(cs2s(sParam));
 	GetDlgItem(IDC_EDIT_CLEARLOG)->GetWindowTextW(sParam);
 	gWawajiConfig.setClearLogInterval(cs2s(sParam));
 	

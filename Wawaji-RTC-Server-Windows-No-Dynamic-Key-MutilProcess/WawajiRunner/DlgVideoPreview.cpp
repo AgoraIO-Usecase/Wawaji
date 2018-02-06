@@ -163,11 +163,15 @@ void CDlgVideoPreview::setChildInfo(const CString processName, CAgoraCameraManag
 	//Enable
 	std::string strSection = cs2s(m_processIdName);
 	bool bEnable = str2int(gWawajiConfig.getProcessEnable(strSection));
+	((CButton*)GetDlgItem(IDC_CHECK_CameraList))->SetCheck(bEnable);
 
 	//UID
-	((CButton*)GetDlgItem(IDC_CHECK_CameraList))->SetCheck(bEnable);
 	std::string configValue = gWawajiConfig.getLoginUid(strSection);
 	GetDlgItem(IDC_EDIT_CHILDUID)->SetWindowTextW(s2cs(configValue));
+
+	//ChannelName
+	std::string strChannelName = gWawajiConfig.getChannelName(strSection);
+	GetDlgItem(IDC_EDIT_CHILD_CHANNELNAME)->SetWindowTextW(s2cs(strChannelName));
 
 	//Camera
 	configValue = gWawajiConfig.getCameraName(strSection);
@@ -280,6 +284,9 @@ void CDlgVideoPreview::saveConfig()
 	CString sParam;
 	GetDlgItem(IDC_EDIT_CHILDUID)->GetWindowText(sParam);
 	gWawajiConfig.setLoginUid(strSection, cs2s(sParam));
+
+	GetDlgItem(IDC_EDIT_CHILD_CHANNELNAME)->GetWindowTextW(sParam);
+	gWawajiConfig.setChannelName(strSection, cs2s(sParam));
 
 	//VideoSolution
 	bool res = m_ckLeftRotate90.GetCheck();
