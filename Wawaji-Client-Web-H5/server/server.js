@@ -58,16 +58,16 @@ var shuangqu_profile = new ShuangquProfile(StreamMethod.JSMPEG);
 //var qiyiguo_profile = new QiyiguoProfile(StreamMethod.JSMPEG);
 
 var unique = function(s){
-    return s + (process.argv[2] ? "_" + process.argv[2] :  "");
+    return s;
 }
 
-request(leyaoyao_profile.http_url, function (err, response, body) {
-	console.log(body);
-    var msg = JSON.parse(body);
-    if (msg) {
-        leyaoyao_profile.url = msg.data.wsUrl;
-    }
-});
+// request(leyaoyao_profile.http_url, function (err, response, body) {
+// 	console.log(body);
+//     var msg = JSON.parse(body);
+//     if (msg) {
+//         leyaoyao_profile.url = msg.data.wsUrl;
+//     }
+// });
 
 request(shuangqu_profile.create_user_url, function (error, response, body) {
     console.log('shuangqu response body:', body);
@@ -75,21 +75,24 @@ request(shuangqu_profile.create_user_url, function (error, response, body) {
 
 //qiyiguo_profile.genURL(qiyiguo_profile.onRequestUrl);
 
-var manager = new WawajiManager(unique("server_agora"), io);
-manager.onStarted = function(){
-    manager.machines.add(new Wawaji.Machine(unique('machine_leyaoyao'), leyaoyao_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_zinian'), zinian_profile));
-    manager.machines.add(new Wawaji.Machine(unique('machine_shuangqu'), shuangqu_profile));
-    //manager.machines.add(unique('machine_qiyiguo'), qiyiguo_profile);
-    // manager.machines.add(unique('machine_test'), test_profile);
+let enablecontrol = process.argv[2] === "enable-control";
+
+if(enablecontrol){
+    var manager = new WawajiManager(unique("server_agora"), io);
+    manager.onStarted = function(){
+        // manager.machines.add(new Wawaji.Machine(unique('machine_leyaoyao'), leyaoyao_profile));
+        manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
+        // manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
+        // manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
+        // manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
+        manager.machines.add(new Wawaji.Machine(unique('machine_zinian'), zinian_profile));
+        manager.machines.add(new Wawaji.Machine(unique('machine_shuangqu'), shuangqu_profile));
+        //manager.machines.add(unique('machine_qiyiguo'), qiyiguo_profile);
+        // manager.machines.add(unique('machine_test'), test_profile);
+    }
 }
 
 api(manager, app);
-
-var port = process.argv[3] || 4000;
+let port = 4000;
 console.log(`listening on port ${port}`)
 http.listen(port);

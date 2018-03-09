@@ -178,24 +178,6 @@ Wawaji.Server = function (serverid, io) {
         // this.attributes = { queue: [], playing: null, cameras: { front: this.websocket_port1, back: this.websocket_port2 } };
         this.log = profile.log;
 
-        // machine.log.info(`stream: ${machine.stream_port1}, ${machine.stream_port2} ws: ${machine.websocket_port1},${machine.websocket_port2}`);
-        // if (this.stream_method === StreamMethod.JSMPEG) {
-        //     var rand_uid = Math.floor(Math.random() * 100000);
-        //     if (profile.appcert) {
-        //         request(`http://recording.agorapremium.agora.io:9001/agora/media/genDynamicKey5?uid=${rand_uid}&key=${profile.appid}&sign=${profile.appcert}&channelname=${profile.video_channel}`, function (err, response, body) {
-        //             machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, body, rand_uid);
-        //         });
-        //     } else {
-        //         machine.stream = new JsmpegStream(machine.stream_port1, machine.stream_port2, machine.websocket_port1, machine.websocket_port2, profile.stream_secret, profile.appid, profile.video_channel, null, rand_uid);
-        //     }
-        // } else {
-        //     if (!profile.video_host) {
-        //         machine.stream = new ImageStream(io, profile.appid, profile.video_channel, null, "1", "2");
-        //     }
-        // }
-
-
-
         this.setStatus = function (status, reason) {
             machine.log.debug(`[DEBUG] ${machine.name} set to status ${status}: ${reason}`);
             machine.status = status;
