@@ -20,6 +20,9 @@ function Api(manager, app){
         } else if(appid === "324f0da1e2284832a44fee5fcbec44c1") {
             //leidi
             appcert = vault.leidi.appcert;
+        } else if(appid === "df5d561c7c094b028a3100fba535dfa9") {
+            //shuangqu
+            appcert = vault.shuangqu.appcert;
         } else {
             res.json({err: "unrecognized device", key: null});
             return;
