@@ -56,6 +56,15 @@ $(function () {
                 image: "IMG_5467.png",
                 available: true
             }, {
+                id: "wawaji_machine_shuangqu",
+                name: "wawaji_machine_shuangqu",
+                appid: "df5d561c7c094b028a3100fba535dfa9",
+                channel: "bj_A131",
+                dynamicKeyEnabled: true,
+                video_rotation: 0,
+                image: "IMG_5468.png",
+                available: true
+            }, {
                 id: "wawaji_machine_zhuazhua2",
                 name: "wawaji_machine_zhuazhua2",
                 appid: "8b0faaf944034061a5ffd263d3f3f7a4",
