@@ -16,6 +16,7 @@ public:
 	void setChildInfo(const CString processName, CAgoraCameraManager* pCameraManager);
 	void showChildWnd(bool Enable = true);
 	void saveConfig();
+	bool checkParam();
 
 // 对话框数据
 	enum { IDD = IDD_DIALOG_CHILD_CAMERA };
@@ -33,6 +34,8 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonChildApply();
 	afx_msg void OnBnClickedButtonVideopreview();
+	afx_msg void OnBnClickedCheckLeftrotate90();
+	afx_msg void OnBnClickedCheckSwitchwh();
 
 private:
 	CAgoraCameraManager *m_pAgoraCameraManager;

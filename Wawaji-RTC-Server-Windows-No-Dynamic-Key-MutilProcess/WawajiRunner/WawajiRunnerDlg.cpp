@@ -540,6 +540,10 @@ void CWawajiRunnerDlg::OnBnClickedButtonSaveall()
 		m_pDlgVideoPreview[i].saveConfig();
 	}
 
+	for (int i = 0; m_processCount > i; i++){
+		m_pDlgVideoPreview[i].checkParam();
+	}
+
 	KillTimer(TIMER_IDEVENT_RECHECK);
 	m_mapProcessId.clear();
 	for (int i = 0; i < m_processCount; i++){

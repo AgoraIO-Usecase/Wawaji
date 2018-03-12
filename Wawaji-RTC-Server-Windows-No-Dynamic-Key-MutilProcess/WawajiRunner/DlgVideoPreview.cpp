@@ -41,6 +41,8 @@ void CDlgVideoPreview::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDlgVideoPreview, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CHILD_Apply, &CDlgVideoPreview::OnBnClickedButtonChildApply)
 	ON_BN_CLICKED(IDC_BUTTON_VideoPreview, &CDlgVideoPreview::OnBnClickedButtonVideopreview)
+	ON_BN_CLICKED(IDC_CHECK_LEFTRotate90, &CDlgVideoPreview::OnBnClickedCheckLeftrotate90)
+	ON_BN_CLICKED(IDC_CHECK_SwitchWH, &CDlgVideoPreview::OnBnClickedCheckSwitchwh)
 END_MESSAGE_MAP()
 
 
@@ -95,6 +97,8 @@ void CDlgVideoPreview::initCtrl()
 
 		m_comVideoSolution.AddString(m_szProfileDes[nIndex]);
 	}
+
+	m_comVideoSolution.SetCurSel(15);//default VideoSolutionIndex
 }
 
 void CDlgVideoPreview::uninitCtrl()
@@ -196,8 +200,8 @@ void CDlgVideoPreview::setChildInfo(const CString processName, CAgoraCameraManag
 	//VideoResolution
 	nCurSection = CB_ERR;
 	configValue = gWawajiConfig.getResolutionIndex(strSection);
-	if ("" == configValue){
-		configValue = 15;
+	if ("" == configValue || "-1" == configValue){
+		nCurSection = 15;
 	}
 	else{
 		nCurSection = str2int(configValue);
@@ -291,8 +295,6 @@ void CDlgVideoPreview::saveConfig()
 	//VideoSolution
 	bool res = m_ckLeftRotate90.GetCheck();
 	gWawajiConfig.setLeftRotate90(strSection, int2str(res));
-	res = m_ckSwitchWH.GetCheck();
-	gWawajiConfig.setSwitchWHEnable(strSection,int2str(res));
 
 	int curSel = m_comVideoSolution.GetCurSel();
 	int width = 0, height = 0, fps = 0, bitrate = 0;
@@ -305,6 +307,10 @@ void CDlgVideoPreview::saveConfig()
 	gWawajiConfig.setResolutionHeight(strSection, int2str(res ? width : height));
 	gWawajiConfig.setResolutionFps(strSection,int2str(fps));
 	gWawajiConfig.setResolutionBitrate(strSection,int2str(bitrate));
+
+	//SwitchWidthHeight
+	res = m_ckSwitchWH.GetCheck();
+	gWawajiConfig.setSwitchWHEnable(strSection, int2str(res));
 
 	//RTMP
 	res = m_ckRtmp.GetCheck();
@@ -341,4 +347,77 @@ bool CDlgVideoPreview::getVideoParam(CString sSrc, int &width, int &height, int 
 	}
 
 	return FALSE;
+}
+
+void CDlgVideoPreview::OnBnClickedCheckLeftrotate90()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	BOOL bRes = m_ckRtmp.GetCheck();
+	if (bRes){
+
+		m_ckSwitchWH.SetCheck(!bRes);
+	}
+}
+
+
+void CDlgVideoPreview::OnBnClickedCheckSwitchwh()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	BOOL bRes = m_ckSwitchWH.GetCheck();
+	if (bRes){
+		
+		m_ckLeftRotate90.SetCheck(!bRes);
+	}
+}
+
+
+bool CDlgVideoPreview::checkParam()
+{
+	std::string strSection = cs2s(m_processIdName);
+
+	//RTMP
+	if ("1" == gWawajiConfig.getRtmpSave(strSection)){
+
+		int nSolutionWidth = str2int(gWawajiConfig.getResolutionWidth(strSection));
+		int nSolutionHeight = str2int(gWawajiConfig.getResolutionHeight(strSection));
+		int nSolutionFps = str2int(gWawajiConfig.getResolutionFps(strSection));
+		int nSolutionBitrate = str2int(gWawajiConfig.getResolutionBitrate(strSection));
+
+		int nRtmpWidth = str2int(gWawajiConfig.getRtmpWidth(strSection));
+		int nRtmpHeight = str2int(gWawajiConfig.getRtmpHeight(strSection));
+		int nRtmpFps = str2int(gWawajiConfig.getRtmpFps(strSection));
+		int nRtmpBitrate = str2int(gWawajiConfig.getRtmpBitrate(strSection));
+
+		if (nSolutionWidth < nRtmpWidth ||
+			nSolutionHeight < nRtmpHeight ||
+			nSolutionFps < nRtmpFps ||
+			nSolutionBitrate < nRtmpBitrate){
+
+			CString strDesc;
+			strDesc.Format(_T("进程: %s 对应的 Rtmp 推流参数设置 不合理( 检查参数设置是否超过了采集参数)"), m_processIdName);
+			AfxMessageBox(strDesc);
+		}
+
+		//Camera occupancy
+		std::string strCurProcessComId = gWawajiConfig.getCameraComID(strSection);
+		std::string strKey = "process";
+		std::string strInex = strSection.substr(strKey.length(), strSection.length() - strKey.length());
+		int nIndexCur = str2int(strInex);
+		for (int nIndex = 0; nIndex < nIndexCur; nIndex++){
+
+			std::string strIndexTemp = strKey + int2str(nIndex);
+			if ("1" == gWawajiConfig.getProcessEnable(strSection)){
+
+				std::string strCameraComID = gWawajiConfig.getCameraComID(strIndexTemp);
+				if (strCameraComID == strCurProcessComId){
+					CString strDesc;
+					strDesc.Format(_T("进程: %s 与 %s 的摄像头相互占用,请更改"), m_processIdName, s2cs(strIndexTemp));
+					AfxMessageBox(strDesc);
+					break;
+				}
+			}
+		}
+	}
+
+	return TRUE;
 }
