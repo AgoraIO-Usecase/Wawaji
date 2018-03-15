@@ -41,10 +41,10 @@ ShuangquProfile = function (mode) {
     this.onInit = function (machine, done) {
         console.log("onInit.");
         profile.machine = machine;
-        done();
 
         machine.socket.on('open', function open() {
             console.log("WebSocket opened");
+            done();
         });
 
         machine.socket.on('message', function incoming(data) {
