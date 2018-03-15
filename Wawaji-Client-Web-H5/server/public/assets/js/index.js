@@ -63,6 +63,7 @@ $(function () {
                 dynamicKeyEnabled: true,
                 video_rotation: 0,
                 image: "IMG_5468.png",
+                reverseControl: true,
                 available: true
             }, {
                 id: "wawaji_machine_zhuazhua2",

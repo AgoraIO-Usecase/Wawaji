@@ -157,7 +157,7 @@ $(function () {
                     attrs = JSON.parse(k) || {};
                 }
 
-                if(attrs !== null){
+                if (attrs !== null) {
                     game.queue = attrs.queue || [];
                     game.playing = attrs.playing;
                     updateViews();
@@ -210,20 +210,37 @@ $(function () {
             this.control = function (data, pressed) {
                 var action = data;
                 if (!video_client.isUsingFrontCamera()) {
-                    //if is using side camera, update control
-                    switch (data) {
-                        case 'left':
-                            action = 'down';
-                            break;
-                        case 'right':
-                            action = 'up';
-                            break;
-                        case 'up':
-                            action = 'left';
-                            break;
-                        case 'down':
-                            action = 'right';
-                            break;
+                    if (!lobby.machine.reverseControl) {
+                        //if is using side camera, update control
+                        switch (data) {
+                            case 'left':
+                                action = 'down';
+                                break;
+                            case 'right':
+                                action = 'up';
+                                break;
+                            case 'up':
+                                action = 'left';
+                                break;
+                            case 'down':
+                                action = 'right';
+                                break;
+                        }
+                    } else {
+                        switch (data) {
+                            case 'left':
+                                action = 'up';
+                                break;
+                            case 'right':
+                                action = 'down';
+                                break;
+                            case 'up':
+                                action = 'right';
+                                break;
+                            case 'down':
+                                action = 'left';
+                                break;
+                        }
                     }
                 }
                 game.channel.messageChannelSend(JSON.stringify({ "type": "CONTROL", "data": action, "pressed": pressed }));
@@ -375,7 +392,7 @@ $(function () {
     }
 
 
-    function fitScreen(){
+    function fitScreen() {
         if (lobby.machine.video_rotation === 90) {
             //do nothing
             var width = $(".wrapper").width();
