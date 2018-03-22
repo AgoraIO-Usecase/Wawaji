@@ -210,7 +210,7 @@ void CSetupDlg::InitData()
 	m_szProfileDes[17] = _T("640x480 30fps 750kbps");
 	m_nProfileValue[17] = 43;
 	m_szProfileDes[18] = _T("480x480 30fps 600kbps");
-	m_nProfileValue[18] = 44;
+	m_nProfileValue[18] = 45;
 	m_szProfileDes[19] = _T("848x480 15fps 610kbps");
 	m_nProfileValue[19] = 47;
 	m_szProfileDes[20] = _T("848x480 30fps 930kbps");
