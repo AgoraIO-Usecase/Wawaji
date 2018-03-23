@@ -109,7 +109,7 @@ void CSetupDlg::InitCtrls()
 	m_edFrame.SetWindowText(_T("10"));
 	m_edFrame.SetWindowTextW(s2cs(strParam));
 	m_edFrame.MoveWindow(250, 150, 80, 24, TRUE);
-	strParam = getInfoManager()->getConfig()->getRtmpBitrate(strSection);
+	strParam = getInfoManager()->getConfig()->getResolutionBitrate(strSection);
 	m_edBitrate.SetFont(&m_ftDes);
 	m_edBitrate.SetWindowText(_T("300"));
 	m_edBitrate.SetWindowTextW(s2cs(strParam));

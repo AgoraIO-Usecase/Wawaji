@@ -52,4 +52,6 @@ private:
 	CButton m_ckLeftRotate90;
 	CButton m_ckSwitchWH;
 	LPTSTR m_szProfileDes[32];
+public:
+	afx_msg void OnCbnSelchangeComboVideoresolution();
 };

@@ -43,6 +43,7 @@ BEGIN_MESSAGE_MAP(CDlgVideoPreview, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_VideoPreview, &CDlgVideoPreview::OnBnClickedButtonVideopreview)
 	ON_BN_CLICKED(IDC_CHECK_LEFTRotate90, &CDlgVideoPreview::OnBnClickedCheckLeftrotate90)
 	ON_BN_CLICKED(IDC_CHECK_SwitchWH, &CDlgVideoPreview::OnBnClickedCheckSwitchwh)
+	ON_CBN_SELCHANGE(IDC_COMBO_VIDEORESOLUTION, &CDlgVideoPreview::OnCbnSelchangeComboVideoresolution)
 END_MESSAGE_MAP()
 
 
@@ -54,6 +55,7 @@ BOOL CDlgVideoPreview::OnInitDialog()
 	//TO DO
 	ShowWindow(SW_HIDE);
 	initCtrl();
+	OnCbnSelchangeComboVideoresolution();
 
 	return true;
 }
@@ -352,7 +354,7 @@ bool CDlgVideoPreview::getVideoParam(CString sSrc, int &width, int &height, int 
 void CDlgVideoPreview::OnBnClickedCheckLeftrotate90()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	BOOL bRes = m_ckRtmp.GetCheck();
+	BOOL bRes = m_ckLeftRotate90.GetCheck();
 	if (bRes){
 
 		m_ckSwitchWH.SetCheck(!bRes);
@@ -420,4 +422,19 @@ bool CDlgVideoPreview::checkParam()
 	}
 
 	return TRUE;
+}
+
+void CDlgVideoPreview::OnCbnSelchangeComboVideoresolution()
+{
+	// TODO:  在此添加控件通知处理程序代码
+
+	CString strParam;
+	m_comVideoSolution.GetWindowTextW(strParam);
+
+	int nWidth = 0; int nHeight = 0; int nfps = 0; int nbitrate = 0;
+	getVideoParam(strParam, nWidth, nHeight, nfps, nbitrate);
+	m_edtRtmpWidth.SetWindowTextW(s2cs(int2str(nWidth)));
+	m_edtRtmpHeight.SetWindowTextW(s2cs(int2str(nHeight)));
+	m_edtRtmpFps.SetWindowTextW(s2cs(int2str(nfps)));
+	m_edtRtmpBitrate.SetWindowTextW(s2cs(int2str(nbitrate)));
 }

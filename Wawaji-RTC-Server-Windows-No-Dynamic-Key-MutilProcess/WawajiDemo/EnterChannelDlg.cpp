@@ -334,9 +334,12 @@ void CEnterChannelDlg::OnBnClickedBtnjoinChannel()
 	publishParam.bitrate = str2int(cs2s(param));
 	m_edPublishRtmpUrl.GetWindowText(param);
 	publishParam.rtmpUrl = cs2s(param);
-	CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
+
 	bool bRtmp = str2int(getInfoManager()->getConfig()->getRtmpSave(strSection));
-	CAgoraObject::GetAgoraObject()->enablePublish(bRtmp);
+	if (bRtmp){
+		CAgoraObject::GetAgoraObject()->setPublishParam(publishParam);
+		CAgoraObject::GetAgoraObject()->enablePublish(bRtmp);
+	}
 
 	//m_lpAgoraObject->EnableLocalMirrorImage(FALSE);
 
