@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="AgoraObject">
+      <UniqueIdentifier>{1dadd9a2-db16-4396-801c-607834659539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{1708a677-d845-43ee-b9df-0ede11a06d47}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WawajiStreamInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WawajiStreamInstanceDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AGEngineEventHandler.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AGEventDef.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AGMessage.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraAudInputManager.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraCameraManager.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraObject.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraPlayoutManager.h">
+      <Filter>AgoraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\AGResourceVisitor.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\commonFun.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DynamicKey5.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\FileIO.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\generatorSignalToken.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LanguagePack.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\MyCmdLineInfo.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Packer.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\utils.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\WawajiInterface.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WawajiStreamInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WawajiStreamInstanceDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AGEngineEventHandler.cpp">
+      <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraAudInputManager.cpp">
+      <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraCameraManager.cpp">
+      <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraObject.cpp">
+      <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraPlayoutManager.cpp">
+      <Filter>AgoraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\AGResourceVisitor.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\commonFun.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\FileIO.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\MyCmdLineInfo.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WawajiStreamInstance.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\WawajiStreamInstance.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\WawajiStreamInstance.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
