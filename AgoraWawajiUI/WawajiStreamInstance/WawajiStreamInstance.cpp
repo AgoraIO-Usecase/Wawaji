@@ -72,6 +72,10 @@ BOOL CWawajiStreamInstanceApp::InitInstance()
 	// TODO:  应适当修改该字符串，
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
+#ifdef _DEBUG
+	//std::string strLogPath = getAbsoluteDir() + "\\text.log";
+	//gAgoraWawajiLog.openLog(strLogPath.data(), OPEN_ALWAYS);
+#endif
 
 	CWawajiStreamInstanceDlg dlg;
 	m_pMainWnd = &dlg;

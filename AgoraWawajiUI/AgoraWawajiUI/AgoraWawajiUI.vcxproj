@@ -107,8 +107,11 @@
   <ItemGroup>
     <ClInclude Include="..\Include\AGResourceVisitor.h" />
     <ClInclude Include="..\Include\commonFun.h" />
+    <ClInclude Include="..\Include\DynamicKey5.h" />
     <ClInclude Include="..\Include\FileIO.h" />
     <ClInclude Include="..\Include\LanguagePack.h" />
+    <ClInclude Include="..\Include\Packer.h" />
+    <ClInclude Include="..\Include\utils.h" />
     <ClInclude Include="..\Include\WawajiInterface.h" />
     <ClInclude Include="AGButton.h" />
     <ClInclude Include="AGComboBox.h" />

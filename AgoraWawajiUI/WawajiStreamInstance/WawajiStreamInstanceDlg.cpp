@@ -13,6 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
+#define INSTANCE_TEST
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -52,11 +53,20 @@ CWawajiStreamInstanceDlg::CWawajiStreamInstanceDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CWawajiStreamInstanceDlg::IDD, pParent),
 	m_lpAgoraObject(nullptr),
 	m_lpRtcEngine(nullptr),
-	hMainUIItemWnd(nullptr)
+	m_hMainUIItemWnd(nullptr),
+	m_hMainUIWnd(nullptr),
+	m_eInstanceType(eTagConfigType::eTagConfigType_NULL)
 {
-	m_strInstance = "Instance0";
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	parseCmdLine();
+
+	m_strInstance = m_cmdInfo.getInstance();
+	m_hMainUIItemWnd = m_cmdInfo.getMainUIItemWnd();
+	m_hMainUIWnd = m_cmdInfo.getMainUIWnd();
+
+	int nIndex = 0;
+	sscanf_s(m_strInstance.data(), "Instance%d", &nIndex);
+	m_eInstanceType = (eTagConfigType)nIndex;
 }
 
 void CWawajiStreamInstanceDlg::DoDataExchange(CDataExchange* pDX)
@@ -68,6 +78,7 @@ BEGIN_MESSAGE_MAP(CWawajiStreamInstanceDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_LBUTTONDOWN()
 
 	ON_MESSAGE(WM_MSGID(EID_JOINCHANNEL_SUCCESS), &CWawajiStreamInstanceDlg::OnJoinChannelSuccess)
 	ON_MESSAGE(WM_MSGID(EID_REJOINCHANNEL_SUCCESS), &CWawajiStreamInstanceDlg::OnRejoinChannelSuccess)
@@ -119,15 +130,17 @@ BOOL CWawajiStreamInstanceDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
-
+ 
+#ifdef INSTANCE_TEST
 	SetWindowPos(&CWnd::wndNoTopMost, 0, 0, 0, 0, SWP_HIDEWINDOW);
 	ModifyStyleEx(WS_EX_APPWINDOW, WS_EX_TOOLWINDOW);
 	ShowWindow(SW_HIDE);
+#endif
 
 	// TODO:  在此添加额外的初始化代码
-	m_strInstance = m_cmdInfo.getInstance();
-	hMainUIItemWnd = m_cmdInfo.getMainUIItemWnd();
+	SetWindowText(s2cs(m_strInstance));
 
+	initData();
 	initCtrl();
 	initAgoraMedia();
 	joinChannel();
@@ -156,7 +169,9 @@ void CWawajiStreamInstanceDlg::OnPaint()
 {
 	if (IsIconic())
 	{
+#ifdef INSTANCE_TEST
 		CWnd::ShowWindow(SW_HIDE);
+#endif
 		CPaintDC dc(this); // 用于绘制的设备上下文
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
@@ -185,17 +200,52 @@ HCURSOR CWawajiStreamInstanceDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+inline void CWawajiStreamInstanceDlg::initData()
+{
+	m_nProfileValue[0] = 0;
+	m_nProfileValue[1] = 2;
+	m_nProfileValue[2] = 10;
+	m_nProfileValue[3] = 12;
+	m_nProfileValue[4] = 13;
+	m_nProfileValue[5] = 20;
+	m_nProfileValue[6] = 22;
+	m_nProfileValue[7] = 23;
+	m_nProfileValue[8] = 30;
+	m_nProfileValue[9] = 32;
+	m_nProfileValue[10] = 33;
+	m_nProfileValue[11] = 35;
+	m_nProfileValue[12] = 36;
+	m_nProfileValue[13] = 37;
+	m_nProfileValue[14] = 38;
+	m_nProfileValue[15] = 40;
+	m_nProfileValue[16] = 42;
+	m_nProfileValue[17] = 43;
+	m_nProfileValue[18] = 44;
+	m_nProfileValue[19] = 47;
+	m_nProfileValue[20] = 48;
+	m_nProfileValue[21] = 50;
+	m_nProfileValue[22] = 52;
+	m_nProfileValue[23] = 54;
+	m_nProfileValue[24] = 55;
+	m_nProfileValue[25] = 60;
+	m_nProfileValue[26] = 62;
+	m_nProfileValue[27] = 64;
+	m_nProfileValue[28] = 66;
+	m_nProfileValue[29] = 67;
+	m_nProfileValue[30] = 70;
+	m_nProfileValue[31] = 72;
+}
 
 inline void CWawajiStreamInstanceDlg::initCtrl()
 {
 	m_strAppId = gAgoraConfigInstance.getAppId();
 	m_strAppcertificateId = gAgoraConfigInstance.getAppCertificateId();
 	m_strChannel = gAgoraConfigInstance.getChannelName();
-	m_strAppcertificateId = "123";	
+	m_uLoginUid = str2int(gAgoraConfigInstance.getLoginUid(m_strInstance));
 	
-	if (FALSE &&  (0 == m_strAppId.length() || 0 == m_strAppcertificateId.length() || 0 == m_strChannel.length() || 0 == m_uLoginUid)){
+	if ((0 == m_strAppId.length() || 0 == m_strAppcertificateId.length() || 0 == m_strChannel.length() || 0 == m_uLoginUid)){
 		CAgoraFormatStr::AgoraMessageBox(_T("There are one empty AppId, AppCertificateId, Channel, and LoginUID in the configuration file. Please modify"));
-		PostQuitMessage(0);
+		//PostQuitMessage(0);
 		return;
 	}
 }
@@ -207,9 +257,6 @@ inline void CWawajiStreamInstanceDlg::uninitCtrl()
 
 inline void CWawajiStreamInstanceDlg::initAgoraMedia()
 {
-	if ("" == m_strAppId){
-		return;
-	}
 	m_lpAgoraObject = CAgoraObject::GetAgoraObject(s2cs(m_strAppId));
 	ASSERT(m_lpAgoraObject);
 	m_lpAgoraObject->SetMsgHandlerWnd(m_hWnd);
@@ -228,6 +275,33 @@ inline void CWawajiStreamInstanceDlg::initAgoraMedia()
 
 	m_lpAgoraObject->EnableVideo(TRUE);
 	m_lpAgoraObject->EnableAudio(FALSE);
+
+	m_lpAgoraObject->EnableLastmileTest(FALSE);
+	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+	m_lpAgoraObject->SetChannelProfile(TRUE);
+
+	//Rtmp
+	BOOL bEnableRotate = str2int(gAgoraConfigInstance.getLeftRotate90(m_strInstance));
+	BOOL bEnableRtmp = str2int(gAgoraConfigInstance.getRtmpSave(m_strInstance));
+	if (bEnableRtmp){
+
+		int nRtmpWidth = str2int(gAgoraConfigInstance.getRtmpWidth(m_strInstance));
+		int nRtmpHeight = str2int(gAgoraConfigInstance.getRtmpHeight(m_strInstance));
+		int nRtmpFps = str2int(gAgoraConfigInstance.getRtmpFps(m_strInstance));
+		int nRtmpBitrate = str2int(gAgoraConfigInstance.getResolutionBitrate(m_strInstance));
+		std::string strRtmpURL = gAgoraConfigInstance.getRtmpUrl(m_strInstance);
+		AGE_PUBLISH_PARAM pp;
+		pp.bitrate = nRtmpBitrate;
+		pp.fps = nRtmpFps;
+		pp.height = bEnableRotate ? nRtmpWidth : nRtmpHeight;
+		pp.width = bEnableRotate ? nRtmpHeight : nRtmpWidth;
+		pp.rtmpUrl = strRtmpURL;
+		m_lpAgoraObject->setPublishParam(pp);
+		m_lpAgoraObject->enablePublish(true);
+
+		CAgoraFormatStr::AgoraWriteLog(("RtmpParam Width: %d,Height: %d,Fps: %d,Bitrate: %d,URL: %s"),pp.width,pp.height,pp.fps,pp.bitrate,(pp.rtmpUrl).data());
+		CAgoraFormatStr::AgoraOutDebugStr(_T("Rtmp Wdith: %d,Height: %d,Fps: %d,Bitrate: %d \r\n URL : %s"),pp.width,pp.height,pp.fps,pp.bitrate,s2cs(pp.rtmpUrl));
+	}
 }
 
 inline void CWawajiStreamInstanceDlg::uninitAgoraMedia()
@@ -247,10 +321,6 @@ inline void CWawajiStreamInstanceDlg::uninitAgoraMedia()
 
 inline void CWawajiStreamInstanceDlg::joinChannel()
 {
-	m_lpAgoraObject->EnableLastmileTest(FALSE);
-	m_lpAgoraObject->SetClientRole(CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-	m_lpAgoraObject->SetChannelProfile(TRUE);
-
 	std::string strCameraComId = gAgoraConfigInstance.getCameraComID(m_strInstance);
 	CAgoraCameraManager agoraCameraManager;
 	agoraCameraManager.Create(m_lpRtcEngine);
@@ -265,22 +335,54 @@ inline void CWawajiStreamInstanceDlg::joinChannel()
 	VideoCanvas vc;
 	vc.renderMode = RENDER_MODE_FIT;
 	vc.uid = m_uLoginUid;
-	vc.view = hMainUIItemWnd;
+#ifdef INSTANCE_TEST
+	vc.view = m_hMainUIItemWnd;
+#else
+	vc.view = /*hMainUIItemWnd*/m_hWnd;
+#endif
 	m_lpRtcEngine->setupLocalVideo(vc);
 
-	int nVideoProfileIndex = str2int(gAgoraConfigInstance.getResolutionIndex(m_strInstance));
-	m_lpAgoraObject->SetVideoProfile((VIDEO_PROFILE_TYPE)16);
+	int nVideoProfileIndex = m_nProfileValue[str2int(gAgoraConfigInstance.getResolutionIndex())];
+	BOOL bEnableRotate = str2int(gAgoraConfigInstance.getLeftRotate90(m_strInstance));
+	BOOL bEnableSwithchWH = str2int(gAgoraConfigInstance.getSwitchWHEnable(m_strInstance));
+	std::string strFormat = gAgoraConfigInstance.getResolution();
+	int nWidth = 0, nHeight = 0, nFps = 0, nBitrate = 0;
+	sscanf_s(strFormat.data(), ("%dx%d %dfps %dkbps"), &nWidth, &nHeight, &nFps, &nBitrate);
+	if (bEnableRotate && !bEnableSwithchWH){
+
+		if (bEnableRotate)
+		m_lpAgoraObject->SetVideoProfileEx(nHeight, nWidth, nFps, nBitrate);
+
+		CAgoraFormatStr::AgoraWriteLog(("Rotate90 SetVideoProfileEx Width: %d,Height: %d,Fps: %d,Bitrate."), nHeight,nWidth,nFps,nBitrate);
+		CAgoraFormatStr::AgoraOutDebugStr(_T("Rotate90 SetVideoProfileEx Wdith: %d,Height: %d,Fps: %d,Bitrate: %d"),nHeight,nWidth,nFps,nBitrate);
+	}
+	else if (!bEnableRotate && bEnableSwithchWH){
+
+		m_lpAgoraObject->SetVideoProfile((VIDEO_PROFILE_TYPE)nVideoProfileIndex, bEnableSwithchWH);
+		CAgoraFormatStr::AgoraWriteLog(("SwitchWH SetVideoProfileEx Width: %d,Height: %d,Fps: %d,Bitrate."), nWidth, nHeight, nFps, nBitrate);
+		CAgoraFormatStr::AgoraOutDebugStr(_T("SwitchWH SetVideoProfileEx Wdith: %d,Height: %d,Fps: %d,Bitrate: %d"), nWidth, nHeight, nFps, nBitrate);
+	}
+	else if (!bEnableSwithchWH && !bEnableRotate){
+
+		m_lpAgoraObject->SetVideoProfile((VIDEO_PROFILE_TYPE)nVideoProfileIndex,bEnableSwithchWH);
+		CAgoraFormatStr::AgoraWriteLog(("SetVideoProfileEx Width: %d,Height: %d,Fps: %d,Bitrate."), nWidth, nHeight, nFps, nBitrate);
+		CAgoraFormatStr::AgoraOutDebugStr(_T("SetVideoProfileEx Wdith: %d,Height: %d,Fps: %d,Bitrate: %d"), nWidth, nHeight, nFps, nBitrate);
+	}
 
 	m_lpRtcEngine->startPreview();
 
 	m_lpAgoraObject->MuteAllRemoteVideo(TRUE);
 	m_lpAgoraObject->MuteAllRemoteAudio(TRUE);
 
-	m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uLoginUid);
-	//CStringA strMediaChannelKey = m_lpAgoraObject->getDynamicMediaChannelKey(s2cs(m_strChannelName));
-	//m_lpAgoraObject->JoinChannel(s2cs(m_strChannelName), m_uId, strMediaChannelKey);
+	if(0 == m_strAppcertificateId.length()){
 
-	//Rtmp
+		m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uLoginUid);
+	}
+	else{
+
+		CStringA strMediaChannelKey = m_lpAgoraObject->getDynamicMediaChannelKey(s2cs(m_strChannel));
+		m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uLoginUid, strMediaChannelKey);
+	}
 }
 
 void CWawajiStreamInstanceDlg::OnClose()
@@ -302,6 +404,11 @@ void CWawajiStreamInstanceDlg::OnClose()
 
 	CDialogEx::OnCancel();
 	CDialogEx::OnCancel();
+}
+
+void CWawajiStreamInstanceDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 }
 
 inline void CWawajiStreamInstanceDlg::parseCmdLine()
@@ -513,6 +620,19 @@ LRESULT CWawajiStreamInstanceDlg::OnLocalVideoStats(WPARAM wParam, LPARAM lParam
 	LPAGE_LOCAL_VIDEO_STAT lpData = (LPAGE_LOCAL_VIDEO_STAT)wParam;
 	if (lpData){
 
+		if (0 == lpData->sentBitrate || 0 == lpData->sentFrameRate){
+			
+			AG_WAWAJI_LOCALVIDEO_STATS DataLocalVideoStats;
+			DataLocalVideoStats.InstanceType = m_eInstanceType;
+			DataLocalVideoStats.strInstance = m_strInstance;
+			DataLocalVideoStats.uRemoteInstanceUID = m_uLoginUid;
+			char szbuf[24] = { '\0' };
+			COPYDATASTRUCT cd;
+			cd.dwData = m_uLoginUid;
+			cd.cbData = sizeof(DataLocalVideoStats);
+			cd.lpData = (PVOID)&DataLocalVideoStats;
+			::SendMessage(m_hMainUIWnd, WM_COPYDATA, (WPARAM)m_hWnd, (LPARAM)&cd);
+		}
 
 		delete lpData; lpData = nullptr;
 	}

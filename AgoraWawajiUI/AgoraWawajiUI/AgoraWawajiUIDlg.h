@@ -42,6 +42,8 @@ protected:
 
 	inline void reserveStream(const std::string &Instance);
 
+	inline void getInvalidFileList(std::vector<CString> &vecFileList, const CString&strFilePath, int IntervalTime);
+
 // й╣ож
 protected:
 	HICON m_hIcon;
@@ -53,8 +55,10 @@ protected:
 	afx_msg void OnNcPaint();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnClose();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnLButtonDown(UINT, CPoint point);
 	afx_msg HCURSOR OnQueryDragIcon();
+	BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	DECLARE_MESSAGE_MAP()
 
 	afx_msg void OnBnClickedButtonStart();
@@ -99,6 +103,7 @@ protected:
 
 	//WawajiMsg
 	LRESULT OnConfigParamSave(WPARAM wParam,LPARAM lParam);
+	LRESULT OnInstanceRemoteVideoStats(WPARAM wParam,LPARAM lParam);
 
 private:
 	CStatic m_CtlCamera1;
@@ -139,6 +144,7 @@ private:
 	CImageList m_imgNetQuality;
 	int m_nLastmileQuality;
 	BOOL m_bParamStatus;
+	int m_nClearLog;
 
 	CDlgConfig m_DlgConfig;
 

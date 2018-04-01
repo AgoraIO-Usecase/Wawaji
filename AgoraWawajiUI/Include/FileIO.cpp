@@ -129,6 +129,7 @@ std::string CFileIO::readLine()
 	char readTxt[2] = { 0 };
 	DWORD readLen = 0; DWORD dwValue = 0;
 	BOOL res = ReadFile(fileHandle_, readTxt, 1, &readLen, nullptr);
+	int nerr = GetLastError();
 	std::string chKey = "\r";
 	while (true)
 	{

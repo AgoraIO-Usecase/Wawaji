@@ -38,6 +38,7 @@ namespace AgoraWawaji{
 	enum enumWawajiMsgType{
 		WawajiMsgType_NULL = WM_USER,
 		WawajiMsgType_Config,
+		WawajiMsgType_RemoteVideoStats,
 
 
 		WawajiMsgType_UNKNOWN = 0xff,
@@ -58,6 +59,7 @@ namespace AgoraWawaji{
 		EventType_TIMER_EVENT_CHECK_BASEINFOPARAM,
 		EventType_TIMER_EVENT_Runnin_Stream,
 		EventType_TIMER_EVENT_UpTime,
+		EventType_TIMER_EVENT_CLEARLOG,
 
 		EventType_TIMER_EVENT_UNKNOWN,
 	};
@@ -67,5 +69,12 @@ namespace AgoraWawaji{
 		bool isRunStream;
 
 	}AG_WAWAJI_CONFIG,*PAG_WAWAJI_CONFIG,*LPAG_WAWAJI_CONFIG;
+
+	typedef struct eTagWawajiLocalVideoStats{
+		eTagConfigType InstanceType;
+		std::string strInstance;
+		uid_t uRemoteInstanceUID;
+
+	}AG_WAWAJI_LOCALVIDEO_STATS, *PAG_WAWAJI_LOCALVIDEO_STATS, *LPAG_WAWAJI_LOCALVIDEO_STATS;
 
 }

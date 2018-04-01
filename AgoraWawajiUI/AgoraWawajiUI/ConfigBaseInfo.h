@@ -26,8 +26,12 @@ protected:
 	inline void initData();
 	inline void initCtrl();
 	inline void uninitCtrl();
+	
+	inline void getTimerStartIni(SYSTEMTIME &st, const std::string &timeStr);
 
 private:
+
+	int m_nProfileValue[32];
 
 	CEdit m_EditAppId;
 	CEdit m_EditAppCertId;
@@ -36,6 +40,9 @@ private:
 	CEdit m_EditAutoClearLog;
 	CComboBox m_comLanguage;
 	CButton m_checkLocalPreview;
+
+	CDateTimeCtrl m_DataTimeCtlRestart;
+	SYSTEMTIME m_stRestart;
 
 public:
 	afx_msg void OnBnClickedButtonSave();

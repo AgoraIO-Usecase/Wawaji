@@ -167,6 +167,8 @@ public:
 	void getPublishParam(AGE_PUBLISH_PARAM &publishParam);
 	bool enablePublish(bool enable = true);
 
+	CStringA getDynamicMediaChannelKey(CString channelname);
+
 protected:
 	CAgoraObject(void);
 

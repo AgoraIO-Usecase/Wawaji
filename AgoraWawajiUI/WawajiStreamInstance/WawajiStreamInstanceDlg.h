@@ -28,6 +28,7 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg void OnClose();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
@@ -70,6 +71,7 @@ protected:
 
 protected:
 	
+	inline void initData();
 	inline void initCtrl();
 	inline void uninitCtrl();
 
@@ -82,7 +84,10 @@ protected:
 
 private:
 
+	int m_nProfileValue[32];
+
 	std::string m_strInstance;
+	eTagConfigType m_eInstanceType;
 	std::string m_strAppId;
 	std::string m_strAppcertificateId;
 	std::string m_strChannel;
@@ -91,7 +96,8 @@ private:
 
 	CAgoraObject* m_lpAgoraObject;
 	IRtcEngine* m_lpRtcEngine;
-	HWND hMainUIItemWnd;
+	HWND m_hMainUIItemWnd;
+	HWND m_hMainUIWnd;
 	CMyCmdLineInfo m_cmdInfo;
 };
 

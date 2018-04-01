@@ -31,6 +31,7 @@ void CDlgConfigBaseInfo::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_BASEINFO_AutoClearLog, m_EditAutoClearLog);
 	DDX_Control(pDX, IDC_COMBO_BaseInfo_Language, m_comLanguage);
 	DDX_Control(pDX, IDC_CHECK_BaseInfo_EnablePreview, m_checkLocalPreview);
+	DDX_Control(pDX, IDC_DATETIMEPICKER_Restart, m_DataTimeCtlRestart);
 }
 
 
@@ -53,7 +54,6 @@ BOOL CDlgConfigBaseInfo::OnInitDialog()
 inline void CDlgConfigBaseInfo::initData()
 {
 	LPTSTR m_szProfileDes[32];
-	int m_nProfileValue[32];
 	m_szProfileDes[0] = _T("160x120 15fps 65kbps");
 	m_nProfileValue[0] = 0;
 	m_szProfileDes[1] = _T("120x120 15fps 50kbps");
@@ -148,23 +148,26 @@ inline void CDlgConfigBaseInfo::initCtrl()
 	std::string strAppId = gAgoraConfigMainUI.getAppId();
 	std::string strAppCertID = gAgoraConfigMainUI.getAppCertificateId();
 	std::string strChannelName = gAgoraConfigMainUI.getChannelName();
-	std::string strVideoProfile = gAgoraConfigMainUI.getResolutionIndex();
+	std::string strVideoProfileIndex = gAgoraConfigMainUI.getResolutionIndex();
+	int nVideoProfileIndex = str2int(strVideoProfileIndex);
 	std::string strAutoClearLog = gAgoraConfigMainUI.getClearLogInterval();
+	std::string strRestatTime = gAgoraConfigMainUI.getRestartTimer();
 	std::string strLanguage = gAgoraConfigMainUI.getLanguagePack();
 	std::string strPreview = gAgoraConfigMainUI.getVideoPreview();
 
 	m_EditAppId.SetWindowTextW(s2cs(strAppId));
 	m_EditAppCertId.SetWindowTextW(s2cs(strAppCertID));
 	m_EditChannelName.SetWindowTextW(s2cs(strChannelName));
-	m_comVideoProfile.SetCurSel(str2int(strVideoProfile));
-	if ("" != strVideoProfile)
-		m_comVideoProfile.SetCurSel(str2int(strVideoProfile));
+	if ("" != strVideoProfileIndex)
+		m_comVideoProfile.SetCurSel(m_nProfileValue[nVideoProfileIndex]);
 
 	if ("" != strAutoClearLog)
 	m_EditAutoClearLog.SetWindowTextW(s2cs(strAutoClearLog));
 
+	//RestartTime//TO DO
+
 	if ("" != strLanguage)
-		m_comLanguage.SetWindowTextW(s2cs(strLanguage));
+		m_comLanguage.SetCurSel(str2int(strLanguage));
 
 	m_checkLocalPreview.SetCheck(str2int(strPreview));
 }
@@ -174,15 +177,37 @@ inline void CDlgConfigBaseInfo::uninitCtrl()
 
 }
 
-BOOL CDlgConfigBaseInfo::SaveConfigInfo()
+inline void CDlgConfigBaseInfo::getTimerStartIni(SYSTEMTIME &st, const std::string &timeStr)
 {
-	//SaveAll
+	int nindexleft = timeStr.find(":");
+	int nindexright = timeStr.rfind(":");
+	DWORD dhour = str2int(timeStr.substr(0, nindexleft));
+	DWORD dmin = str2int(timeStr.substr(nindexleft + 1, nindexright));
+	DWORD dsec = str2int(timeStr.substr(nindexright + 1, timeStr.length() - 1));
+
+	GetLocalTime(&st);
+	st.wHour = dhour;
+	st.wMinute = dmin;
+	st.wSecond = dsec;
+}
+
+BOOL CDlgConfigBaseInfo::SaveConfigInfo()
+{	//SaveAll
+#define IMPLEMENT_BASEINFO_SECURITYCHECK()\
+	if (_T("") == strParam){\
+		CAgoraFormatStr::AgoraMessageBox(_T("AppID, AppCertificateID,Channel 不能为空,请重新输入."));\
+		return FALSE;\
+	}\
+
 	CString strParam;
 	m_EditAppId.GetWindowTextW(strParam);
+	IMPLEMENT_BASEINFO_SECURITYCHECK()
 	gAgoraConfigMainUI.setAppId(cs2s(strParam));
 	m_EditAppCertId.GetWindowTextW(strParam);
+	IMPLEMENT_BASEINFO_SECURITYCHECK()
 	gAgoraConfigMainUI.setAppCertificateId(cs2s(strParam));
 	m_EditChannelName.GetWindowTextW(strParam);
+	IMPLEMENT_BASEINFO_SECURITYCHECK()
 	gAgoraConfigMainUI.setChannelName(cs2s(strParam));
 	m_comVideoProfile.GetWindowTextW(strParam);
 	gAgoraConfigMainUI.setResolution(cs2s(strParam));
@@ -215,5 +240,11 @@ void CDlgConfigBaseInfo::OnClose()
 void CDlgConfigBaseInfo::OnBnClickedButtonSave()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	//security check
 	SaveConfigInfo();
+
+	LPAG_WAWAJI_CONFIG lpData = new AG_WAWAJI_CONFIG;
+	lpData->configInstance = eTagConfigType::eTagConfigType_BaseInfo;
+	lpData->isRunStream = FALSE;
+	::PostMessage(theApp.GetMainWnd()->m_hWnd, WawajiMsgType_Config, (WPARAM)lpData, NULL);
 }

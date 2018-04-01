@@ -164,15 +164,23 @@ inline void CDlgCamera::initData()
 
 BOOL CDlgCamera::SaveConfigInfo()
 {
+#define IMPLEMENT_CameraInfo_SecurityChecek()\
+	if (_T("") == strParam){\
+		CAgoraFormatStr::AgoraMessageBox(_T("UID, CameraName 不能为空,请重新输入"));\
+		return FALSE;\
+	}\
+
 	CString strParam;
 	BOOL bRes = m_checkEnable.GetCheck();
 	std::string strSection = cs2s(m_InstanceDesc);
 	gAgoraConfigMainUI.setProcessEnable(strSection, int2str(bRes));
 
 	m_editLoginUID.GetWindowTextW(strParam);
+	IMPLEMENT_CameraInfo_SecurityChecek()
 	gAgoraConfigMainUI.setLoginUid(strSection,cs2s(strParam));
 
 	m_comCameraName.GetWindowTextW(strParam);
+	IMPLEMENT_CameraInfo_SecurityChecek();
 	gAgoraConfigMainUI.setCameraName(strSection, cs2s(strParam));
 	CString strCameraName; CString strCameraComID;
 	int nCurVideoIndex = m_comCameraName.GetCurSel();
@@ -197,7 +205,7 @@ BOOL CDlgCamera::SaveConfigInfo()
 	m_editRtmpUrl.GetWindowTextW(strParam);
 	gAgoraConfigMainUI.setRtmpUrl(strSection, cs2s(strParam));
 
-	//Check Encoder VideoProfile and Rtmp SendVideoProfile
+	//Check Encoder VideoProfile and Rtmp SendVideoProfile Security Check
 	//TO DO
 
 	return TRUE;

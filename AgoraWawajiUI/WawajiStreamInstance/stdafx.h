@@ -46,12 +46,12 @@ using namespace agora::util;
 #pragma comment(lib,"libcrypto.lib")
 
 #include "AgoraObject.h"
-#include "generatorSignalToken.h"
 #include "FileIO.h"
 
 extern CConfigAgora gAgoraConfigInstance;
 
 #include "LanguagePack.h"
+#include "WawajiInterface.h"
 using namespace AgoraWawaji;
 using namespace AgoraWawaji::Language_Pack;
 using namespace AgoraWawaji::FormatStr;

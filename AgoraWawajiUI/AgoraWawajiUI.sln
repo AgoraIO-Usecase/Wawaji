@@ -7,20 +7,47 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AgoraWawajiUI", "AgoraWawaj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WawajiStreamInstance", "WawajiStreamInstance\WawajiStreamInstance.vcxproj", "{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}"
 EndProject
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "WawajiSetup", "WawajiSetup\WawajiSetup.isproj", "{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|Win32 = CD_ROM|Win32
 		Debug|Win32 = Debug|Win32
+		DVD-5|Win32 = DVD-5|Win32
 		Release|Win32 = Release|Win32
+		SingleImage|Win32 = SingleImage|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.CD_ROM|Win32.ActiveCfg = Release|Win32
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.CD_ROM|Win32.Build.0 = Release|Win32
 		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.Debug|Win32.Build.0 = Debug|Win32
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.DVD-5|Win32.ActiveCfg = Debug|Win32
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.DVD-5|Win32.Build.0 = Debug|Win32
 		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.Release|Win32.ActiveCfg = Release|Win32
 		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.Release|Win32.Build.0 = Release|Win32
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.SingleImage|Win32.ActiveCfg = Release|Win32
+		{1E3F6BC2-0F74-4746-82BD-6F4BA9DEA756}.SingleImage|Win32.Build.0 = Release|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.CD_ROM|Win32.ActiveCfg = Release|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.CD_ROM|Win32.Build.0 = Release|Win32
 		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.Debug|Win32.Build.0 = Debug|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.DVD-5|Win32.ActiveCfg = Debug|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.DVD-5|Win32.Build.0 = Debug|Win32
 		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.Release|Win32.ActiveCfg = Release|Win32
 		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.Release|Win32.Build.0 = Release|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.SingleImage|Win32.ActiveCfg = Release|Win32
+		{E29A289F-15C0-43E2-BA87-34FEA3E4B07C}.SingleImage|Win32.Build.0 = Release|Win32
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.CD_ROM|Win32.ActiveCfg = CD_ROM
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.CD_ROM|Win32.Build.0 = CD_ROM
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.Debug|Win32.ActiveCfg = DVD-5
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.Debug|Win32.Build.0 = DVD-5
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.DVD-5|Win32.ActiveCfg = DVD-5
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.DVD-5|Win32.Build.0 = DVD-5
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.Release|Win32.ActiveCfg = SingleImage
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.Release|Win32.Build.0 = SingleImage
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.SingleImage|Win32.ActiveCfg = SingleImage
+		{63DD6B39-BFB5-4967-8C41-AAEA1EBD4381}.SingleImage|Win32.Build.0 = SingleImage
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -81,6 +81,9 @@ void CAgoraWawajiUIDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_SDKVersion, m_CtlSdkVersion);
 	DDX_Control(pDX, IDC_LIST_WawajiLog, m_listLog);
 	DDX_Control(pDX, IDC_BUTTON_Start, m_BtnStart);
+	DDX_Control(pDX, IDC_BUTTON_Settings, m_BtnSettings);
+	DDX_Control(pDX, IDC_BUTTON_Restart, m_BtnRestart);
+	DDX_Control(pDX, IDC_BUTTON_UploadLogs, m_BtnUpLoadLog);
 }
 
 BEGIN_MESSAGE_MAP(CAgoraWawajiUIDlg, CDialogEx)
@@ -91,6 +94,8 @@ BEGIN_MESSAGE_MAP(CAgoraWawajiUIDlg, CDialogEx)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CLOSE()
 	ON_WM_TIMER()
+	ON_WM_SHOWWINDOW()
+	ON_WM_COPYDATA()
 	ON_BN_CLICKED(IDC_BUTTON_Start, &CAgoraWawajiUIDlg::OnBnClickedButtonStart)
 	ON_BN_CLICKED(IDC_BUTTON_Settings, &CAgoraWawajiUIDlg::OnBnClickedButtonSettings)
 	ON_BN_CLICKED(IDC_BUTTON_Restart, &CAgoraWawajiUIDlg::OnBnClickedButtonRestart)
@@ -113,6 +118,7 @@ BEGIN_MESSAGE_MAP(CAgoraWawajiUIDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_LOCAL_VIDEO_STAT), &CAgoraWawajiUIDlg::OnLocalVideoStats)
 	ON_MESSAGE(WM_MSGID(EID_REMOTE_VIDEO_STAT), &CAgoraWawajiUIDlg::OnRemoteVideoStats)
 	ON_MESSAGE(WawajiMsgType_Config,OnConfigParamSave)
+	ON_MESSAGE(WawajiMsgType_RemoteVideoStats, OnInstanceRemoteVideoStats)
 END_MESSAGE_MAP()
 
 
@@ -151,6 +157,21 @@ BOOL CAgoraWawajiUIDlg::OnInitDialog()
 	//SetBackgroundImage(IDB_BITMAP_MAINUI);
 	SetBackgroundColor(RGB(0xff, 0xff, 0xff), TRUE);
 
+	TCHAR path[255];
+	SHGetSpecialFolderPath(0, path, CSIDL_DESKTOPDIRECTORY, 0);
+	CString strDesktop = _T("\\roominfo.txt");
+	wcscat_s(path, 255, strDesktop.GetBuffer());
+	CFileIO fileChannelName;
+	fileChannelName.openReadFile(cs2s(path).data());
+	m_strChannel = fileChannelName.readLine();
+	if ("" == m_strChannel){
+		CAgoraFormatStr::AgoraMessageBox(_T("桌面roominfo.txt中没有频道信息,请修改"));
+		ShellExecute(NULL, _T("open"), path, NULL, NULL, SW_SHOW);
+		::PostQuitMessage(0);
+		return FALSE;
+	}
+
+	gAgoraConfigMainUI.setChannelName(m_strChannel);
 	int num = 0;
 	closeProcess(KWawajiStream, num);
 
@@ -158,16 +179,6 @@ BOOL CAgoraWawajiUIDlg::OnInitDialog()
 	m_strAppcertId = gAgoraConfigMainUI.getAppCertificateId();
 	m_strChannel = gAgoraConfigMainUI.getChannelName();
 
-#if 0
-	if ("" == m_strAppId){
-		CAgoraFormatStr::AgoraMessageBox(L"AppID is empty, Please modify the appID item in the AgoraWawaji.ini\r\n Then restart application");
-		std::string iniFilePath = gAgoraConfigMainUI.getFilePah();
-		gAgoraConfigMainUI.setAppId("");
-		ShellExecute(NULL, _T("open"), s2cs(iniFilePath), NULL, NULL, SW_SHOW);
-		::PostQuitMessage(0);
-		return FALSE;
-	}
-#else
 	if (0 == m_strAppId.length() || 0 == m_strAppcertId.length() || 0 == m_strChannel.length()){
 
 		ShowWindow(SW_HIDE);
@@ -179,8 +190,6 @@ BOOL CAgoraWawajiUIDlg::OnInitDialog()
 		initAgoraMedia();
 		SetTimer(EventType_TIMER_EVENT_CHECK_BASEINFOPARAM, 1000, nullptr);
 	}
-
-#endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -249,9 +258,6 @@ HCURSOR CAgoraWawajiUIDlg::OnQueryDragIcon()
 
 inline void CAgoraWawajiUIDlg::InitCtrl()
 {
-	gEnumLangType = (eTagLanguageType)(str2int(gAgoraConfigMainUI.getLanguagePack()));
-	switchLang();
-
 	//initCtrlInfo
 	m_nLastmileQuality = QUALITY_TYPE::QUALITY_DOWN;
 	CBitmap	bmpNetQuality;
@@ -279,10 +285,21 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 	lpData1->configInstance = eTagConfigType::eTagConfigType_Instance2;
 	lpData1->isRunStream = FALSE;
 	::PostMessage(theApp.GetMainWnd()->m_hWnd, WawajiMsgType_Config, (WPARAM)lpData1, NULL);
+
+	m_nClearLog = str2int(gAgoraConfigMainUI.getClearLogInterval());
+	SetTimer(EventType_TIMER_EVENT_CLEARLOG, 1000, NULL);
 }
 
 inline void CAgoraWawajiUIDlg::InitCtrlTxt()
 {
+	m_strAppId = gAgoraConfigMainUI.getAppId();
+	m_strAppcertId = gAgoraConfigMainUI.getAppCertificateId();
+	m_strChannel = gAgoraConfigMainUI.getChannelName();
+	m_nClearLog = str2int(gAgoraConfigMainUI.getClearLogInterval());
+
+	gEnumLangType = (eTagLanguageType)(str2int(gAgoraConfigMainUI.getLanguagePack()));
+	switchLang();
+
 	m_EditAppValue.SetWindowTextW(s2cs(m_strAppId));
 	m_EditAppCertificateValue.SetWindowTextW(s2cs(m_strAppcertId));
 	m_EditChannelValue.SetWindowTextW(s2cs(m_strChannel));
@@ -313,6 +330,12 @@ inline void CAgoraWawajiUIDlg::switchLang()
 {
 	Language_Pack::switchLang();
 
+	SetWindowText(gStrTitleUI);
+	m_BtnSettings.SetWindowTextW(gStrSettings);
+	m_BtnStart.SetWindowTextW(gStrStart);
+	m_BtnRestart.SetWindowTextW(gStrRestart);
+	m_BtnUpLoadLog.SetWindowTextW(gStrUploadLog);
+
 }
 
 inline void CAgoraWawajiUIDlg::initAgoraMedia()
@@ -327,6 +350,7 @@ inline void CAgoraWawajiUIDlg::initAgoraMedia()
 	m_lpRtcEngine = CAgoraObject::GetEngine();
 	ASSERT(m_lpRtcEngine);
 
+	m_lpAgoraObject->SetAppCert(s2cs(m_strAppcertId));
 	CString strSdkLogFilePath = s2cs(getMediaSdkLogPath("MainUI"));
 	m_lpAgoraObject->SetLogFilePath(strSdkLogFilePath);
 	m_bParamStatus = TRUE;
@@ -356,7 +380,7 @@ inline void CAgoraWawajiUIDlg::DrawClient(CDC *lpDC)
 {
 	if (0 <= m_nLastmileQuality){
 
-		m_imgNetQuality.Draw(lpDC, m_nLastmileQuality, CPoint(16, 16), ILD_NORMAL);
+		m_imgNetQuality.Draw(lpDC, m_nLastmileQuality, CPoint(980, 10), ILD_NORMAL);
 	}
 }
 
@@ -364,8 +388,11 @@ inline void CAgoraWawajiUIDlg::AddTxt(LPCTSTR lpFormat, ...)
 {
 	TCHAR szBuffer[1024] = { _T("\0") };
 	va_list args;
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	swprintf_s(szBuffer,_T("%02d%02d:%02d%02d%02d "),st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 	va_start(args, lpFormat);
-	_vsnwprintf(szBuffer, sizeof(szBuffer) / sizeof(TCHAR), lpFormat, args);
+	_vsnwprintf(szBuffer + _tcslen(szBuffer), sizeof(szBuffer) / sizeof(TCHAR) - _tcslen(szBuffer), lpFormat, args);
 	va_end(args);
 	
 	m_listLog.AddString(szBuffer);
@@ -373,13 +400,7 @@ inline void CAgoraWawajiUIDlg::AddTxt(LPCTSTR lpFormat, ...)
 
 void CAgoraWawajiUIDlg::OnBnClickedButtonStart()
 {
-	// TODO:  在此添加控件通知处理程序代码
-#if 0
-	char szBuffer[512] = { '\0' };
-	sprintf_s(szBuffer, "%s %x", "Instance1", m_CtlCamera1.GetSafeHwnd());
-	DWORD processId = openProcess("WawajiStreamInstance.exe", szBuffer);
-#endif
-	
+	// TODO:  在此添加控件通知处理程序代码	
 	if (m_bIsJoinChannel){
 
 		StopWawajiMonitor();
@@ -395,6 +416,8 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonSettings()
 	KillTimer(EventType_TIMER_EVENT_CHECK_CAMERAPARAM);
 	KillTimer(EventType_TIMER_EVENT_Runnin_Stream);
 
+	if (m_lpAgoraObject)
+	m_lpAgoraObject->EnableLastmileTest(TRUE);
 	INT_PTR nResponse = m_DlgConfig.DoModal();
 	if (IDOK == nResponse){
 
@@ -404,22 +427,24 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonSettings()
 
 	}
 
-	if (IDYES==  (nResponse = AfxMessageBox(_T("保存配置程序之后建议重启程序,是否重启 (Y-是; N-否)"), IDOK | IDCANCEL))){
+	if (IDYES==  (nResponse = AfxMessageBox(_T("修改【BaseInfo】配置信息 建议重启程序,是否重启所有程序 (Y-是; N-否)"), IDOK | IDCANCEL))){
 
 		PostQuitMessage(0);
 	}
 	else{
 
-		ShowWindow(SW_SHOW);
-		//重新收集配置信息
+		if (IDYES == (nResponse = AfxMessageBox(_T("修改【推流配置】信息 建议重新开始推流, 是否重新推流 (Y-是; N-否)"), IDOK | IDCANCEL))){
 
-		
-		LPAG_WAWAJI_CONFIG lpData = new AG_WAWAJI_CONFIG;
-		lpData->configInstance = eTagConfigType::eTagConfigType_BaseInfo;
-		lpData->isRunStream = true;
-		::PostMessage(m_hWnd, WawajiMsgType_Config, (WPARAM)lpData, NULL);
+			ShowWindow(SW_SHOW);
+			//重新收集配置信息
 
-		AddTxt(_T("[Monitor] 更新配置会重启所有推流程序"));
+			LPAG_WAWAJI_CONFIG lpData = new AG_WAWAJI_CONFIG;
+			lpData->configInstance = eTagConfigType::eTagConfigType_NULL;
+			lpData->isRunStream = true;
+			::PostMessage(m_hWnd, WawajiMsgType_Config, (WPARAM)lpData, NULL);
+
+			AddTxt(_T("[Monitor] !!!!!! 更新配置会重启所有推流程序\n"));
+		}
 	}
 }
 
@@ -470,16 +495,40 @@ void CAgoraWawajiUIDlg::OnTimer(UINT_PTR nIDEvent)
 	else if (EventType_TIMER_EVENT_UpTime == nIDEvent){
 
 		m_ltimeInterval += 1;
+
 		int nHour = 0; int nMinutes = 0; int nSeconds = 0;
 		int nDivison = 0; int nReminds = 0;
-		nDivison = m_ltimeInterval / 3600;
-		nSeconds = nReminds = m_ltimeInterval % 3600;
-		nMinutes = nDivison % 60;
-		nHour = nDivison / 60;
+		nHour = nDivison = m_ltimeInterval / 3600;
+		nReminds = m_ltimeInterval % 3600;
+		nMinutes = nDivison = nReminds / 60;
+		nSeconds = nReminds = nReminds % 60;
 		CString strUpTime;
 		strUpTime.Format(_T("%02d:%02d:%02d"),nHour,nMinutes,nSeconds);
 		m_CtlUpTimeValue.SetWindowTextW(strUpTime);
 	}
+
+	if (EventType_TIMER_EVENT_CLEARLOG == nIDEvent){
+
+		std::vector<CString> vecFileList;
+		std::string logPath = getAbsoluteDir() + "logger\\";
+		getInvalidFileList(vecFileList, s2cs(logPath), m_nClearLog);
+
+		for (std::vector<CString>::iterator it = vecFileList.begin(); vecFileList.end() != it; it++){
+			if (DeleteFile(*it)){
+
+				CAgoraFormatStr::AgoraOutDebugStr(_T("ClearLogTimer Delete File %s"), (*it));
+			}
+		}
+	}
+}
+
+void CAgoraWawajiUIDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CRect rt;
+	m_CtlCamera1.GetClientRect(&rt);
+	//m_CtlCamera1.MoveWindow(rt.left + 50, rt.top + 10, rt.right - rt.left ,rt.bottom - rt.top + 180);
+	//m_CtlCamera2.MoveWindow(rt.right+ 160, rt.top + 10, rt.right - rt.left, rt.bottom - rt.top + 180);
+	CDialogEx::OnShowWindow(bShow, nStatus);
 }
 
 inline void CAgoraWawajiUIDlg::checkBaseInfo()
@@ -487,9 +536,6 @@ inline void CAgoraWawajiUIDlg::checkBaseInfo()
 	if (NULL == m_DlgConfig.m_hWnd || !m_DlgConfig.IsWindowVisible()){
 
 		//Check BaseInfo :AppID,AppCertID,Channel,
-		m_strAppId = gAgoraConfigMainUI.getAppId();
-		m_strAppcertId = gAgoraConfigMainUI.getAppCertificateId();
-		m_strChannel = gAgoraConfigMainUI.getChannelName();
 		if (0 == m_strAppId.length() || 0 == m_strAppcertId.length() || 0 == m_strChannel.length()){
 			CAgoraFormatStr::AgoraOutDebugStr(_T("AppId:%s\n AppCert:%s\n ChannelName:%s\n 其中有一个参数为空，不满足要求!"),
 				s2cs(m_strAppId).GetBuffer(), s2cs(m_strAppcertId).GetBuffer(), s2cs(m_strChannel).GetBuffer());
@@ -557,8 +603,9 @@ inline void CAgoraWawajiUIDlg::StartWawajiMonitor()
 		CAgoraFormatStr::AgoraOutDebugStr(_T(__FUNCTION__));
 		m_lpAgoraObject->EnableLastmileTest(FALSE);
 
-		m_uMonitorUId = str2int(getRandomUid());
-		//m_lpAgoraObject->EnableVideo(FALSE);
+		//m_uMonitorUId = str2int(getRandomUid());
+		m_uMonitorUId = 20;
+		m_lpAgoraObject->EnableVideo(FALSE);
 		m_lpAgoraObject->EnableAudio(FALSE);
 
 		m_lpAgoraObject->SetClientRole(CLIENT_ROLE_TYPE::CLIENT_ROLE_AUDIENCE);
@@ -568,7 +615,16 @@ inline void CAgoraWawajiUIDlg::StartWawajiMonitor()
 		m_lpAgoraObject->MuteAllRemoteVideo(TRUE);
 
 		m_lpAgoraObject->LocalVideoPreview(NULL, TRUE);
-		m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uMonitorUId);
+
+		if (m_strAppcertId.length()){
+
+			CStringA strAppCertificateId = m_lpAgoraObject->getDynamicMediaChannelKey(s2cs(m_strChannel));
+			m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uMonitorUId, strAppCertificateId);
+		}
+		else{
+
+			m_lpAgoraObject->JoinChannel(s2cs(m_strChannel), m_uMonitorUId);
+		}
 	}
 }
 
@@ -602,7 +658,11 @@ inline void CAgoraWawajiUIDlg::StartRunWawajiStream()
 	if (m_mapStream.end() != it){
 
 		char szbuf[512] = { '\0' };
-		sprintf_s(szbuf, "%s %s %x", m_strAgoraWawajiMainUILogPath.data(), it->first.data(), it->second->wnd);
+		BOOL bEnableLocalPreview = str2int(gAgoraConfigMainUI.getVideoPreview());
+		if (bEnableLocalPreview)
+			sprintf_s(szbuf, "%s %s %x %x", m_strAgoraWawajiMainUILogPath.data(), it->first.data(),m_hWnd, it->second->wnd);
+		else
+			sprintf_s(szbuf, "%s %s %x %x", m_strAgoraWawajiMainUILogPath.data(), it->first.data(), m_hWnd, NULL);
 		CAgoraFormatStr::AgoraWriteLog((char*)std::string(szbuf).data());
 		CAgoraFormatStr::AgoraOutDebugStr(s2cs(szbuf));
 		DWORD processId = openProcess(KWawajiStream, szbuf);
@@ -624,10 +684,48 @@ inline void CAgoraWawajiUIDlg::reserveStream(const std::string &Instance)
 	SetTimer(EventType_TIMER_EVENT_Runnin_Stream,2000,nullptr);
 }
 
+void CAgoraWawajiUIDlg::getInvalidFileList(std::vector<CString> &vecFileList, const CString &strFilePath, int IntervalTime)
+{
+	DWORD dwAttr = GetFileAttributes(strFilePath);
+	if (INVALID_FILE_ATTRIBUTES == dwAttr){
+		return;
+	}
+
+	CFileFind findHandle;
+	CString strDestDir = strFilePath + _T("*.*");
+	bool isNotEmpty = findHandle.FindFile(strDestDir);
+	while (isNotEmpty){
+
+		isNotEmpty = findHandle.FindNextFileW();
+		CString fileName = findHandle.GetFileName();
+		if (!findHandle.IsDirectory() && !findHandle.IsDots()){
+			CTime timeLastWrite;
+			if (findHandle.GetLastWriteTime(timeLastWrite)){
+
+				CTime timeNow = CTime::GetCurrentTime();
+				CTimeSpan  timeTemp = timeNow - timeLastWrite;
+				if (timeTemp.GetDays() >= IntervalTime){
+					vecFileList.push_back(strFilePath + fileName);
+				}
+			}
+		}
+		else if (L"." != fileName && L".." != fileName){
+
+			getInvalidFileList(vecFileList, strFilePath + (fileName + _T("\\")), IntervalTime);
+		}
+	}
+}
+
 void CAgoraWawajiUIDlg::OnClose()
 {
+	KillTimer(EventType_TIMER_EVENT_CLEARLOG);
+	KillTimer(EventType_TIMER_EVENT_Runnin_Stream);
+	KillTimer(EventType_TIMER_EVENT_UpTime);
 	KillTimer(enumWawajiEventType::EventType_TIMER_EVENT_CHECK_CAMERAPARAM);
 	KillTimer(enumWawajiEventType::EventType_TIMER_EVENT_CHECK_BASEINFOPARAM);
+
+	int nNum = 0;
+	closeProcess(KWawajiStream, nNum);
 
 	if (m_lpAgoraObject){
 
@@ -658,6 +756,7 @@ LRESULT CAgoraWawajiUIDlg::OnConfigParamSave(WPARAM wParam, LPARAM lParam)
 			if (eTagConfigType::eTagConfigType_BaseInfo == lpData->configInstance){
 				//更新基础信息对应的指定模块
 
+				InitCtrlTxt();
 			}
 			else if (eTagConfigType::eTagConfigType_BaseInfo < lpData->configInstance){
 				//更新摄像头的对应模块
@@ -700,6 +799,50 @@ LRESULT CAgoraWawajiUIDlg::OnConfigParamSave(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
+LRESULT CAgoraWawajiUIDlg::OnInstanceRemoteVideoStats(WPARAM wParam, LPARAM lParam)
+{
+	LPAG_WAWAJI_LOCALVIDEO_STATS lpData = (LPAG_WAWAJI_LOCALVIDEO_STATS)wParam;
+	if (lpData){
+		
+		CAgoraFormatStr::AgoraWriteLog("RemoteVideoStats SendBitrate 0 uid: %u", lpData->uRemoteInstanceUID);
+
+		uid_t uRemoteUID = lpData->uRemoteInstanceUID;
+		std::map<uid_t,std::string>::iterator it = m_mapUidMgr.find(uRemoteUID);
+		if (m_mapUidMgr.end() != it){
+			assert(lpData->strInstance == it->second);
+
+			//reserveStream(it->second);
+			AddTxt(_T("RemoteVideoStats: uid: %u,%s"), lpData->uRemoteInstanceUID, s2cs(lpData->strInstance));
+		}
+
+		delete lpData; lpData = nullptr;
+	}
+
+	return TRUE;
+}
+
+BOOL CAgoraWawajiUIDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
+{
+	if (pCopyDataStruct){
+
+		if (pCopyDataStruct->lpData){
+
+			LPAG_WAWAJI_LOCALVIDEO_STATS lpData = (LPAG_WAWAJI_LOCALVIDEO_STATS)pCopyDataStruct->lpData;
+			CAgoraFormatStr::AgoraWriteLog("RemoteVideoStats SendBitrate 0 uid: %u", lpData->uRemoteInstanceUID);
+
+			uid_t uRemoteUID = lpData->uRemoteInstanceUID;
+			std::map<uid_t, std::string>::iterator it = m_mapUidMgr.find(uRemoteUID);
+			if (m_mapUidMgr.end() != it){
+				assert(lpData->strInstance == it->second);
+
+				AddTxt(_T("[%s] Uid: %u 推流停止."), s2cs(lpData->strInstance),lpData->uRemoteInstanceUID);
+				reserveStream(it->second);
+			}
+		}
+	}
+	
+	return CDialog::OnCopyData(pWnd, pCopyDataStruct);
+}
 
 LRESULT CAgoraWawajiUIDlg::OnJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 {
@@ -707,9 +850,10 @@ LRESULT CAgoraWawajiUIDlg::OnJoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	if (lpData){
 
 		m_bIsJoinChannel = TRUE;
-		m_BtnStart.SetWindowTextW(_T("stopLive"));
+		m_BtnStart.SetWindowTextW(gStrStart);
 		assert(m_uMonitorUId == lpData->uid);
-		AddTxt(_T("[Monitor] Uid: %u JoinChannelSuccess."),m_uMonitorUId);
+		AddTxt(_T("[Monitor] 监控程序正常启动.."));
+		CAgoraFormatStr::AgoraWriteLog("uid: %u joinchannelSuccess", m_uMonitorUId);
 		delete lpData; lpData = NULL;
 
 		m_ltimeInterval = 0;
@@ -725,7 +869,8 @@ LRESULT CAgoraWawajiUIDlg::OnRejoinChannelSuccess(WPARAM wParam, LPARAM lParam)
 	LPAGE_REJOINCHANNEL_SUCCESS lpData = (LPAGE_REJOINCHANNEL_SUCCESS)wParam;
 	if (lpData){
 
-		AddTxt(_T("[Monitor] Uid: %d ,Channel:%s ReJoinChannelSuccess."), lpData->uid,s2cs(lpData->channel));
+		AddTxt(_T("[Monitor] 监控程序重新启动..."));
+		CAgoraFormatStr::AgoraWriteLog("Uid: %u Channel: %s RejoinChannelSuccess",lpData->uid,lpData->channel);
 		delete lpData; lpData = nullptr;
 	}
 
@@ -780,8 +925,10 @@ LRESULT CAgoraWawajiUIDlg::OnLeaveChannel(WPARAM wParam, LPARAM lParam)
 		KillTimer(EventType_TIMER_EVENT_UpTime);
 
 		m_bIsJoinChannel = FALSE;
-		m_BtnStart.SetWindowTextW(_T("startLive"));
-		AddTxt(_T("[Monitor] LeaveChannel uid: %u"),lpData->rtcStat.users);
+		gStrStart = gEnumLangType == eLanguage_CHZ ? L"停止推流" : L"StopLive";
+		m_BtnStart.SetWindowTextW(gStrStart);
+		AddTxt(_T("[Monitor] 监控程序退出."));
+		CAgoraFormatStr::AgoraWriteLog("LeaveChannel uid: %u", lpData->rtcStat.users);
 		delete lpData; lpData = nullptr;
 	}
 	return TRUE;
@@ -906,7 +1053,8 @@ LRESULT CAgoraWawajiUIDlg::OnUserOffline(WPARAM wParam, LPARAM lParam)
 		}
 		else{
 
-			AddTxt(_T("[Monitor ] %s UserJoin UID : %u"), s2cs(it->second), lpData->uid);
+			CAgoraFormatStr::AgoraWriteLog("UserOffline UID: %u", lpData->uid);
+			AddTxt(_T("[Monitor] %s UserOffline UID : %u"), s2cs(it->second), lpData->uid);
 			//reserve stream
 			reserveStream(it->second);
 		}
@@ -938,8 +1086,11 @@ LRESULT CAgoraWawajiUIDlg::OnUserMuteVideo(WPARAM wParam, LPARAM lParam)
 			if (lpData->muted){
 
 				AddTxt(_T("[Monitor] %s UID: %u 开始直播推流"), s2cs(it->second).GetBuffer(), lpData->uid);
+				Invalidate(TRUE);
 			}
 			else{
+
+				CAgoraFormatStr::AgoraWriteLog("UserMuteVideo UID :%u,%d", lpData->uid, lpData->muted);
 				AddTxt(_T("[Monitor] %s UID: %u 停止直播推流",s2cs(it->second).GetBuffer(),lpData->uid));
 				//reserve livestream
 				reserveStream(it->second);

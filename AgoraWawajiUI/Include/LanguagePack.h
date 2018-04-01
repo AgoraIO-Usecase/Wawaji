@@ -19,9 +19,9 @@ namespace
 		Language_Pack{//default
 
 		enum eTagLanguageType{
-			eLanguage_NULL = -1,
-			eLanguage_CHZ,
+			eLanguage_NULL = -1, 
 			eLanguage_ENU,
+			eLanguage_CHZ,
 
 			eLanguage_UNKNOWN = 0xff
 		};
@@ -40,11 +40,19 @@ namespace
 		static CString gStrRestart = L"";
 		static CString gStrUploadLog = L"";
 
+		static CString gStrTitleUI = L"";
+
 		namespace
 			Language_Chinese{
 
 			const TCHAR* const  KUIDKey = L"账号";
 			const TCHAR* const  KCameraKey = L"摄像头";
+			const TCHAR* const  KBtnSettings = L"设置";
+			const TCHAR* const  KBtnStartLive = L"开始直播";
+			const TCHAR* const  KBtnRestart =   L"重新直播";
+			const TCHAR* const  KBtnUpLoads = L"上传日志";
+			const TCHAR* const  KTitleNameUI = L"声网娃娃机推流程序";
+
 
 		}
 
@@ -53,6 +61,11 @@ namespace
 
 			const TCHAR* const KUIDKey = L"UID";
 			const TCHAR* const KCameraKey = L"CameraName";
+			const TCHAR* const  KBtnSettings = L"Settings";
+			const TCHAR* const  KBtnStartLive = L"StartLive";
+			const TCHAR* const  KBtnRestart = L"Restart Live";
+			const TCHAR* const  KBtnUpLoads = L"Upload Logs";
+			const TCHAR* const KTitleNameUI = L"AgoraWawaji";
 
 		}
 
@@ -65,6 +78,11 @@ namespace
 
 				IMPLEMENT_Chinese(gStrUIDKey, KUIDKey)
 				IMPLEMENT_Chinese(gStrCameraKey, KCameraKey)
+				IMPLEMENT_Chinese(gStrTitleUI, KTitleNameUI)
+				IMPLEMENT_Chinese(gStrSettings, KBtnSettings)
+				IMPLEMENT_Chinese(gStrStart, KBtnStartLive)
+				IMPLEMENT_Chinese(gStrRestart, KBtnRestart)
+				IMPLEMENT_Chinese(gStrUploadLog, KBtnUpLoads)
 			}
 												 break;
 			case eTagLanguageType::eLanguage_ENU:{
@@ -73,6 +91,11 @@ namespace
 
 				IMPLEMENT_English(gStrUIDKey, KUIDKey)
 				IMPLEMENT_English(gStrCameraKey, KCameraKey)
+				IMPLEMENT_English(gStrTitleUI, KTitleNameUI)
+				IMPLEMENT_English(gStrSettings, KBtnSettings)
+				IMPLEMENT_English(gStrStart, KBtnStartLive)
+				IMPLEMENT_English(gStrRestart, KBtnRestart)
+				IMPLEMENT_English(gStrUploadLog, KBtnUpLoads)
 			}
 												 break;
 			case eTagLanguageType::eLanguage_NULL:
@@ -107,8 +130,9 @@ namespace
 
 				TCHAR szBuffer[1024] = { _T("\0") };
 				va_list args;
+				_tcsnccat_s(szBuffer, s2cs(gStrInstance + ": "), gStrInstance.length() + 2);
 				va_start(args, lpFormat);
-				_vsnwprintf(szBuffer, sizeof(szBuffer) / sizeof(TCHAR), lpFormat, args);
+				_vsnwprintf(szBuffer + _tcslen(szBuffer), sizeof(szBuffer) / sizeof(TCHAR) - _tcslen(szBuffer), lpFormat, args);
 				va_end(args);
 
 				AfxMessageBox(szBuffer);

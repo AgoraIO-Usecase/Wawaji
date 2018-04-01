@@ -8,6 +8,7 @@ public:
 
 	std::string getInstance();
 	HWND getMainUIItemWnd();
+	HWND getMainUIWnd();
 
 private:
 	virtual void ParseParam(const TCHAR* pszParam, BOOL bFlag, BOOL bLast);
@@ -17,4 +18,5 @@ private:
 	std::string m_strAppLog;
 	std::string m_strInstance;
 	HWND m_Wnd;
+	HWND m_MainUIWnd;
 };
