@@ -37,6 +37,7 @@ CConfigAgora gAgoraConfigMainUI;
 CFileIO gAgoraWawajiLog;
 std::string gStrCurRunningExeName = getCurRunningExeName();
 std::string gStrInstance = KAppAttributeMainUI;
+int AgoraWawaji::gMaxCameraCount = 0;
 
 // CAgoraWawajiUIApp ≥ı ºªØ
 

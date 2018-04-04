@@ -53,7 +53,6 @@ namespace
 			const TCHAR* const  KBtnUpLoads = L"上传日志";
 			const TCHAR* const  KTitleNameUI = L"声网娃娃机推流程序";
 
-
 		}
 
 		namespace
@@ -118,6 +117,8 @@ namespace
 		const char* const KSignalSdkInstance = "Instance";
 		const char* const KConfigBaseInfo = "BaseInfo";
 		const char* const KWawajiStream = "WawajiStreamInstance.exe";
+		const TCHAR* const KFrontCamera = L"前置摄像头";
+		const TCHAR* const KBackCamera = L"后置摄像头";
 	}
 
 	namespace

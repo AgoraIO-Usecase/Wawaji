@@ -83,12 +83,19 @@ inline void CDlgConfig::initCtrl()
 		m_AgoraCameraManager.Create(pRtcEngine);
 		int nCameraCount = m_AgoraCameraManager.GetDeviceCount();
 
-		for (int nIndex = 1; nCameraCount >= nIndex && nIndex <= MAX_Camera_Count; nIndex++){
+		for (int nIndex = 1; nCameraCount >= nIndex && nIndex <= gMaxCameraCount; nIndex++){
 
 			TCHAR tszBuffer[128] = { _T('\0') };
 			swprintf_s(tszBuffer,_T("Instance%d"),nIndex);
 
-			m_TabCtrlConfig.InsertItem(nIndex, tszBuffer);
+			if (2 == gMaxCameraCount){
+				if (1 == nIndex)
+					m_TabCtrlConfig.InsertItem(nIndex, KFrontCamera);
+				else
+					m_TabCtrlConfig.InsertItem(nIndex, KBackCamera);
+			}
+			else
+				m_TabCtrlConfig.InsertItem(nIndex, tszBuffer);
 			conType = (eTagConfigType)(nIndex);
 			lpConfigData = new AG_CONFIG;
 			lpConfigData->szBufferDesc = cs2s(tszBuffer);

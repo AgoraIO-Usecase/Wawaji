@@ -164,6 +164,8 @@ BOOL CAgoraWawajiUIDlg::OnInitDialog()
 	CFileIO fileChannelName;
 	fileChannelName.openReadFile(cs2s(path).data());
 	m_strChannel = fileChannelName.readLine();
+	gMaxCameraCount  = str2int(fileChannelName.readLine());
+	gMaxCameraCount = gMaxCameraCount >= 2 ? gMaxCameraCount : 2;
 	if ("" == m_strChannel){
 		CAgoraFormatStr::AgoraMessageBox(_T("桌面roominfo.txt中没有频道信息,请修改"));
 		ShellExecute(NULL, _T("open"), path, NULL, NULL, SW_SHOW);
@@ -258,6 +260,22 @@ HCURSOR CAgoraWawajiUIDlg::OnQueryDragIcon()
 
 inline void CAgoraWawajiUIDlg::InitCtrl()
 {
+	//shell:startup
+	HKEY kResult = NULL;
+	LPCTSTR lpRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, lpRun, 0, KEY_ALL_ACCESS, &kResult);
+	if (lRet == ERROR_SUCCESS){
+
+		TCHAR path[MAXPATHLEN] = { 0 };
+			GetModuleFileName(nullptr, path, MAXPATHLEN);
+			lRet = RegSetValueEx(kResult, _T("AgoraWawajiUI"), 0, REG_SZ, (const unsigned char*)path, (DWORD)MAXPATHLEN);
+			if (ERROR_SUCCESS == lpRun){
+
+				RegCloseKey(kResult);
+				kResult = NULL;
+			}
+		}
+
 	//initCtrlInfo
 	m_nLastmileQuality = QUALITY_TYPE::QUALITY_DOWN;
 	CBitmap	bmpNetQuality;
@@ -275,6 +293,7 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 	m_EditAppCertificateValue.EnableWindow(FALSE);
 	m_EditChannelValue.EnableWindow(FALSE);
 	m_ComboVideoProfileValue.EnableWindow(FALSE);
+	m_BtnRestart.ShowWindow(SW_HIDE);
 
 	LPAG_WAWAJI_CONFIG lpData = new AG_WAWAJI_CONFIG;
 	lpData->configInstance = eTagConfigType::eTagConfigType_Instance1;
@@ -405,7 +424,7 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonStart()
 
 		StopWawajiMonitor();
 
-		SetTimer(EventType_TIMER_EVENT_CHECK_BASEINFOPARAM,1000,nullptr);
+		SetTimer(EventType_TIMER_EVENT_CHECK_BASEINFOPARAM,2000,nullptr);
 	}
 }
 
@@ -430,6 +449,9 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonSettings()
 	if (IDYES==  (nResponse = AfxMessageBox(_T("修改【BaseInfo】配置信息 建议重启程序,是否重启所有程序 (Y-是; N-否)"), IDOK | IDCANCEL))){
 
 		PostQuitMessage(0);
+		//run restart.bat
+		std::string strBatPath = getAbsoluteDir() + "Restart.bat";
+		ShellExecute(NULL, _T("open"), s2cs(strBatPath), NULL, NULL, SW_SHOW);
 	}
 	else{
 
@@ -561,7 +583,7 @@ inline void CAgoraWawajiUIDlg::checkCameraInfo()
 		CAgoraCameraManager agoraCameraManager;
 		agoraCameraManager.Create(m_lpRtcEngine);
 		int nInstanceMax = agoraCameraManager.GetDeviceCount();
-		for (int nIndex = 1; nInstanceMax >= nIndex && MAX_Camera_Count >= nIndex; nIndex++){
+		for (int nIndex = 1; nInstanceMax >= nIndex && gMaxCameraCount >= nIndex; nIndex++){
 
 			char szbuf[128] = { '\0' };
 			sprintf_s(szbuf, "Instance%d", nIndex);
@@ -591,7 +613,7 @@ inline void CAgoraWawajiUIDlg::checkCameraInfo()
 		}
 		else{
 
-			CAgoraFormatStr::AgoraMessageBox(_T("Wawaji直播程序 没有检测到 有效的摄像头实例.\r\n 请检查 是否有摄像头,或摄像头配置是否正确."));
+			CAgoraFormatStr::AgoraMessageBox(_T("Wawaji直播程序 没有检测到 有效的摄像头实例.\r\n 请点击【配置/Settings】按钮 检查是否有摄像头,或摄像头配置是否正确."));
 		}
 	}
 }
@@ -925,7 +947,7 @@ LRESULT CAgoraWawajiUIDlg::OnLeaveChannel(WPARAM wParam, LPARAM lParam)
 		KillTimer(EventType_TIMER_EVENT_UpTime);
 
 		m_bIsJoinChannel = FALSE;
-		gStrStart = gEnumLangType == eLanguage_CHZ ? L"停止推流" : L"StopLive";
+		gStrStart = gEnumLangType == eLanguage_CHZ ? L"重启中..." : L"Restartting....";
 		m_BtnStart.SetWindowTextW(gStrStart);
 		AddTxt(_T("[Monitor] 监控程序退出."));
 		CAgoraFormatStr::AgoraWriteLog("LeaveChannel uid: %u", lpData->rtcStat.users);

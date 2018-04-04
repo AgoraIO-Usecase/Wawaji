@@ -5,7 +5,7 @@ using namespace std;
 
 namespace AgoraWawaji{
 
-#define MAX_Camera_Count 2
+	extern int gMaxCameraCount;
 
 	enum eTagConfigType{
 		eTagConfigType_NULL = -1,
