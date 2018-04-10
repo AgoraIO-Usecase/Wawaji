@@ -30,7 +30,7 @@
         key: key,//对应的动态key，如果没有请不需要传null，直接不带这个参数即可，可选
         uid1: 1, //主摄像头的uid
         uid2: 2, //副摄像头的uid
-        container: document.getElementById("#wawaji-container") //播放器的容器元素
+        container: document.getElementById("wawaji-container") //播放器的容器元素
     });
     ```
 
