@@ -18,12 +18,15 @@
 
 2. **在html文件中加入container**
 
+
     ```html
     <div id="wawaji-container" style="width: 640px">
     </div>
     ```
 
 3. **在js中使用以下代码初始化并播放h5视频**
+
+
     ```javascript
     var client = AgoraCMH5SDK.createClient();
     client.init(appid, channel, {
@@ -36,6 +39,7 @@
 
 4. **切换摄像头**
 
+
     ```javascript
     client.switchCamera();
     ```
@@ -44,6 +48,8 @@
 
     如果您的应用为多页面应用，则大多数时候不需要使用该方法。
     若您使用的是React等技术实现的单页面应用，在重复初始化播放器的时候，请先调用一下方法确认销毁之前的播放视频实例。
+
+
     ```javascript
     client.destroy();
     ```
