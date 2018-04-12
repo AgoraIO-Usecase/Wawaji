@@ -340,6 +340,7 @@
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>AgoraWawajiUI.exe</td><td>{8273E776-CB42-4B5C-B0D7-5C7EA5BB368B}</td><td>AGORA</td><td>2</td><td/><td>agorawawajiui.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td>{06646B77-EF0A-407C-A361-EEA97BF444B1}</td><td>AGORA</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{525274EC-E3AD-4C2C-8C14-9F52569C4E07}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>IS_ININSTALL_SHORTCUT</td><td>{8458BD03-3D5D-49EB-A578-6BA930FEEE6C}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>WawajiStreamInstance.exe</td><td>{60DB6174-C61A-4EB1-95AF-D3A56497629E}</td><td>AGORA</td><td>2</td><td/><td>wawajistreaminstance.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1055,11 +1056,13 @@
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AGORA</td><td>AgoraWawajiUI.exe</td></row>
+		<row><td>AGORA</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AGORA</td><td>WawajiStreamInstance.exe</td></row>
 		<row><td>AGORA</td><td>agora_rtc_sdk.dll</td></row>
 		<row><td>AGORA</td><td>agorasdk.dll</td></row>
 		<row><td>AGORA</td><td>libcrypto_1_1.dll</td></row>
 		<row><td>INSTALLDIR</td><td>AgoraWawajiUI.exe</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
 		<row><td>INSTALLDIR</td><td>IS_ININSTALL_SHORTCUT</td></row>
 		<row><td>INSTALLDIR</td><td>WawajiStreamInstance.exe</td></row>
@@ -1878,6 +1881,7 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>AgoraWawajiUI.exe</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
 		<row><td>AlwaysInstall</td><td>IS_ININSTALL_SHORTCUT</td></row>
 		<row><td>AlwaysInstall</td><td>WawajiStreamInstance.exe</td></row>
@@ -1898,11 +1902,12 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>agora_rtc_sdk.dll</td><td>agora_rtc_sdk.dll</td><td>AGORA_~1.DLL|agora_rtc_sdk.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\agora_rtc_sdk.dll</td><td>1</td><td/></row>
-		<row><td>agorasdk.dll</td><td>agorasdk.dll</td><td>agorasdk.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\agorasdk.dll</td><td>1</td><td/></row>
-		<row><td>agorawawajiui.exe</td><td>AgoraWawajiUI.exe</td><td>AGORAW~1.EXE|AgoraWawajiUI.exe</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\AgoraWawajiUI.exe</td><td>1</td><td/></row>
-		<row><td>libcrypto_1_1.dll</td><td>libcrypto_1_1.dll</td><td>LIBCRY~1.DLL|libcrypto-1_1.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\libcrypto-1_1.dll</td><td>1</td><td/></row>
-		<row><td>wawajistreaminstance.exe</td><td>WawajiStreamInstance.exe</td><td>WAWAJI~1.EXE|WawajiStreamInstance.exe</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\WawajiStreamInstance.exe</td><td>1</td><td/></row>
+		<row><td>agora_rtc_sdk.dll</td><td>agora_rtc_sdk.dll</td><td>AGORA_~1.DLL|agora_rtc_sdk.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Release\agora_rtc_sdk.dll</td><td>1</td><td/></row>
+		<row><td>agorasdk.dll</td><td>agorasdk.dll</td><td>agorasdk.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Release\agorasdk.dll</td><td>1</td><td/></row>
+		<row><td>agorawawajiui.exe</td><td>AgoraWawajiUI.exe</td><td>AGORAW~1.EXE|AgoraWawajiUI.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Release\AgoraWawajiUI.exe</td><td>1</td><td/></row>
+		<row><td>libcrypto_1_1.dll</td><td>libcrypto_1_1.dll</td><td>LIBCRY~1.DLL|libcrypto-1_1.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Release\libcrypto-1_1.dll</td><td>1</td><td/></row>
+		<row><td>restart.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>Restart.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Restart.bat</td><td>1</td><td/></row>
+		<row><td>wawajistreaminstance.exe</td><td>WawajiStreamInstance.exe</td><td>WAWAJI~1.EXE|WawajiStreamInstance.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ISPROJECTFOLDER&gt;..\Release\WawajiStreamInstance.exe</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2046,6 +2051,7 @@
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
 		<row><td>AgoraWawajiUI.exe</td><td/><td/><td>_775D731C_1E05_407B_BC9D_C6429E904C49_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_BAB9DEF6_27F5_4BFC_9CC1_F1F304C6F1B0_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_AA85D624_A85D_4CE0_B587_962BC7A2AC1D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>IS_ININSTALL_SHORTCUT</td><td/><td/><td>_7947F8B3_3E34_4A2B_ABFC_11F230D9A1A4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>WawajiStreamInstance.exe</td><td/><td/><td>_B880CCC4_8DD8_4B40_BC8C_49D25284424F_FILTER</td><td/><td/><td/><td/></row>
@@ -3861,8 +3867,8 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AgoraWawajiUI\res\AgoraWawajiUI.ico</td><td>0</td></row>
-		<row><td>AgoraWawajiUI.exe1_1A5F138E3C1D47D7BB3AB047C0B91EB4.exe</td><td/><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\AgoraWawajiUI.exe</td><td>0</td></row>
-		<row><td>AgoraWawajiUI.exe_218BA264B8D547ED917D65B641C66F21.exe</td><td/><td>D:\Agora_programe\baluoteli\Agora-Wawaji-Windows-UI\AgoraWawajiUI\Release\AgoraWawajiUI.exe</td><td>0</td></row>
+		<row><td>AgoraWawajiUI.exe1_1A5F138E3C1D47D7BB3AB047C0B91EB4.exe</td><td/><td>&lt;ISPROJECTFOLDER&gt;..\Release\AgoraWawajiUI.exe</td><td>0</td></row>
+		<row><td>AgoraWawajiUI.exe_218BA264B8D547ED917D65B641C66F21.exe</td><td/><td>&lt;ISPROJECTFOLDER&gt;..\Release\AgoraWawajiUI.exe</td><td>0</td></row>
 		<row><td>UNINST_Uninstall_W_D1CBFACB7A454428BF6F866C5F343590.exe</td><td/><td>C:\Program Files (x86)\InstallShield\2015LE\Redist\Language Independent\OS Independent\uninstall.ico</td><td>0</td></row>
 	</table>
 
