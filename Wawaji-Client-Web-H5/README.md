@@ -16,7 +16,7 @@
 ### v2.1
 1. **引入h5的js sdk文件**
 
-2. **在html文件中加入container**
+2. **在html文件中加入播放器**
 
 
     ```html
