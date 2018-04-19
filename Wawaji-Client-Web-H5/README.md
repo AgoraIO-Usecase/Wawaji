@@ -2,7 +2,7 @@
 
 
 ### 更新日志
-- 2018/04/09 - 使用H264方案替换MPEG2
+- 2018/04/09 - 使用H264和JSMPEG混合方案
 - 2018/02/25 - 修复了部分bug
 - 2018/01/09 - 更新了SDK，进一步优化了摄像头切换的速度，增加了前端稳定性
 
@@ -20,7 +20,9 @@
 
 
     ```html
-    <div id="wawaji-container" style="width: 640px">
+    <div>
+        <canvas id="js-player1"></canvas>
+        <canvas id="js-player2"></canvas>
     </div>
     ```
 
@@ -33,7 +35,13 @@
         key: key,//对应的动态key，如果没有请不需要传null，直接不带这个参数即可，可选
         uid1: 1, //主摄像头的uid
         uid2: 2, //副摄像头的uid
-        container: document.getElementById("wawaji-container") //播放器的容器元素
+    }, function(){
+        client.play({
+            canvas1: "js-player1",
+            canvas2: "js-player2"
+        });
+    }, function(err){
+        console.error(err);
     });
     ```
 

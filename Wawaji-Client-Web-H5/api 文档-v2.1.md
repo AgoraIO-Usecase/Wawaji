@@ -23,9 +23,17 @@ Client初始化。客户端会尝试建立两个摄像头的视频流连接，�
     + key 如果项目开启了动态key功能，则必须填写。没有开启则不要填写。
     + uid1 主摄像头的uid
     + uid2 副摄像头的uid
-    + container 可选，播放器的container元素。如不填，则需要在init之后手动调用play()
-+ callback_Success 可选
-+ callback_Error(err) 可选
++ callback_Success 初始化成功时的回调
++ callback_Error(err) 初始化失败时的回调
+
+##### client.play(options, callback)
+
+初始化播放器、播放画面。
+
++ options
+    + canvas1 主摄像头的画布的id。
+    + canvas2 副摄像头的画布id。
++ callback(err) 可选。
 
 
     ```javascript
@@ -34,25 +42,22 @@ Client初始化。客户端会尝试建立两个摄像头的视频流连接，�
         key: key,//对应的动态key，如果没有请不需要传null，直接不带这个参数即可，可选
         uid1: 1, //主摄像头的uid
         uid2: 2, //副摄像头的uid
-        container: document.getElementById("wawaji-container") //播放器的容器元素
+    }, function(){
+        client.play({
+            canvas1: "js-player1",
+            canvas2: "js-player2"
+        });
+    }, function(err){
+        console.error(err);
     });
     ```
 
-##### client.play(options, callback)
-
-初始化播放器、播放画面。
-如在`client.init`时已经传入过container，则会自动播放，无需调用`client.play()`方法。
-播放器默认会采用container的宽度。
-
-+ options
-    + container 播放器的容器div元素。
-+ callback(err) 可选。
 
 ##### client.switchCamera(callback)
 
 切换主、副摄像头
 
-+ callback(err) 可选
++ callback(err)
 
 ##### client.isUsingFrontCamera()
 
