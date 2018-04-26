@@ -3,13 +3,20 @@
 ### AgoraCMH5SDK
 
 
-##### AgoraCMH5SDK.createClient();
+##### AgoraCMH5SDK.createClient(options);
 
     ```javascript
     var client = AgoraCMH5SDK.createClient();
     ```
 
 返回Client实例。
+
++ options 可选
+    + mode 有"mpeg"和"h264"两中模式。如不填，则根据手机型号自动匹配。
+   
+    
+    注：通过RTMP推流的视频发送端会存在兼容性问题，请手动强制选择mpeg模式。
+
 
 ### Client
 
