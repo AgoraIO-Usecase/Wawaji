@@ -14,6 +14,13 @@
 
 
 ### v2.1
+
+    2.1 版本会为iPhone6以上的系统及一部分Android高端机适配H264解码方案，可减小码率与延时。
+
+    注：通过RTMP推流的视频发送端会存在兼容性问题，请手动强制选择mpeg模式：
+
+        var client = AgoraCMH5SDK.createClient({mode: "mpeg"});
+
 1. **引入h5的js sdk文件**
 
 2. **在html文件中加入播放器**
