@@ -266,7 +266,14 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, lpRun, 0, KEY_ALL_ACCESS, &kResult);
 	if (lRet == ERROR_SUCCESS){
 
+		DWORD dwBuffer = 0;
 		TCHAR path[MAXPATHLEN] = { 0 };
+		DWORD pathLen = (DWORD)MAXPATHLEN;
+		if (ERROR_SUCCESS == RegQueryValueEx(kResult, _T("AgoraWawajiUI"), NULL, &dwBuffer, (LPBYTE)path, &pathLen)){
+			RegCloseKey(kResult);
+			return;
+		}
+
 			GetModuleFileName(nullptr, path, MAXPATHLEN);
 			lRet = RegSetValueEx(kResult, _T("AgoraWawajiUI"), 0, REG_SZ, (const unsigned char*)path, (DWORD)MAXPATHLEN);
 			if (ERROR_SUCCESS == lpRun){
@@ -275,6 +282,7 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 				kResult = NULL;
 			}
 		}
+	RegCloseKey(kResult);
 
 	//initCtrlInfo
 	m_nLastmileQuality = QUALITY_TYPE::QUALITY_DOWN;
