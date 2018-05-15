@@ -118,7 +118,7 @@ namespace
 		const char* const KConfigBaseInfo = "BaseInfo";
 		const char* const KWawajiStream = "WawajiStreamInstance.exe";
 		const TCHAR* const KFrontCamera = L"前置摄像头";
-		const TCHAR* const KBackCamera = L"后置摄像头";
+		const TCHAR* const KBackCamera = L"侧面摄像头";
 	}
 
 	namespace

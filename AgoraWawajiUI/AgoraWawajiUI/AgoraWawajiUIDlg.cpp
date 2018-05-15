@@ -109,6 +109,7 @@ BEGIN_MESSAGE_MAP(CAgoraWawajiUIDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_MEDIA_ENGINE_EVENT), &CAgoraWawajiUIDlg::OnMediaEngineEvent)
 	ON_MESSAGE(WM_MSGID(EID_AUDIO_DEVICE_STATE_CHANGED), &CAgoraWawajiUIDlg::OnAudioDeviceStateChanged)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_LOCAL_VIDEO_FRAME), &CAgoraWawajiUIDlg::OnFirstLocalVideoFrame)
+	ON_MESSAGE(WM_MSGID(EID_REQUEST_CHANNELKEY), &CAgoraWawajiUIDlg::OnRequestChannelKey)
 	ON_MESSAGE(WM_MSGID(EID_LASTMILE_QUALITY), &CAgoraWawajiUIDlg::OnLastmileQuality)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_REMOTE_VIDEO_DECODED), &CAgoraWawajiUIDlg::OnFirstRemoteVideoDecoded)
 	ON_MESSAGE(WM_MSGID(EID_USER_JOINED), &CAgoraWawajiUIDlg::OnUserJoined)
@@ -260,30 +261,6 @@ HCURSOR CAgoraWawajiUIDlg::OnQueryDragIcon()
 
 inline void CAgoraWawajiUIDlg::InitCtrl()
 {
-	//shell:startup
-	HKEY kResult = NULL;
-	LPCTSTR lpRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, lpRun, 0, KEY_ALL_ACCESS, &kResult);
-	if (lRet == ERROR_SUCCESS){
-
-		DWORD dwBuffer = 0;
-		TCHAR path[MAXPATHLEN] = { 0 };
-		DWORD pathLen = (DWORD)MAXPATHLEN;
-		if (ERROR_SUCCESS == RegQueryValueEx(kResult, _T("AgoraWawajiUI"), NULL, &dwBuffer, (LPBYTE)path, &pathLen)){
-			RegCloseKey(kResult);
-			return;
-		}
-
-			GetModuleFileName(nullptr, path, MAXPATHLEN);
-			lRet = RegSetValueEx(kResult, _T("AgoraWawajiUI"), 0, REG_SZ, (const unsigned char*)path, (DWORD)MAXPATHLEN);
-			if (ERROR_SUCCESS == lpRun){
-
-				RegCloseKey(kResult);
-				kResult = NULL;
-			}
-		}
-	RegCloseKey(kResult);
-
 	//initCtrlInfo
 	m_nLastmileQuality = QUALITY_TYPE::QUALITY_DOWN;
 	CBitmap	bmpNetQuality;
@@ -315,6 +292,30 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 
 	m_nClearLog = str2int(gAgoraConfigMainUI.getClearLogInterval());
 	SetTimer(EventType_TIMER_EVENT_CLEARLOG, 1000, NULL);
+
+	//shell:startup
+	HKEY kResult = NULL;
+	LPCTSTR lpRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+	long lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE, lpRun, 0, KEY_ALL_ACCESS, &kResult);
+	if (lRet == ERROR_SUCCESS){
+
+		DWORD dwBuffer = 0;
+		TCHAR path[MAXPATHLEN] = { 0 };
+		DWORD pathLen = (DWORD)MAXPATHLEN;
+		if (ERROR_SUCCESS == RegQueryValueEx(kResult, _T("AgoraWawajiUI"), NULL, &dwBuffer, (LPBYTE)path, &pathLen)){
+			RegCloseKey(kResult);
+			return;
+		}
+
+		GetModuleFileName(nullptr, path, MAXPATHLEN);
+		lRet = RegSetValueEx(kResult, _T("AgoraWawajiUI"), 0, REG_SZ, (const unsigned char*)path, (DWORD)MAXPATHLEN);
+		if (ERROR_SUCCESS == lpRun){
+
+			RegCloseKey(kResult);
+			kResult = NULL;
+		}
+	}
+	RegCloseKey(kResult);
 }
 
 inline void CAgoraWawajiUIDlg::InitCtrlTxt()
@@ -709,9 +710,11 @@ inline void CAgoraWawajiUIDlg::reserveStream(const std::string &Instance)
 	std::map<std::string, LPAG_WAWAJI_STREAMINFO>::iterator it = m_mapStream.find(Instance);
 	assert(m_mapStream.end() != it);
 	assert(it->second->dProcessId > 0);
+	std::string str = __FUNCTION__;
+	CAgoraFormatStr::AgoraWriteLog("%s processId: %u", __FUNCTION__,it->second->dProcessId);
 	BOOL bRes = closeProcess(it->second->dProcessId);
 
-	SetTimer(EventType_TIMER_EVENT_Runnin_Stream,2000,nullptr);
+	SetTimer(EventType_TIMER_EVENT_Runnin_Stream,5000,nullptr);
 }
 
 void CAgoraWawajiUIDlg::getInvalidFileList(std::vector<CString> &vecFileList, const CString &strFilePath, int IntervalTime)
@@ -858,15 +861,34 @@ BOOL CAgoraWawajiUIDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
 		if (pCopyDataStruct->lpData){
 
 			LPAG_WAWAJI_LOCALVIDEO_STATS lpData = (LPAG_WAWAJI_LOCALVIDEO_STATS)pCopyDataStruct->lpData;
-			CAgoraFormatStr::AgoraWriteLog("RemoteVideoStats SendBitrate 0 uid: %u", lpData->uRemoteInstanceUID);
+			switch (lpData->eProcessType)
+			{
+			case eType_NativeCaptureFailed:{
+				CAgoraFormatStr::AgoraWriteLog("RemoteVideoStats SendBitrate 0 uid: %u", lpData->uRemoteInstanceUID);
 
-			uid_t uRemoteUID = lpData->uRemoteInstanceUID;
-			std::map<uid_t, std::string>::iterator it = m_mapUidMgr.find(uRemoteUID);
-			if (m_mapUidMgr.end() != it){
-				assert(lpData->strInstance == it->second);
+				uid_t uRemoteUID = lpData->uRemoteInstanceUID;
+				std::map<uid_t, std::string>::iterator it = m_mapUidMgr.find(uRemoteUID);
+				if (m_mapUidMgr.end() != it){
+					assert(lpData->strInstance == it->second);
 
-				AddTxt(_T("[%s] Uid: %u 推流停止."), s2cs(lpData->strInstance),lpData->uRemoteInstanceUID);
-				reserveStream(it->second);
+					AddTxt(_T("[%s] Uid: %u 推流停止."), s2cs(lpData->strInstance), lpData->uRemoteInstanceUID);
+					reserveStream(it->second);
+				}
+			}
+				break;
+			case eType_ChannelJoinSuccess:{
+				CAgoraFormatStr::AgoraWriteLog(" CopyData UserJoin uid: %u", lpData->uRemoteInstanceUID);
+
+				uid_t uRemoteUID = lpData->uRemoteInstanceUID;
+				std::map<uid_t, std::string>::iterator it = m_mapUidMgr.find(uRemoteUID);
+				if (m_mapUidMgr.end() != it){
+					assert(lpData->strInstance == it->second);
+
+					AddTxt(_T("[%s] Uid: %u 开始推流"), s2cs(lpData->strInstance), lpData->uRemoteInstanceUID);
+				}
+			}
+				break;
+			default:break;
 			}
 		}
 	}
@@ -992,6 +1014,16 @@ LRESULT CAgoraWawajiUIDlg::OnAudioDeviceStateChanged(WPARAM wParam, LPARAM lPara
 	return TRUE;
 }
 
+LRESULT CAgoraWawajiUIDlg::OnRequestChannelKey(WPARAM wParam, LPARAM lParam)
+{
+	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
+	CString channelName = CAgoraObject::GetAgoraObject()->GetChanelName();
+	CStringA newChannelKey = CAgoraObject::GetAgoraObject()->getDynamicMediaChannelKey(channelName);
+	CAgoraFormatStr::AgoraWriteLog("%s newChannelKey:%s", __FUNCTION__, newChannelKey.GetBuffer());
+	newChannelKey.ReleaseBuffer();
+	return pRtcEngine->renewChannelKey(newChannelKey);
+}
+
 LRESULT CAgoraWawajiUIDlg::OnLastmileQuality(WPARAM wParam, LPARAM lParam)
 {
 	LPAGE_LASTMILE_QUALITY lpData = (LPAGE_LASTMILE_QUALITY)wParam;
@@ -1055,6 +1087,8 @@ LRESULT CAgoraWawajiUIDlg::OnUserJoined(WPARAM wParam, LPARAM lParam)
 {
 	LPAGE_USER_JOINED lpData = (LPAGE_USER_JOINED)wParam;
 	if (lpData){
+
+		CAgoraFormatStr::AgoraWriteLog("%s uid: %u", __FUNCTION__, lpData->uid);
 
 		std::map<uid_t, std::string>::iterator it = m_mapUidMgr.find(lpData->uid);
 		if (m_mapUidMgr.end() == it){

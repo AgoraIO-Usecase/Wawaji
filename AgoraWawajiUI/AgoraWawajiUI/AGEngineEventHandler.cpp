@@ -180,6 +180,13 @@ void CAGEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, int 
 
 }
 
+void CAGEngineEventHandler::onRequestChannelKey()
+{
+	if (m_hMainWnd){
+		::PostMessage(m_hMainWnd, WM_MSGID(EID_REQUEST_CHANNELKEY), 0, 0);
+	}
+}
+
 void CAGEngineEventHandler::onLastmileQuality(int quality)
 {
 	CAgoraFormatStr::AgoraOutDebugStr(_T(__FUNCTION__));

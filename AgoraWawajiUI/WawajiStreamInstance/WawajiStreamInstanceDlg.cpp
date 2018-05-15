@@ -89,6 +89,7 @@ BEGIN_MESSAGE_MAP(CWawajiStreamInstanceDlg, CDialogEx)
 	ON_MESSAGE(WM_MSGID(EID_MEDIA_ENGINE_EVENT), &CWawajiStreamInstanceDlg::OnMediaEngineEvent)
 	ON_MESSAGE(WM_MSGID(EID_AUDIO_DEVICE_STATE_CHANGED), &CWawajiStreamInstanceDlg::OnAudioDeviceStateChanged)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_LOCAL_VIDEO_FRAME), &CWawajiStreamInstanceDlg::OnFirstLocalVideoFrame)
+	ON_MESSAGE(WM_MSGID(EID_REQUEST_CHANNELKEY), &CWawajiStreamInstanceDlg::OnRequestChannelKey)
 	ON_MESSAGE(WM_MSGID(EID_LASTMILE_QUALITY), &CWawajiStreamInstanceDlg::OnLastmileQuality)
 	ON_MESSAGE(WM_MSGID(EID_FIRST_REMOTE_VIDEO_DECODED), &CWawajiStreamInstanceDlg::OnFirstRemoteVideoDecoded)
 	ON_MESSAGE(WM_MSGID(EID_USER_JOINED), &CWawajiStreamInstanceDlg::OnUserJoined)
@@ -422,6 +423,17 @@ LRESULT CWawajiStreamInstanceDlg::OnJoinChannelSuccess(WPARAM wParam, LPARAM lPa
 	LPAGE_JOINCHANNEL_SUCCESS lpData = (LPAGE_JOINCHANNEL_SUCCESS)wParam;
 	if (lpData){
 
+		AG_WAWAJI_LOCALVIDEO_STATS DataLocalVideoStats;
+		DataLocalVideoStats.eProcessType = eType_ChannelJoinSuccess;
+		DataLocalVideoStats.InstanceType = m_eInstanceType;
+		DataLocalVideoStats.strInstance = m_strInstance;
+		DataLocalVideoStats.uRemoteInstanceUID = m_uLoginUid;
+		char szbuf[24] = { '\0' };
+		COPYDATASTRUCT cd;
+		cd.dwData = m_uLoginUid;
+		cd.cbData = sizeof(DataLocalVideoStats);
+		cd.lpData = (PVOID)&DataLocalVideoStats;
+		::SendMessage(m_hMainUIWnd, WM_COPYDATA, (WPARAM)m_hWnd, (LPARAM)&cd);
 
 		delete lpData; lpData = NULL;
 	}
@@ -516,6 +528,16 @@ LRESULT CWawajiStreamInstanceDlg::OnAudioDeviceStateChanged(WPARAM wParam, LPARA
 	return TRUE;
 }
 
+LRESULT CWawajiStreamInstanceDlg::OnRequestChannelKey(WPARAM wParam, LPARAM lParam)
+{
+	IRtcEngine *pRtcEngine = CAgoraObject::GetEngine();
+	CString channelName = CAgoraObject::GetAgoraObject()->GetChanelName();
+	CStringA newChannelKey = CAgoraObject::GetAgoraObject()->getDynamicMediaChannelKey(channelName);
+	CAgoraFormatStr::AgoraWriteLog("%s newChannelKey:%s", __FUNCTION__, newChannelKey.GetBuffer());
+	newChannelKey.ReleaseBuffer();
+	return pRtcEngine->renewChannelKey(newChannelKey);
+}
+
 LRESULT CWawajiStreamInstanceDlg::OnLastmileQuality(WPARAM wParam, LPARAM lParam)
 {
 
@@ -527,6 +549,7 @@ LRESULT CWawajiStreamInstanceDlg::OnVideoDeviceStateChanged(WPARAM wParam, LPARA
 	LPAGE_VIDEO_DEVICE_STATE_CHANGED lpData = (LPAGE_VIDEO_DEVICE_STATE_CHANGED)wParam;
 	if (lpData){
 
+		CAgoraFormatStr::AgoraWriteLog("OnVideoDeviceStateChanged");
 		delete lpData; lpData = nullptr;
 	}
 
@@ -623,6 +646,7 @@ LRESULT CWawajiStreamInstanceDlg::OnLocalVideoStats(WPARAM wParam, LPARAM lParam
 		if (0 == lpData->sentBitrate || 0 == lpData->sentFrameRate){
 			
 			AG_WAWAJI_LOCALVIDEO_STATS DataLocalVideoStats;
+			DataLocalVideoStats.eProcessType = eType_NativeCaptureFailed;
 			DataLocalVideoStats.InstanceType = m_eInstanceType;
 			DataLocalVideoStats.strInstance = m_strInstance;
 			DataLocalVideoStats.uRemoteInstanceUID = m_uLoginUid;

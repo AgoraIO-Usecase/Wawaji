@@ -46,6 +46,7 @@ protected:
 	LRESULT OnAudioDeviceStateChanged(WPARAM wParam, LPARAM lParam);
 	LRESULT OnVideoDeviceStateChanged(WPARAM wParam, LPARAM lParam);
 
+	LRESULT OnRequestChannelKey(WPARAM wParam, LPARAM lParam);
 	LRESULT OnLastmileQuality(WPARAM wParam, LPARAM lParam);
 	LRESULT OnFirstLocalVideoFrame(WPARAM wParam, LPARAM lParam);
 	LRESULT OnFirstRemoteVideoDecoded(WPARAM wParam, LPARAM lParam);

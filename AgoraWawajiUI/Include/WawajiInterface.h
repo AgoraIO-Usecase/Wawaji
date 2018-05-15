@@ -70,7 +70,16 @@ namespace AgoraWawaji{
 
 	}AG_WAWAJI_CONFIG,*PAG_WAWAJI_CONFIG,*LPAG_WAWAJI_CONFIG;
 
+	enum enumProcessMsgType{
+		eType_NULL = -1,
+		eType_NativeCaptureFailed,
+		eType_ChannelJoinSuccess,
+
+		eType_KNOWN = 0xff,
+	};
+
 	typedef struct eTagWawajiLocalVideoStats{
+		enumProcessMsgType eProcessType;
 		eTagConfigType InstanceType;
 		std::string strInstance;
 		uid_t uRemoteInstanceUID;
