@@ -180,7 +180,7 @@ public class WawajiServerActivity extends Activity {
     private void setupVideoProfile() {
         mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.enableVideo();
-        mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, "");
+        mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
@@ -195,7 +195,7 @@ public class WawajiServerActivity extends Activity {
                     .owner(true)
                     .size(width, height)
                     .frameRate(fps)
-                    .biteRate(bitrate)
+                    .bitRate(bitrate)
                     .rawStreamUrl(rtmpUrl)
                     .extraInfo("{\"lowDelay\":true}")
                     .build();
