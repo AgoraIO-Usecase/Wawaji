@@ -208,7 +208,7 @@ public class WawajiServerActivity extends Activity {
     // Step 4
     private void joinChannel() {
 
-        mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+        mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", uid); // if you do not specify the uid, we will generate the uid for you
 
     }
 
