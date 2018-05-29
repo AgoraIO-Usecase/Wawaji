@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+const sslcerts = require("./modules/sslcerts");
+const https= require("https").createServer(sslcerts, app);
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const fs = require('fs');
@@ -57,42 +59,27 @@ var zinian_profile = new ZiNianProfile(StreamMethod.JSMPEG);
 var shuangqu_profile = new ShuangquProfile(StreamMethod.JSMPEG);
 //var qiyiguo_profile = new QiyiguoProfile(StreamMethod.JSMPEG);
 
-var unique = function(s){
-    return s;
-}
 
-// request(leyaoyao_profile.http_url, function (err, response, body) {
-// 	console.log(body);
-//     var msg = JSON.parse(body);
-//     if (msg) {
-//         leyaoyao_profile.url = msg.data.wsUrl;
-//     }
-// });
-
-request(shuangqu_profile.create_user_url, function (error, response, body) {
-    console.log('shuangqu response body:', body);
-});
-
-//qiyiguo_profile.genURL(qiyiguo_profile.onRequestUrl);
-
-let enablecontrol = process.argv[2] === "enable-control";
-
-if(enablecontrol){
-    var manager = new WawajiManager(unique("server_agora"), io);
+shuangqu_profile.prepare().then(() => {
+    var manager = new WawajiManager("server_agora", io);
     manager.onStarted = function(){
         // manager.machines.add(new Wawaji.Machine(unique('machine_leyaoyao'), leyaoyao_profile));
-        manager.machines.add(new Wawaji.Machine(unique('machine_leidi'), leidi_profile));
+        manager.machines.add(new Wawaji.Machine('machine_leidi', leidi_profile));
         // manager.machines.add(new Wawaji.Machine(unique('machine_zhuazhua2'), zhuazhua2_profile));
         // manager.machines.add(new Wawaji.Machine(unique('machine_huizhi'), huizhi_profile));
         // manager.machines.add(new Wawaji.Machine(unique('machine_kedie'), kedie_profile));
-        manager.machines.add(new Wawaji.Machine(unique('machine_zinian'), zinian_profile));
-        manager.machines.add(new Wawaji.Machine(unique('machine_shuangqu'), shuangqu_profile));
+        manager.machines.add(new Wawaji.Machine('machine_zinian', zinian_profile));
+        manager.machines.add(new Wawaji.Machine('machine_shuangqu', shuangqu_profile));
         //manager.machines.add(unique('machine_qiyiguo'), qiyiguo_profile);
         // manager.machines.add(unique('machine_test'), test_profile);
     }
-}
 
-api(manager, app);
-let port = 4000;
-console.log(`listening on port ${port}`)
-http.listen(port);
+
+    api(manager, app);
+    let port = 4000;
+    console.log(`listening on port ${port}`)
+    http.listen(port);
+    https.listen(4002);
+}).catch(e => {
+    console.log(`failed to start: shuangqu profile update failed`);
+});

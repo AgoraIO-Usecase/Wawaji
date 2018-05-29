@@ -2,6 +2,7 @@ const vault = require('../../vault.js').zinian;
 const logger = require('../../logger');
 var debug = true;
 const WawajiStatus = require('../../constants').WawajiStatus;
+const request = require("request");
 var dbg = function () {
     if (debug) {
         var x = [];
@@ -15,10 +16,44 @@ ZiNianProfile = function (mode) {
     this.machine = null;
     this.appid = vault.appid;
     this.appcert = vault.appcert;
-    this.url = vault.url;
+    this.url = null;
     this.video_channel = vault.video_channel;
     this.video_rotation = vault.video_rotation;
+    this.app_id = vault.app_id;
+    this.room_id = vault.room_id;
+    this.binding = vault.binding;
     this.log = (new logger('zinian', 'logs/zinian.log')).get();
+
+    this.prepare = () => {
+        let ts = new Date().getTime();
+        if(this.url && ts - this.lastRefreshTs < 1000 * 60 * 60 * 24) {
+            //refresh daily
+            return Promise.resolve(this.url);
+        }
+
+        return new Promise((resolve, reject) => {
+            console.log(`prepare url..`);
+            let options = {
+                uri: `https://catchu.azusasoft.com/open_api/v0.2/rooms/${this.room_id}/play`,
+                method: "post",
+                json: {
+                    binding: this.binding,
+                    room_id: this.room_id,
+                    app_id: this.app_id
+                }
+            }
+            request(options, (error, response, body) => {
+                if(body.status !== "ok") {
+                    reject("failed");
+                } else {
+                    console.log(`prepared url: ${body.user.ws_url}`);
+                    this.url = body.user.ws_url;
+                    this.lastRefreshTs = new Date().getTime();
+                    resolve(body.user.ws_url);
+                }
+            });
+        });
+    }
 
     this.onInit = function (machine, done) {
         profile.log.info("onInit.");

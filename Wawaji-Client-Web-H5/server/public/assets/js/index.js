@@ -145,12 +145,14 @@ $(function () {
                         if (!lobby.machines[i].available) {
                             alert("设备维护中！");
                         } else {
-                            if(lobby.machines[i].internal){
-                                location.href = "play.html?account=" + lobby.account + "&machine=" + lobby.machines[i].name + "&internal=true";
-                            } else {
-                                location.href = "play.html?account=" + lobby.account + "&machine=" + lobby.machines[i].name;
-                            }
+                            var url = "play.html?account=" + lobby.account + "&machine=" + lobby.machines[i].name;
+                            var isDebug = getParameterByName("debug") === "true";
+                            var isH264 = getParameterByName("h264") === "true";
                             
+                            if(isH264){
+                                url += "&h264=true";
+                            }
+                            location.href = url;
                         }
                         break;
                     }

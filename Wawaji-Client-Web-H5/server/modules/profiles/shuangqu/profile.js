@@ -32,14 +32,41 @@ ShuangquProfile = function (mode) {
     this.onResult = null;
     this.onError = null;
 
+    this.prepare = () => {
+        return new Promise((resolve, reject) => {
+            console.log(`prepare url..`);
+            request(this.create_user_url, (error, response, body) => {
+                console.log(`create user: ${this.create_user_url}`);
+                let result = JSON.parse(body);
+                if(!result.success){
+                    reject(error);
+                    return;
+                }
+                request(this.http_url, (error, response, body) => {
+                    console.log(`url request: ${this.http_url}`);
+                    result = JSON.parse(body);
+                    if(result.success){
+                        this.url = result.data.ws_url;
+                        resolve(result.data.ws_url);
+                    } else {
+                        reject(error);
+                    }
+                })
+            });
+        });
+    }
+
     this.sendMessage = function (msgObj, type) {
         let data = { event: type, param: msgObj };
-        profile.machine.socket.send(JSON.stringify(data));
+        if (profile.machine && profile.machine.socket) {
+            profile.machine.socket.send(JSON.stringify(data));
+        }
         console.log(`sending action ${JSON.stringify(data)}`);
     }
 
-    this.onInit = function (machine, done) {
+    this.onInit = (machine, done) => {
         console.log("onInit.");
+
         profile.machine = machine;
 
         machine.socket.on('open', function open() {
@@ -115,6 +142,9 @@ ShuangquProfile = function (mode) {
     this.onCatch = function () {
         let data = { opeType: "turnDown" };
         profile.sendMessage(data, "control");
+        if (profile.machine && profile.machine.socket) {
+            profile.machine.socket.close();
+        }
     }
 }
 

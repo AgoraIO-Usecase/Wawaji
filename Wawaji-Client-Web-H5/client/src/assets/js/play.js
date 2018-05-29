@@ -415,7 +415,9 @@ $(function () {
         }
     }
 
-    var video_client = AgoraCMH5SDK.createClient();
+    var isH264 = getParameterByName("h264") === "true";
+
+    var video_client = isH264 ? AgoraCMH5SDK.createClient({mode: "h264"}) : AgoraCMH5SDK.createClient({mode: "mpeg"});
 
     video_client.on("camera_switched", function (params) {
         dbg("camera_switched");

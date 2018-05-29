@@ -14,17 +14,6 @@ module.exports = {
         },
         env_production : {
           NODE_ENV: 'production'
-        },
-        args: "enable-control"
-      },
-      {
-        name      : 'Wawaji-Web',
-        script    : 'server.js',
-        env: {
-          COMMON_VARIABLE: 'true'
-        },
-        env_production : {
-          NODE_ENV: 'production'
         }
       }
     ]

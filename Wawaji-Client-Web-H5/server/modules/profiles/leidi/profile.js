@@ -29,6 +29,11 @@ LeiDiProfile = function(mode){
     this.onResult = null;
     this.onError = null;
 
+    this.prepare = () => {
+        return Promise.resolve(profile.url);
+    }
+
+
     this.sendMessage = function(msgObj, type){
         var id = new Date().getTime();
         var data = Object.assign({id: id}, msgObj);
