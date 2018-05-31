@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         checkBoxPushFlow2.setOnCheckedChangeListener(onCheckedChangeListener);
 
 
-        channelName = WawajiApplication.the().getSetting(Constant.CHANNEL_NAME, UtilstHelp.getMac());
+        channelName = WawajiApplication.the().getSetting(Constant.CHANNEL_NAME, "wwjtest");
         appid = WawajiApplication.the().getSetting(Constant.CHANNEL_APPID, "");
 
         rtmpUrl1 = WawajiApplication.the().getSetting(Constant.CHANNEL_URL1, "");
@@ -154,9 +154,6 @@ public class MainActivity extends AppCompatActivity {
         bitrate2 = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_BITRATE2, 0);
         fps2 = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_FPS2, 0);
         openRtmpStream2 = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE2, false);
-
-
-        Log.i(LOG_TAG, " mac address : " + UtilstHelp.getMac());
 
 
         if (channelName != null) {

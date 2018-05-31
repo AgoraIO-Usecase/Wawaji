@@ -29,7 +29,7 @@ import io.agora.wawaji.utils.Constant;
 
 public class FirstServer extends Activity {
 
-    private static final String LOG_TAG = "wbsTest-->";
+    private static final String LOG_TAG = "firstTest-->";
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
@@ -147,12 +147,13 @@ public class FirstServer extends Activity {
     }
 
     private void initAgoraEngineAndJoinChannel() {
-        startSecondProcess();
-
         setupUI();
         initializeAgoraEngine();     // Step 2
         setupVideoProfile();         // Step 3
         joinChannel();               // Step 4
+
+        startSecondProcess();
+
     }
 
     public boolean checkSelfPermission(String permission, int requestCode) {
@@ -359,5 +360,30 @@ public class FirstServer extends Activity {
 
         return users;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG, "onPause "  + servicePushIntent);
+        if(servicePushIntent != null) {
+           Intent intent = new Intent() ;
+            intent.setAction("action1");
+            intent.putExtra("status", 1);
+            sendBroadcast(intent);
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(LOG_TAG, "onRestart "  + servicePushIntent);
+        if(servicePushIntent != null) {
+            Intent intent = new Intent() ;
+            intent.setAction("action1");
+            intent.putExtra("status", 2);
+            sendBroadcast(intent);
+        }
+    }
+
 
 }

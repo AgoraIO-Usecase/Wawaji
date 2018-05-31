@@ -26,7 +26,7 @@ First register in [Agora.io (https://dashboard.agora.io/cn/signup/), and create 
 <string name="agora_app_id"><#YOUR APP ID#></string>
 ```
 
-[Agora.io SDK](https://www.agora.io/cn/download/) Download the * * * video call SDK**, and copy the ***.jar** under the **libs** folder into the **app/libs** of the project after unzip, and the **arm64-v8a**/**x86**/**armeabi-v7a** under the **libs** folder is copied to the **app/src/main/libs** of the project.
+[Agora.io SDK](https://www.agora.io/cn/download/) Download the * * * video call SDK**, and copy the ***.jar** under the **libs** folder into the **app/libs** of the project after unzip, and the **arm64-v8a**/**x86**/**armeabi-v7a** under the **libs** folder is copied to the **app/src/main/jniLibs** of the project.
 
 Finally, open the project with Android Studio, connect to the device, compile and run it.
 
