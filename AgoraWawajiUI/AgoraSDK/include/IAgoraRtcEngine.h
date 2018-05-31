@@ -2091,6 +2091,19 @@ public:
 		return m_parameter->setString("rtc.log_file", filePath);
     }
 
+    int setLogFile(const char* filePath, int logsize) {
+        if (!m_parameter) return -ERR_NOT_INITIALIZED;
+#if defined(_WIN32)
+        util::AString path;
+        if (!m_parameter->convertPath(filePath, path))
+            filePath = path->c_str();
+        else if (!filePath)
+            filePath = "";
+#endif
+        return setObject("rtc.log_file_size", "{\"filepath\":\"%s\",\"filesize\":%d}", filePath, logsize);
+    }
+
+
     /**
     * set the log information filter level
     * @param [in] filter
