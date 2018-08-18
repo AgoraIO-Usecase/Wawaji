@@ -43,7 +43,6 @@ private:
 
 	CDateTimeCtrl m_DataTimeCtlRestart;
 	SYSTEMTIME m_stRestart;
-
 public:
 	afx_msg void OnBnClickedButtonSave();
 };

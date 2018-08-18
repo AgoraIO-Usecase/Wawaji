@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DlgConfig.h"
+#include <thread>
 /*class CDlgConfig;*/
 
 // CAgoraWawajiUIDlg ¶Ô»°¿ò
@@ -106,6 +107,7 @@ protected:
 	LRESULT OnConfigParamSave(WPARAM wParam,LPARAM lParam);
 	LRESULT OnInstanceRemoteVideoStats(WPARAM wParam,LPARAM lParam);
 
+	void RestartWawaji(bool bInit = false);
 private:
 	CStatic m_CtlCamera1;
 	CStatic m_CtlCamera2;
@@ -158,6 +160,7 @@ private:
 	BOOL m_bIsJoinChannel;
 	long m_ltimeInterval;
 	
+	int nIDEventRestart = 1000;
 public:
 	afx_msg void OnBnClickedButtonSettings();
 	afx_msg void OnBnClickedButtonRestart();

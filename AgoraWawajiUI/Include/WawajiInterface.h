@@ -60,7 +60,7 @@ namespace AgoraWawaji{
 		EventType_TIMER_EVENT_Runnin_Stream,
 		EventType_TIMER_EVENT_UpTime,
 		EventType_TIMER_EVENT_CLEARLOG,
-
+		EventType_TIMER_EVENT_RESTART_Wawaji,
 		EventType_TIMER_EVENT_UNKNOWN,
 	};
 

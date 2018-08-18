@@ -24,7 +24,7 @@ using namespace agora::media;
 #define AG_ENGFLAG_NSON			0x00000200	// ½µÔë
 #define AG_ENGFLAG_AECON		0x00000400	// »ØÉùÏû³ý
 
-#define APP_ID				_T("YOUR APP ID")
+#define APP_ID				_T("aab8b8f5a8cd4469a63042fcfafe7063")
 
 typedef struct _SEI_INFO
 {

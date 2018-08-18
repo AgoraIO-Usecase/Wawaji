@@ -292,7 +292,9 @@ inline void CAgoraWawajiUIDlg::InitCtrl()
 
 	m_nClearLog = str2int(gAgoraConfigMainUI.getClearLogInterval());
 	SetTimer(EventType_TIMER_EVENT_CLEARLOG, 1000, NULL);
-
+#if 0
+	RestartWawaji(TRUE);
+#endif
 	//shell:startup
 	HKEY kResult = NULL;
 	LPCTSTR lpRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
@@ -455,8 +457,8 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonSettings()
 
 	}
 
-	if (IDYES==  (nResponse = AfxMessageBox(_T("修改【BaseInfo】配置信息 建议重启程序,是否重启所有程序 (Y-是; N-否)"), IDOK | IDCANCEL))){
 
+	if (IDYES==  (nResponse = AfxMessageBox(_T("修改【BaseInfo】配置信息 建议重启程序,是否重启所有程序 (Y-是; N-否)"), IDOK | IDCANCEL))){
 		PostQuitMessage(0);
 		//run restart.bat
 		std::string strBatPath = getAbsoluteDir() + "Restart.bat";
@@ -475,10 +477,10 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonSettings()
 			::PostMessage(m_hWnd, WawajiMsgType_Config, (WPARAM)lpData, NULL);
 
 			AddTxt(_T("[Monitor] !!!!!! 更新配置会重启所有推流程序\n"));
+
 		}
 	}
 }
-
 
 void CAgoraWawajiUIDlg::OnBnClickedButtonRestart()
 {
@@ -498,6 +500,12 @@ void CAgoraWawajiUIDlg::OnBnClickedButtonUploadlogs()
 
 void CAgoraWawajiUIDlg::OnTimer(UINT_PTR nIDEvent)
 {
+	if (nIDEvent == EventType_TIMER_EVENT_RESTART_Wawaji){
+		KillTimer(EventType_TIMER_EVENT_RESTART_Wawaji);
+		std::string strBatPath = getAbsoluteDir() + "Restart.bat";
+		ShellExecute(NULL, _T("open"), s2cs(strBatPath), NULL, NULL, SW_SHOW);
+	}
+
 	if (enumWawajiEventType::EventType_TIMER_EVENT_CHECK_CAMERAPARAM == nIDEvent){
 	
 		checkCameraInfo();
@@ -537,6 +545,7 @@ void CAgoraWawajiUIDlg::OnTimer(UINT_PTR nIDEvent)
 		strUpTime.Format(_T("%02d:%02d:%02d"),nHour,nMinutes,nSeconds);
 		m_CtlUpTimeValue.SetWindowTextW(strUpTime);
 	}
+
 
 	if (EventType_TIMER_EVENT_CLEARLOG == nIDEvent){
 
@@ -1249,4 +1258,24 @@ LRESULT CAgoraWawajiUIDlg::OnRefreshRecordingServiceStatus(WPARAM wParam, LPARAM
 	}
 
 	return TRUE;
+}
+
+void CAgoraWawajiUIDlg::RestartWawaji(bool bInit)
+{
+	if (gAgoraConfigMainUI.getRestartTimerStatus() == "1"){
+		std::string strRestart = gAgoraConfigMainUI.getRestartTimer();
+		long long restart_time = strtoll(strRestart.c_str(), 0, 10);
+		time_t cur_time;
+		time(&cur_time);
+		if (bInit && restart_time < cur_time){
+			gAgoraConfigMainUI.setRestartTimerStatus("0");
+			gAgoraConfigMainUI.setRestartTimer("");
+			return;
+		}
+		
+		SetTimer(EventType_TIMER_EVENT_RESTART_Wawaji, (restart_time - cur_time) * 1000, NULL);
+		CString strInfo;
+		strInfo.Format(_T("%d秒后重启程序\n"), restart_time - cur_time);
+		AddTxt(strInfo);
+	}
 }

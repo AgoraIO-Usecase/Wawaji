@@ -154,6 +154,20 @@ inline void CDlgConfigBaseInfo::initCtrl()
 	std::string strRestatTime = gAgoraConfigMainUI.getRestartTimer();
 	std::string strLanguage = gAgoraConfigMainUI.getLanguagePack();
 	std::string strPreview = gAgoraConfigMainUI.getVideoPreview();
+	std::string strRestartStatus = gAgoraConfigMainUI.getRestartTimerStatus();
+	if (strRestartStatus == "1"){
+		std::string strRestart = gAgoraConfigMainUI.getRestartTimer();
+		long long restart_time = strtoll(strRestart.c_str(), 0, 10);
+		time_t cur_time;
+		time(&cur_time);
+
+		if (cur_time < restart_time){
+			time_t t(restart_time);
+			struct tm temptm = *localtime(&t);
+			SYSTEMTIME st = { 1900 + temptm.tm_year, 1 + temptm.tm_mon, temptm.tm_wday, temptm.tm_mday,	temptm.tm_hour, temptm.tm_min, temptm.tm_sec, 0 };
+			m_DataTimeCtlRestart.SetTime(st);
+		}
+	}
 
 	m_EditAppId.SetWindowTextW(s2cs(strAppId));
 	m_EditAppCertId.SetWindowTextW(s2cs(strAppCertID));
@@ -220,6 +234,28 @@ BOOL CDlgConfigBaseInfo::SaveConfigInfo()
 	BOOL bCheck = m_checkLocalPreview.GetCheck();
 	gAgoraConfigMainUI.setVideoPreview(int2str(bCheck));
 
+	SYSTEMTIME st;
+	m_DataTimeCtlRestart.GetTime(&st);
+
+	struct tm t = { st.wSecond, st.wMinute, st.wHour, st.wDay, st.wMonth-1, st.wYear-1900, st.wDayOfWeek, 0, 0};
+	time_t restart_time = mktime(&t);
+
+	time_t cur_time;
+	time(&cur_time);
+
+	if (restart_time > cur_time){
+		gAgoraConfigMainUI.setRestartTimerStatus("1");
+		char szTime[12] = { 0 };
+		sprintf_s(szTime, 12, "%d", restart_time);
+		gAgoraConfigMainUI.setRestartTimer(szTime);
+
+		::KillTimer(GetParent()->GetParent()->GetParent()->m_hWnd, EventType_TIMER_EVENT_RESTART_Wawaji);
+		::SetTimer(GetParent()->GetParent()->GetParent()->m_hWnd, EventType_TIMER_EVENT_RESTART_Wawaji, (restart_time - cur_time) * 1000, NULL);
+	}
+	else{
+		gAgoraConfigMainUI.setRestartTimerStatus("0");
+		gAgoraConfigMainUI.setRestartTimer("");
+	}
 	return TRUE;
 }
 
@@ -232,7 +268,7 @@ void CDlgConfigBaseInfo::OnShowWindow(BOOL bShow, UINT nStatus)
 void CDlgConfigBaseInfo::OnClose()
 {
 	//To Do
-	uninitCtrl();
+	 uninitCtrl();
 
 	CDialogEx::OnCancel();
 }
