@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,15 +15,15 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
-import io.agora.live.LiveTranscoding;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.live.LiveTranscoding;
 import io.agora.rtc.video.AgoraVideoFrame;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.agora.wawaji.utils.CameraHelper;
 import io.agora.wawaji.utils.Constant;
 
@@ -239,7 +238,12 @@ public class SecondServer extends Service implements IFrameListener {
             encodeHeight = 720;
         }
 
-        mRtcEngine.setVideoProfile(vProfile, false);
+        //mRtcEngine.setVideoProfile(vProfile, false);
+        VideoEncoderConfiguration encodeConfig = new VideoEncoderConfiguration(new VideoEncoderConfiguration.VideoDimensions(encodeWidth, encodeHeight),
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15, VideoEncoderConfiguration.STANDARD_BITRATE,
+                VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE);
+        mRtcEngine.setVideoEncoderConfiguration(encodeConfig);
+
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
