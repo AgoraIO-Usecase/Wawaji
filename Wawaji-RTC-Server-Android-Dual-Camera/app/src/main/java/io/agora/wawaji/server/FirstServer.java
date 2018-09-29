@@ -84,11 +84,13 @@ public class FirstServer extends Activity {
         @Override
         public void onError(int err) {
             super.onError(err);
+            Toast.makeText(FirstServer.this, "FirstServer RtcEngine.onError: " + err, Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onWarning(int warn) {
             super.onWarning(warn);
+            Toast.makeText(FirstServer.this, "FirstServer RtcEngine.onWarning: " + warn, Toast.LENGTH_LONG).show();
         }
 
         @Override

@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -184,11 +185,13 @@ public class SecondServer extends Service implements IFrameListener {
         @Override
         public void onError(int err) {
             super.onError(err);
+            Toast.makeText(SecondServer.this, "SecondServer RtcEngine.onError: " + err, Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onWarning(int warn) {
             super.onWarning(warn);
+            Toast.makeText(SecondServer.this, "SecondServer RtcEngine.onWarning: " + warn, Toast.LENGTH_LONG).show();
         }
 
         @Override
