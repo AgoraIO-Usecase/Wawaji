@@ -16,6 +16,7 @@
     <string name="main_push_flow">Open CDN RTMP streaming</string>
     <string name="main_set_nv21">Set CaptureFormat NV21</string>
     <string name="label_confirm">Confirm</string>
+    <string name="no_network">No network, please check</string>
 
     <string-array
         name="string_array_resolutions">

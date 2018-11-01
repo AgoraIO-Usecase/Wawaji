@@ -89,9 +89,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initUIandEvent();
-
     }
-
 
     protected void initUIandEvent() {
         textRoomName = (EditText) findViewById(R.id.room_name);
@@ -335,6 +333,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startActivity() {
+        if (!UtilstHelp.isNetworkAvailable(this)) {
+            Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Intent i = new Intent(MainActivity.this, FirstServer.class);
         i.putExtra(Constant.CHANNEL_NAME, channelName);
         i.putExtra(Constant.CHANNEL_APPID, appid);

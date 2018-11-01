@@ -19,11 +19,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.agora.live.LiveTranscoding;
+import io.agora.rtc.live.LiveTranscoding;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.agora.wawaji.utils.Constant;
 
 
@@ -83,11 +84,13 @@ public class FirstServer extends Activity {
         @Override
         public void onError(int err) {
             super.onError(err);
+            Toast.makeText(FirstServer.this, "FirstServer RtcEngine.onError: " + err, Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onWarning(int warn) {
             super.onWarning(warn);
+            Toast.makeText(FirstServer.this, "FirstServer RtcEngine.onWarning: " + warn, Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -256,7 +259,12 @@ public class FirstServer extends Activity {
             encodeHeight = 720;
         }
 
-        mRtcEngine.setVideoProfile(vProfile, false);
+        //mRtcEngine.setVideoProfile(vProfile, false);
+        VideoEncoderConfiguration encodeConfig = new VideoEncoderConfiguration(new VideoEncoderConfiguration.VideoDimensions(encodeWidth, encodeHeight),
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15, VideoEncoderConfiguration.STANDARD_BITRATE,
+                VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE);
+        mRtcEngine.setVideoEncoderConfiguration(encodeConfig);
+
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
