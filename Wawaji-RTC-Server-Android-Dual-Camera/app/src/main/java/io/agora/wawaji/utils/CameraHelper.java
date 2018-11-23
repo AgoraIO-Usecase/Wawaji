@@ -3,22 +3,20 @@ package io.agora.wawaji.utils;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
 import java.util.List;
 
-import io.agora.rtc.Constants;
 import io.agora.rtc.video.AgoraVideoFrame;
 import io.agora.wawaji.server.IFrameListener;
 
 public class CameraHelper implements SurfaceHolder.Callback, Camera.PreviewCallback {
     // default width and height
-    private  int w = 640;
-    private  int h = 480;
-    private  int IMAGE_FORMAT = ImageFormat.NV21;
+    private int w = 640;
+    private int h = 480;
+    private int IMAGE_FORMAT = ImageFormat.NV21;
 
     private Camera mCamera;
     private IFrameListener mListener;
@@ -64,23 +62,31 @@ public class CameraHelper implements SurfaceHolder.Callback, Camera.PreviewCallb
     private void openCamera(SurfaceHolder holder) {
         releaseCamera(); // release Camera, if not release camera before call camera, it will be locked
 
-        //android.os.Debug.waitForDebugger();
+        mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK); // open default back camera
 
-        mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);// open default back camera
+        mCamera.setErrorCallback(new Camera.ErrorCallback() {
+            @Override
+            public void onError(int i, Camera camera) {
+                String parameters = camera != null ? camera.getParameters().flatten().toString() : "Null Camera";
+
+                Log.i("wawaji", "onError " + i + " " + camera + " " + parameters);
+            }
+        });
+
         Camera.Parameters mParams = mCamera.getParameters();
 
         List<Camera.Size> mParamsSupportedPreviewSizes = mParams.getSupportedPreviewSizes();
 
         boolean founded = false;
-        for(Camera.Size size: mParamsSupportedPreviewSizes) {
-            if (size.width == w && size.height == h){
-               founded = true;
+        for (Camera.Size size : mParamsSupportedPreviewSizes) {
+            if (size.width == w && size.height == h) {
+                founded = true;
                 break;
             }
         }
         if (!founded) {
-            for(Camera.Size size: mParamsSupportedPreviewSizes) {
-                if (size.width == w){
+            for (Camera.Size size : mParamsSupportedPreviewSizes) {
+                if (size.width == w) {
                     w = size.width;
                     h = size.height;
                     founded = true;
@@ -89,8 +95,8 @@ public class CameraHelper implements SurfaceHolder.Callback, Camera.PreviewCallb
             }
         }
         if (!founded) {
-            for(Camera.Size size: mParamsSupportedPreviewSizes) {
-                if (size.height == h){
+            for (Camera.Size size : mParamsSupportedPreviewSizes) {
+                if (size.height == h) {
                     w = size.width;
                     h = size.height;
                     founded = true;

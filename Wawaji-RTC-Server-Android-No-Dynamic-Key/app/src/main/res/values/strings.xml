@@ -2,16 +2,19 @@
     <string name="app_name">Agora Wawaji Server</string>
 
     <string name="label_leave">Leave</string>
-    <string name="main_title">Welcome to Open Live!</string>
+
+    <string name="main_title">Welcome to Wawaji Streaming Server!</string>
     <string name="main_input_name">Input name of the Live (Required)</string>
-    <string name="main_input_appid">Input Aogra AppId (Optional)</string>
+    <string name="main_input_app_id">Input Agora AppId (Optional)</string>
     <string name="main_input_uid">Input uid of the Live (Optional)</string>
-    <string name="main_input_url">Input CDN RTMP Url (Optional)</string>
+
+    <string name="main_input_url">CDN RTMP Url</string>
     <string name="main_input_width">width</string>
     <string name="main_input_height">height</string>
     <string name="main_input_bitrate">bitrate</string>
     <string name="main_input_fps">fps</string>
-    <string name="main_button">Join Room</string>
-    <string name="main_push_flow">Open CDN RTMP streaming</string>
-    <string name="main_set_nv21">Set CaptureFormat NV21</string>
+
+    <string name="main_button">Start Streaming</string>
+    <string name="main_cdn_streaming">Enable CDN RTMP streaming</string>
+    <string name="main_capture_in_nv21">Capture in NV21</string>
 </resources>

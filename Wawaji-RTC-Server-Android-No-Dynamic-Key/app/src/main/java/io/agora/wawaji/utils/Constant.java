@@ -6,7 +6,7 @@ package io.agora.wawaji.utils;
 
 public class Constant {
     public static final String CHANNEL_NAME = "channel_name";
-    public static final String CHANNEL_APPID = "appid";
+    public static final String CHANNEL_APP_ID = "appid";
     public static final String CHANNEL_UID = "uid";
     public static final String CHANNEL_URL = "url";
     public static final String CHANNEL_URL_W = "url_w";
@@ -14,5 +14,5 @@ public class Constant {
     public static final String CHANNEL_URL_BITRATE = "url_bitrate";
     public static final String CHANNEL_URL_FPS = "url_fps";
     public static final String CHANNEL_URL_STATE = "url_state";
-    public static final String CHANNEL_SET_NV21 = "capturenv21";
+    public static final String CHANNEL_CAPTURE_IN_NV21 = "capturenv21";
 }

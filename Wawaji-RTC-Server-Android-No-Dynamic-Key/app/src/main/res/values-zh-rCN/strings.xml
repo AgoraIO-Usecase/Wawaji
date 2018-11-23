@@ -5,17 +5,19 @@
 
     <string name="label_leave">离开</string>
 
-    <string name="main_title">欢迎使用 Agora 声网娃娃机服务端!</string>
+    <string name="main_title">欢迎使用 Agora 声网娃娃机服务端！</string>
     <string name="main_input_name">输入直播间名称(必填)</string>
-    <string name="main_input_appid">输入 Agora Appid(可选)</string>
+    <string name="main_input_app_id">输入 Agora AppId(可选)</string>
     <string name="main_input_uid">输入 Uid(可选)</string>
-    <string name="main_input_url">输入推流地址 (可选)</string>
+
+    <string name="main_input_url">推流地址</string>
     <string name="main_input_width">宽</string>
     <string name="main_input_height">高</string>
     <string name="main_input_bitrate">比特率</string>
     <string name="main_input_fps">帧率</string>
-    <string name="main_button">进入直播间</string>
-    <string name="main_push_flow">开启旁路推流</string>
-    <string name="main_set_nv21">设置视频采集格式 NV21</string>
+
+    <string name="main_button">开始推流</string>
+    <string name="main_cdn_streaming">开启旁路推流</string>
+    <string name="main_capture_in_nv21">以 NV21 格式采集视频</string>
 
 </resources>

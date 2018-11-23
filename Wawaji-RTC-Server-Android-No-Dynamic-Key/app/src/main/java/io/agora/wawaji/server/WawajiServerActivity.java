@@ -20,8 +20,10 @@ import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.PublisherConfiguration;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
-import io.agora.wawaji.utils.Constant;
 
+import io.agora.rtc.video.VideoEncoderConfiguration; // 2.3.0 and later
+
+import io.agora.wawaji.utils.Constant;
 
 public class WawajiServerActivity extends Activity {
 
@@ -31,7 +33,7 @@ public class WawajiServerActivity extends Activity {
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
     private String channelName = "";
-    private String appid = "";
+    private String appId = "";
     private int uid = 0;
 
     private String rtmpUrl = "";
@@ -39,16 +41,17 @@ public class WawajiServerActivity extends Activity {
     private int height = 0;
     private int bitrate = 0;
     private int fps = 0;
-    private boolean openRtmpStream = false;
-    private boolean useCaptureFormatNV21 = false;
+    private boolean enableCDNRtmpStreaming = false;
+    private boolean enableCaptureInNV21 = false;
 
     private RtcEngine mRtcEngine; // Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Step 1
 
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-            Log.i(LOG_TAG, "onJoinChannelSuccess " + channel + " " + uid);
+            Log.i(LOG_TAG, "onJoinChannelSuccess " + channel + " " + (0xFFFFFFFFL & uid));
             super.onJoinChannelSuccess(channel, uid, elapsed);
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -146,12 +149,12 @@ public class WawajiServerActivity extends Activity {
             mTextChannel.setText(channelName);
         }
 
-        appid = intent.getStringExtra(Constant.CHANNEL_APPID);
+        appId = intent.getStringExtra(Constant.CHANNEL_APP_ID);
         uid = intent.getIntExtra(Constant.CHANNEL_UID, 0);
-        useCaptureFormatNV21 = intent.getBooleanExtra(Constant.CHANNEL_SET_NV21, false);
-        openRtmpStream = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE, false);
+        enableCaptureInNV21 = intent.getBooleanExtra(Constant.CHANNEL_CAPTURE_IN_NV21, false);
+        enableCDNRtmpStreaming = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE, false);
 
-        if (openRtmpStream) {
+        if (enableCDNRtmpStreaming) {
             rtmpUrl = intent.getStringExtra(Constant.CHANNEL_URL);
             width = intent.getIntExtra(Constant.CHANNEL_URL_W, 0);
             height = intent.getIntExtra(Constant.CHANNEL_URL_H, 0);
@@ -164,10 +167,10 @@ public class WawajiServerActivity extends Activity {
     // Step 2
     private void initializeAgoraEngine() {
         try {
-            if (appid.equals("")) {
-                appid = getString(R.string.agora_app_id);
+            if (appId.equals("")) {
+                appId = getString(R.string.agora_app_id);
             }
-            mRtcEngine = RtcEngine.create(getBaseContext(), appid, mRtcEventHandler);
+            mRtcEngine = RtcEngine.create(getBaseContext(), appId, mRtcEventHandler);
         } catch (Exception e) {
             WawajiApplication.the().setSetting("appid", "");
             Log.e(LOG_TAG, Log.getStackTraceString(e));
@@ -181,16 +184,29 @@ public class WawajiServerActivity extends Activity {
         mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.enableVideo();
         mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
-        mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
+
+//      mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false); // Earlier than 2.3.0
+        mRtcEngine.setVideoEncoderConfiguration(new VideoEncoderConfiguration(VideoEncoderConfiguration.VD_640x360, VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
+                VideoEncoderConfiguration.STANDARD_BITRATE,
+                VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT));
+
         mRtcEngine.muteAllRemoteAudioStreams(true);
         mRtcEngine.muteAllRemoteVideoStreams(true);
         mRtcEngine.enableWebSdkInteroperability(true);
         mRtcEngine.muteLocalAudioStream(true);
-        if (useCaptureFormatNV21){
+
+        if (enableCaptureInNV21) {
             mRtcEngine.setParameters("{\"che.video.captureFormatNV21\": true}");
         }
+    }
 
-        if (openRtmpStream && !rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
+    // Step 4
+    private void joinChannel() {
+        mRtcEngine.joinChannel(null, channelName, "Wawaji server program", uid); // if you do not specify the uid, we will generate the uid for you
+    }
+
+    private void startCDNStreaming() {
+        if (enableCDNRtmpStreaming && !rtmpUrl.equals("") && width != 0 && height != 0 && bitrate != 0 && fps != 0) {
             PublisherConfiguration config = new PublisherConfiguration.Builder()
                     .owner(true)
                     .size(width, height)
@@ -204,11 +220,7 @@ public class WawajiServerActivity extends Activity {
         }
     }
 
-
-    // Step 4
-    private void joinChannel() {
-
-        mRtcEngine.joinChannel(null, channelName, "Extra Optional Data", uid); // if you do not specify the uid, we will generate the uid for you
+    private void stopCDNStreaming() {
 
     }
 
@@ -218,8 +230,7 @@ public class WawajiServerActivity extends Activity {
         SurfaceView surfaceView = RtcEngine.CreateRendererView(getBaseContext());
         surfaceView.setZOrderMediaOverlay(true);
         container.addView(surfaceView);
-        mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, 0));
-
+        mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_FIT, 0));
     }
 
     // Step 6

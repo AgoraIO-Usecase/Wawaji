@@ -21,13 +21,13 @@ import android.widget.Toast;
 import io.agora.wawaji.utils.Constant;
 import io.agora.wawaji.utils.WawajiCrashHandler;
 
-
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_WRITE_EXTERNAL = 20;
+
     private String channelName = "";
-    private String appid = "";
+    private String appId = "";
     private int uid = 0;
 
     private String rtmpUrl = "";
@@ -35,21 +35,21 @@ public class MainActivity extends AppCompatActivity {
     private int height = 0;
     private int bitrate = 0;
     private int fps = 0;
-    private boolean openRtmpStream = false;
-    private boolean useCaptureFormatNV21 = false;
+
+    private boolean enableCDNRtmpStreaming = false;
+    private boolean enableCaptureInNV21 = false;
 
     private EditText textRoomName;
-    private EditText textRoomAppid;
+    private EditText textRoomAppId;
     private EditText textRoomUid;
     private EditText textRoomUrl;
     private EditText textWidth;
     private EditText textHeight;
     private EditText textBitrate;
     private EditText textFps;
-    private CheckBox checkBoxPushFlow;
-    private CheckBox checkBoxSetNv21;
+    private CheckBox checkBoxEnableCDNStreaming;
+    private CheckBox checkBoxCaptureInNv21;
     private RelativeLayout layoutRtmp;
-
 
     @Override
     public boolean navigateUpTo(Intent upIntent) {
@@ -66,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initUIandEvent();
-
     }
-
 
     protected void initUIandEvent() {
         textRoomName = (EditText) findViewById(R.id.room_name);
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        textRoomAppid = (EditText) findViewById(R.id.room_appid);
+        textRoomAppId = (EditText) findViewById(R.id.room_appid);
         textRoomUid = (EditText) findViewById(R.id.room_uid);
         textRoomUrl = (EditText) findViewById(R.id.room_url_edit);
         textWidth = (EditText) findViewById(R.id.room_url_width);
@@ -98,27 +96,28 @@ public class MainActivity extends AppCompatActivity {
         textBitrate = (EditText) findViewById(R.id.room_url_bitrate);
         textFps = (EditText) findViewById(R.id.room_url_fps);
         layoutRtmp = (RelativeLayout) findViewById(R.id.room_layout_rtmp);
-        checkBoxPushFlow = (CheckBox) findViewById(R.id.room_push_flow);
-        checkBoxSetNv21= (CheckBox) findViewById(R.id.room_check_nv21);
-        checkBoxPushFlow.setOnCheckedChangeListener(onCheckedChangeListener);
-        checkBoxSetNv21.setOnCheckedChangeListener(onCheckedChangeListener);
+        checkBoxEnableCDNStreaming = (CheckBox) findViewById(R.id.room_enable_cdn_streaming);
+        checkBoxCaptureInNv21 = (CheckBox) findViewById(R.id.room_enable_nv21);
+
+        checkBoxEnableCDNStreaming.setOnCheckedChangeListener(onCheckedChangeListener);
+        checkBoxCaptureInNv21.setOnCheckedChangeListener(onCheckedChangeListener);
 
         channelName = WawajiApplication.the().getSetting(Constant.CHANNEL_NAME, "");
-        appid = WawajiApplication.the().getSetting(Constant.CHANNEL_APPID, "");
+        appId = WawajiApplication.the().getSetting(Constant.CHANNEL_APP_ID, "");
         uid = WawajiApplication.the().getSetting(Constant.CHANNEL_UID, 0);
         rtmpUrl = WawajiApplication.the().getSetting(Constant.CHANNEL_URL, "");
         width = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_W, 0);
         height = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_H, 0);
         bitrate = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_BITRATE, 0);
         fps = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_FPS, 0);
-        openRtmpStream = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE, false);
-        useCaptureFormatNV21 = WawajiApplication.the().getSetting(Constant.CHANNEL_SET_NV21, false);
+        enableCDNRtmpStreaming = WawajiApplication.the().getSetting(Constant.CHANNEL_URL_STATE, false);
+        enableCaptureInNV21 = WawajiApplication.the().getSetting(Constant.CHANNEL_CAPTURE_IN_NV21, false);
 
         if (!channelName.equals("")) {
             textRoomName.setText(channelName);
 
-            if (!appid.equals("")) {
-                textRoomAppid.setText(appid);
+            if (!appId.equals("")) {
+                textRoomAppId.setText(appId);
             }
 
             if (uid != 0) {
@@ -140,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
                 textFps.setText("" + fps);
             }
 
-            checkBoxPushFlow.setChecked(openRtmpStream);
-            checkBoxSetNv21.setChecked(useCaptureFormatNV21);
+            checkBoxEnableCDNStreaming.setChecked(enableCDNRtmpStreaming);
+            checkBoxCaptureInNv21.setChecked(enableCaptureInNV21);
 
             startActivity();
         }
@@ -150,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean checkSelfPermission(String permission, int requestCode) {
         Log.i(LOG_TAG, "checkSelfPermission " + permission + " " + requestCode);
+
         if (ContextCompat.checkSelfPermission(this,
                 permission)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -176,14 +176,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             }
-
         }
     }
 
     public void onClickJoin(View view) {
 
         channelName = textRoomName.getText().toString();
-        appid = textRoomAppid.getText().toString();
+        appId = textRoomAppId.getText().toString();
         rtmpUrl = textRoomUrl.getText().toString();
 
         if (!textRoomUid.getText().toString().isEmpty()) {
@@ -204,12 +203,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         WawajiApplication.the().setSetting(Constant.CHANNEL_NAME, channelName);
-        WawajiApplication.the().setSetting(Constant.CHANNEL_APPID, appid);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_APP_ID, appId);
         WawajiApplication.the().setSetting(Constant.CHANNEL_UID, uid);
-        WawajiApplication.the().setSetting(Constant.CHANNEL_SET_NV21, useCaptureFormatNV21);
-        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_STATE, openRtmpStream);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_CAPTURE_IN_NV21, enableCaptureInNV21);
+        WawajiApplication.the().setSetting(Constant.CHANNEL_URL_STATE, enableCDNRtmpStreaming);
 
-        if (openRtmpStream) {
+        if (enableCDNRtmpStreaming) {
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL, rtmpUrl);
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL_W, width);
             WawajiApplication.the().setSetting(Constant.CHANNEL_URL_H, height);
@@ -218,18 +217,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         startActivity();
-
     }
 
     private void startActivity() {
         Intent i = new Intent(MainActivity.this, WawajiServerActivity.class);
         i.putExtra(Constant.CHANNEL_NAME, channelName);
-        i.putExtra(Constant.CHANNEL_APPID, appid);
+        i.putExtra(Constant.CHANNEL_APP_ID, appId);
         i.putExtra(Constant.CHANNEL_UID, uid);
-        i.putExtra(Constant.CHANNEL_URL_STATE, openRtmpStream);
-        i.putExtra(Constant.CHANNEL_SET_NV21, useCaptureFormatNV21);
+        i.putExtra(Constant.CHANNEL_URL_STATE, enableCDNRtmpStreaming);
+        i.putExtra(Constant.CHANNEL_CAPTURE_IN_NV21, enableCaptureInNV21);
 
-        if (openRtmpStream) {
+        if (enableCDNRtmpStreaming) {
             i.putExtra(Constant.CHANNEL_URL, rtmpUrl);
             i.putExtra(Constant.CHANNEL_URL_W, width);
             i.putExtra(Constant.CHANNEL_URL_H, height);
@@ -237,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra(Constant.CHANNEL_URL_FPS, fps);
         }
 
-        if (appid.equals("") && getString(R.string.agora_app_id).equals("")){
-            Toast.makeText(this, "No AppId can use", Toast.LENGTH_SHORT).show();
+        if (appId.equals("") && getString(R.string.agora_app_id).equals("")) {
+            Toast.makeText(this, "Must provide a valid app id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -248,10 +246,10 @@ public class MainActivity extends AppCompatActivity {
     private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            switch (buttonView.getId()) {
+                case R.id.room_enable_cdn_streaming:
 
-            switch (buttonView.getId()){
-                case R.id.room_push_flow:
-                    openRtmpStream = isChecked;
+                    enableCDNRtmpStreaming = isChecked;
 
                     if (isChecked) {
                         layoutRtmp.setVisibility(View.VISIBLE);
@@ -259,15 +257,12 @@ public class MainActivity extends AppCompatActivity {
                         layoutRtmp.setVisibility(View.GONE);
                     }
                     break;
-                case R.id.room_check_nv21:
+                case R.id.room_enable_nv21:
 
-                    useCaptureFormatNV21 = isChecked;
+                    enableCaptureInNV21 = isChecked;
                     break;
             }
-
-
         }
     };
-
 
 }

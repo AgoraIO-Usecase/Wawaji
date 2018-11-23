@@ -27,10 +27,9 @@ import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.agora.wawaji.utils.Constant;
 
-
 public class FirstServer extends Activity {
 
-    private static final String LOG_TAG = "firstTest-->";
+    private static final String LOG_TAG = "wawaji_first_svr";
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
@@ -67,7 +66,7 @@ public class FirstServer extends Activity {
         @Override
         public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
             super.onJoinChannelSuccess(channel, uid, elapsed);
-            Log.e("wbsTest", "FirstServer onJoinChannelSuccess()");
+            Log.e("wawaji", "FirstServer onJoinChannelSuccess()");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -372,9 +371,9 @@ public class FirstServer extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(LOG_TAG, "onPause "  + servicePushIntent);
-        if(servicePushIntent != null) {
-           Intent intent = new Intent() ;
+        Log.i(LOG_TAG, "onPause " + servicePushIntent);
+        if (servicePushIntent != null) {
+            Intent intent = new Intent();
             intent.setAction("action1");
             intent.putExtra("status", 1);
             sendBroadcast(intent);
@@ -384,14 +383,13 @@ public class FirstServer extends Activity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.i(LOG_TAG, "onRestart "  + servicePushIntent);
-        if(servicePushIntent != null) {
-            Intent intent = new Intent() ;
+        Log.i(LOG_TAG, "onRestart " + servicePushIntent);
+        if (servicePushIntent != null) {
+            Intent intent = new Intent();
             intent.setAction("action1");
             intent.putExtra("status", 2);
             sendBroadcast(intent);
         }
     }
-
 
 }

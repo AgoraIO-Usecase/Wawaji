@@ -29,6 +29,8 @@ import io.agora.wawaji.utils.CameraHelper;
 import io.agora.wawaji.utils.Constant;
 
 public class SecondServer extends Service implements IFrameListener {
+    private static final String LOG_TAG = "wawaji_second_svr";
+
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mLayoutParams;
     private LayoutInflater mLayoutInflater;
@@ -55,7 +57,6 @@ public class SecondServer extends Service implements IFrameListener {
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         super.onCreate();
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         mLayoutInflater = LayoutInflater.from(this);
@@ -63,7 +64,6 @@ public class SecondServer extends Service implements IFrameListener {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("action1");
         registerReceiver(broadcastReceiver, intentFilter);
-
     }
 
     private void getParameterData() {
@@ -71,6 +71,7 @@ public class SecondServer extends Service implements IFrameListener {
             channelName = intent.getStringExtra(Constant.CHANNEL_NAME);
             uid2 = intent.getIntExtra(Constant.CHANNEL_UID2, 2);
             openRtmpStream2 = intent.getBooleanExtra(Constant.CHANNEL_URL_STATE2, false);
+
             if (openRtmpStream2) {
                 rtmpUrl2 = intent.getStringExtra(Constant.CHANNEL_URL2);
                 width2 = intent.getIntExtra(Constant.CHANNEL_URL_W2, 0);
@@ -78,17 +79,14 @@ public class SecondServer extends Service implements IFrameListener {
                 bitrate2 = intent.getIntExtra(Constant.CHANNEL_URL_BITRATE2, 0);
                 fps2 = intent.getIntExtra(Constant.CHANNEL_URL_FPS2, 0);
             }
-
         }
-
     }
 
     @Override
-    public int onStartCommand(Intent intent,  int flags, int startId) {
-        Log.i("yttest", "onStartCommand" + intent);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(LOG_TAG, "onStartCommand" + intent);
         this.intent = intent;
         getParameterData();
-
 
         if (mRtcEngine == null) {
             joinChannel();
@@ -101,7 +99,7 @@ public class SecondServer extends Service implements IFrameListener {
 
         if (mFloatView == null) {
             mFloatView = mLayoutInflater.inflate(R.layout.service_main, null);
-           // mFloatView.setOnTouchListener(new OnFloatViewTouchListener());
+            // mFloatView.setOnTouchListener(new OnFloatViewTouchListener());
             mLayoutParams = new WindowManager.LayoutParams();
             mLayoutParams.gravity = Gravity.LEFT | Gravity.CENTER;
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
@@ -134,7 +132,6 @@ public class SecondServer extends Service implements IFrameListener {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -167,7 +164,7 @@ public class SecondServer extends Service implements IFrameListener {
         @Override
         public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
             super.onJoinChannelSuccess(channel, uid, elapsed);
-            Log.e("wbsTest", "SecondServer onJoinChannelSuccess()");
+            Log.e(LOG_TAG, "SecondServer onJoinChannelSuccess()");
 
             if (openRtmpStream2) {
 
@@ -198,7 +195,7 @@ public class SecondServer extends Service implements IFrameListener {
         public void onStreamPublished(String url, int error) {
             super.onStreamPublished(url, error);
 
-            Log.e("wbsTest", "onStreamPublished()" + error);
+            Log.e(LOG_TAG, "onStreamPublished()" + error);
         }
 
         @Override
@@ -302,7 +299,7 @@ public class SecondServer extends Service implements IFrameListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e("wbsTest", "on Server Destroy");
+        Log.e(LOG_TAG, "on Server Destroy");
         if (mRtcEngine != null) {
             if (openRtmpStream2) {
                 mRtcEngine.removePublishStreamUrl(rtmpUrl2);
@@ -316,7 +313,7 @@ public class SecondServer extends Service implements IFrameListener {
     }
 
     public void onPause() {
-        Log.i("secondtest", "second onPause "  + mWindowManager);
+        Log.i(LOG_TAG, "onPause " + mWindowManager);
         if (mWindowManager != null) {
             mFloatView.setVisibility(View.GONE);
 
@@ -325,7 +322,7 @@ public class SecondServer extends Service implements IFrameListener {
     }
 
     public void onResume() {
-        Log.i("secondtest", "second onResume "  + mWindowManager);
+        Log.i(LOG_TAG, "onResume " + mWindowManager);
         if (mWindowManager != null) {
             mFloatView.setVisibility(View.VISIBLE);
         }
@@ -335,19 +332,17 @@ public class SecondServer extends Service implements IFrameListener {
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            String action = intent.getAction( );
-            Log.i("secondtest", "second action "  + action);
-            if( action.equals( "action1" ) ) {
-                if (intent.getIntExtra("status", 0 ) == 1 ) {
+            String action = intent.getAction();
+            Log.i(LOG_TAG, "action " + action);
+            if (action.equals("action1")) {
+                if (intent.getIntExtra("status", 0) == 1) {
                     onPause();
 
-                } else if (intent.getIntExtra("status", 0 ) == 2) {
+                } else if (intent.getIntExtra("status", 0) == 2) {
                     onResume();
 
                 }
             }
-
         }
     };
 }

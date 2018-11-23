@@ -2,7 +2,6 @@ package io.agora.wawaji.server;
 
 import android.app.Application;
 
-import io.agora.wawaji.utils.WawajiCrashHandler;
 import io.agora.wawaji.utils.WawajiSetting;
 
 /**
@@ -24,10 +23,8 @@ public class WawajiApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
     }
 
-    // setting params-------
     public String getSetting(String key) {
         return WawajiSetting.the(mInstance).getSetting(key, null);
     }
@@ -36,12 +33,12 @@ public class WawajiApplication extends Application {
         return WawajiSetting.the(mInstance).getSetting(key, defaultValue);
     }
 
-    public boolean getSetting(String key, boolean denfultValue) {
-        return WawajiSetting.the(mInstance).getSetting(key, denfultValue);
+    public boolean getSetting(String key, boolean defaultValue) {
+        return WawajiSetting.the(mInstance).getSetting(key, defaultValue);
     }
 
-    public int getSetting(String key, int denfultValue) {
-        return WawajiSetting.the(mInstance).getSetting(key, denfultValue);
+    public int getSetting(String key, int defaultValue) {
+        return WawajiSetting.the(mInstance).getSetting(key, defaultValue);
     }
 
     public void setSetting(String key, String value) {
